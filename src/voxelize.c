@@ -1,3 +1,6 @@
+/**
+ * @file
+ */
 #include <math.h>
 #include <stdbool.h>
 #include <stdio.h>
@@ -7,14 +10,16 @@
 
 #include "voxelize.h"
 
-bool sphere2d_belongs(Sphere *sphere, double *point) {
+/** Specialization of sphere_belongs() to two-dimensional spheres (disks). */
+static bool sphere2d_belongs(Sphere *sphere, double *point) {
   double x = point[0] - sphere->center[0];
   double y = point[1] - sphere->center[1];
   double r = sphere->radius;
   return x * x + y * y <= r * r;
 }
 
-bool sphere3d_belongs(Sphere *sphere, double *point) {
+/** Specialization of sphere_belongs() to three-dimensional spheres (disks). */
+static bool sphere3d_belongs(Sphere *sphere, double *point) {
   double x = point[0] - sphere->center[0];
   double y = point[1] - sphere->center[1];
   double z = point[2] - sphere->center[2];
@@ -22,6 +27,7 @@ bool sphere3d_belongs(Sphere *sphere, double *point) {
   return x * x + y * y + z * z <= r * r;
 }
 
+/** Create new sphere. */
 Sphere *sphere_new(size_t ndims, double *center, double radius) {
   Sphere *sphere = g_new(Sphere, 1);
   sphere->ndims = ndims;
@@ -47,10 +53,22 @@ Sphere *sphere_copy(Sphere *sphere) {
   return sphere_new(sphere->ndims, sphere->center, sphere->radius);
 }
 
+/**
+ * Return `true` if `point` belongs to `sphere`.
+ */
 bool sphere_belongs(Sphere *sphere, double *point) {
   return sphere->belongs(sphere, point);
 }
 
+/**
+ * Compute the bounding box of `sphere`.
+ *
+ * `min` and `max` are modified in place.
+ *
+ * @param sphere the sphere
+ * @param min minimum coordinates of the bounding box
+ * @param max maximum coordinates of the bounding box
+ */
 void sphere_bbox(Sphere *sphere, double *min, double *max) {
   double r = sphere->radius;
   double *c = sphere->center;
