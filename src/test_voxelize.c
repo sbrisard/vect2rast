@@ -31,14 +31,15 @@ void sphere_belongs_test_data_free(SphereBelongsTestData *data) {
 }
 
 void test_sphere_belongs(SphereBelongsTestData *test_data) {
-  g_assert_cmpuint(sphere_belongs(test_data->sphere, test_data->point), ==,
-                   test_data->expected);
+  g_assert_cmpuint(
+      test_data->sphere->belongs(test_data->sphere, test_data->point), ==,
+      test_data->expected);
 }
 
 void test_sphere_bbox(Sphere *sphere) {
   double *min = g_new(double, sphere->ndims);
   double *max = g_new(double, sphere->ndims);
-  sphere_bbox(sphere, min, max);
+  sphere->bbox(sphere, min, max);
   for (size_t i = 0; i < sphere->ndims; i++) {
     g_assert_cmpfloat(min[i], ==, sphere->center[i] - sphere->radius);
     g_assert_cmpfloat(max[i], ==, sphere->center[i] + sphere->radius);

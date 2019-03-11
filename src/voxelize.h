@@ -13,21 +13,21 @@
 #define DllExport
 #endif
 
-typedef struct Sphere_ {
-  /** Number of spatial dimensions **/
+typedef struct Particle {
   size_t ndims;
-  /** Coordinates of center **/
   double *center;
+  bool (*belongs)(struct Particle *, double *);
+  void (*bbox)(struct Particle *, double *, double *);
+} Particle;
+
+typedef struct Sphere_ {
+  struct Particle;
   /** Radius **/
   double radius;
-  /** Returns `true` if point belongs to sphere. **/
-  bool (*belongs)(struct Sphere_ *, double *);
 } Sphere;
 
 DllExport Sphere *sphere_new(size_t ndims, double *center, double radius);
 DllExport void sphere_free(Sphere *);
 DllExport Sphere *sphere_copy(Sphere *);
-DllExport bool sphere_belongs(Sphere *, double *);
-DllExport void sphere_bbox(Sphere *, double *, double *);
 
 #endif

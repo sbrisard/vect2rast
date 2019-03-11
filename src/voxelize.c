@@ -11,7 +11,8 @@
 #include "voxelize.h"
 
 /** Specialization of sphere_belongs() to two-dimensional spheres (disks). */
-static bool sphere2d_belongs(Sphere *sphere, double *point) {
+static bool sphere2d_belongs(Particle *particle, double *point) {
+  Sphere *sphere = (Sphere *)particle;
   double x = point[0] - sphere->center[0];
   double y = point[1] - sphere->center[1];
   double r = sphere->radius;
@@ -19,7 +20,8 @@ static bool sphere2d_belongs(Sphere *sphere, double *point) {
 }
 
 /** Specialization of sphere_belongs() to three-dimensional spheres (disks). */
-static bool sphere3d_belongs(Sphere *sphere, double *point) {
+static bool sphere3d_belongs(Particle *particle, double *point) {
+  Sphere *sphere = (Sphere *)particle;
   double x = point[0] - sphere->center[0];
   double y = point[1] - sphere->center[1];
   double z = point[2] - sphere->center[2];
@@ -27,49 +29,21 @@ static bool sphere3d_belongs(Sphere *sphere, double *point) {
   return x * x + y * y + z * z <= r * r;
 }
 
-/** Create new sphere. */
-Sphere *sphere_new(size_t ndims, double *center, double radius) {
-  Sphere *sphere = g_new(Sphere, 1);
-  sphere->ndims = ndims;
-  sphere->center = g_new(double, ndims);
-  for (size_t i = 0; i < ndims; i++) {
-    sphere->center[i] = center[i];
-  }
-  sphere->radius = radius;
-  if (ndims == 2) {
-    sphere->belongs = sphere2d_belongs;
-  } else if (ndims == 3) {
-    sphere->belongs = sphere3d_belongs;
-  }
-  return sphere;
+void sphere2d_bbox(Particle *particle, double *min, double *max) {
+  Sphere *sphere = (Sphere *)particle;
+  double r = sphere->radius;
+  double *c = sphere->center;
+  *min = (*c) - r;
+  *max = (*c) + r;
+  ++min;
+  ++max;
+  ++c;
+  *min = (*c) - r;
+  *max = (*c) + r;
 }
 
-void sphere_free(Sphere *sphere) {
-  g_free(sphere->center);
-  g_free(sphere);
-}
-
-Sphere *sphere_copy(Sphere *sphere) {
-  return sphere_new(sphere->ndims, sphere->center, sphere->radius);
-}
-
-/**
- * Return `true` if `point` belongs to `sphere`.
- */
-bool sphere_belongs(Sphere *sphere, double *point) {
-  return sphere->belongs(sphere, point);
-}
-
-/**
- * Compute the bounding box of `sphere`.
- *
- * `min` and `max` are modified in place.
- *
- * @param sphere the sphere
- * @param min minimum coordinates of the bounding box
- * @param max maximum coordinates of the bounding box
- */
-void sphere_bbox(Sphere *sphere, double *min, double *max) {
+void sphere3d_bbox(Particle *particle, double *min, double *max) {
+  Sphere *sphere = (Sphere *)particle;
   double r = sphere->radius;
   double *c = sphere->center;
   *min = (*c) - r;
@@ -84,6 +58,34 @@ void sphere_bbox(Sphere *sphere, double *min, double *max) {
   ++c;
   *min = (*c) - r;
   *max = (*c) + r;
+}
+
+/** Create new sphere. */
+Sphere *sphere_new(size_t ndims, double *center, double radius) {
+  Sphere *sphere = g_new(Sphere, 1);
+  sphere->ndims = ndims;
+  sphere->center = g_new(double, ndims);
+  for (size_t i = 0; i < ndims; i++) {
+    sphere->center[i] = center[i];
+  }
+  sphere->radius = radius;
+  if (ndims == 2) {
+    sphere->belongs = sphere2d_belongs;
+    sphere->bbox = sphere2d_bbox;
+  } else if (ndims == 3) {
+    sphere->belongs = sphere3d_belongs;
+    sphere->bbox = sphere3d_bbox;
+  }
+  return sphere;
+}
+
+void sphere_free(Sphere *sphere) {
+  g_free(sphere->center);
+  g_free(sphere);
+}
+
+Sphere *sphere_copy(Sphere *sphere) {
+  return sphere_new(sphere->ndims, sphere->center, sphere->radius);
 }
 
 void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
