@@ -10,6 +10,132 @@
 
 #include "voxelize.h"
 
+static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
+                        int *i_max) {
+  *i_min = ceil(h_inv * x_min - 0.5);
+  *i_max = floor(h_inv * x_max - 0.5);
+}
+
+static Particle *particle_copy(Particle *);
+
+static void particle3d_voxelize(Particle *particle, double *dim, size_t *size,
+                                guint8 *grid, guint8 value) {
+  const size_t ndims = 3;
+  const double L0 = dim[0], L1 = dim[1], L2 = dim[2];
+  const int n0 = size[0], n1 = size[1], n2 = size[2];
+  const double h0 = L0 / n0, h1 = L1 / n1, h2 = L2 / n2;
+
+  double *min = g_new(double, ndims);
+  double *max = g_new(double, ndims);
+  particle->bbox(particle, min, max);
+  int i0_min, i0_max, i1_min, i1_max, i2_min, i2_max;
+  init_bounds(min[0], max[0], n0 / L0, &i0_min, &i0_max);
+  init_bounds(min[1], max[1], n1 / L1, &i1_min, &i1_max);
+  init_bounds(min[2], max[2], n2 / L2, &i2_min, &i2_max);
+  g_free(max);
+  g_free(min);
+
+  double *x = g_new(double, ndims);
+  int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
+  x[0] = (i0_min + 0.5) * h0;
+  for (int i0 = i0_min; i0 <= i0_max; i0++) {
+    int j1 = i1_min >= 0 ? i1_min : i1_min + n1;
+    x[1] = (i1_min + 0.5) * h1;
+    for (int i1 = i1_min; i1 <= i1_max; i1++) {
+      int j2 = i2_min >= 0 ? i2_min : i2_min + n2;
+      x[2] = (i2_min + 0.5) * h2;
+      for (int i2 = i2_min; i2 <= i2_max; i2++) {
+        if (particle->belongs(particle, x)) {
+          grid[(j0 * n1 + j1) * n2 + j2] = value;
+        }
+        x[2] += h2;
+        ++j2;
+        if (j2 == n2) {
+          j2 = 0;
+        }
+      }
+      ++j1;
+      x[1] += h1;
+      if (j1 == n1) {
+        j1 = 0;
+      }
+    }
+    ++j0;
+    x[0] += h0;
+    if (j0 == n0) {
+      j0 = 0;
+    }
+  }
+  g_free(x);
+}
+
+static void particle2d_voxelize(Particle *particle, double *dim, size_t *size,
+                                guint8 *grid, guint8 value) {
+  const size_t ndims = 2;
+  const double L0 = dim[0], L1 = dim[1];
+  const int n0 = size[0], n1 = size[1];
+  const double h0 = L0 / n0, h1 = L1 / n1;
+
+  double *min = g_new(double, ndims);
+  double *max = g_new(double, ndims);
+  particle->bbox(particle, min, max);
+  int i0_min, i0_max, i1_min, i1_max;
+  init_bounds(min[0], max[0], n0 / L0, &i0_min, &i0_max);
+  init_bounds(min[1], max[1], n1 / L1, &i1_min, &i1_max);
+  g_free(max);
+  g_free(min);
+
+  double *x = g_new(double, ndims);
+  int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
+  x[0] = (i0_min + 0.5) * h0;
+  for (int i0 = i0_min; i0 <= i0_max; i0++) {
+    int j1 = i1_min >= 0 ? i1_min : i1_min + n1;
+    x[1] = (i1_min + 0.5) * h1;
+    for (int i1 = i1_min; i1 <= i1_max; i1++) {
+      if (particle->belongs(particle, x)) {
+        grid[j0 * n1 + j1] = value;
+      }
+      ++j1;
+      x[1] += h1;
+      if (j1 == n1) {
+        j1 = 0;
+      }
+    }
+    ++j0;
+    x[0] += h0;
+    if (j0 == n0) {
+      j0 = 0;
+    }
+  }
+  g_free(x);
+}
+
+Particle *particle_new(size_t ndims, double *center) {
+  Particle *particle = g_new(Particle, 1);
+  particle->copy = particle_copy;
+  particle->ndims = ndims;
+  particle->center = g_new(double, ndims);
+  for (size_t i = 0; i < ndims; i++) {
+    particle->center[i] = center[i];
+  }
+  if (ndims == 2) {
+    particle->voxelize = particle2d_voxelize;
+  } else if (ndims == 3) {
+    particle->voxelize = particle3d_voxelize;
+  }
+  return particle;
+}
+
+void particle_free(Particle *particle) {
+  g_free(particle->center);
+  g_free(particle);
+}
+
+Particle *particle_copy(Particle *particle) {
+  Particle *copy = particle_new(particle->ndims, particle->center);
+  return copy;
+}
+
 /** Specialization of sphere_belongs() to two-dimensional spheres (disks). */
 static bool sphere2d_belongs(Particle *particle, double *point) {
   Sphere *sphere = (Sphere *)particle;
@@ -29,7 +155,7 @@ static bool sphere3d_belongs(Particle *particle, double *point) {
   return x * x + y * y + z * z <= r * r;
 }
 
-void sphere2d_bbox(Particle *particle, double *min, double *max) {
+static void sphere2d_bbox(Particle *particle, double *min, double *max) {
   Sphere *sphere = (Sphere *)particle;
   double r = sphere->radius;
   double *c = sphere->center;
@@ -42,7 +168,7 @@ void sphere2d_bbox(Particle *particle, double *min, double *max) {
   *max = (*c) + r;
 }
 
-void sphere3d_bbox(Particle *particle, double *min, double *max) {
+static void sphere3d_bbox(Particle *particle, double *min, double *max) {
   Sphere *sphere = (Sphere *)particle;
   double r = sphere->radius;
   double *c = sphere->center;
@@ -59,11 +185,14 @@ void sphere3d_bbox(Particle *particle, double *min, double *max) {
   *min = (*c) - r;
   *max = (*c) + r;
 }
+
+static Particle *sphere_copy(Particle *);
 
 /** Create new sphere. */
 Sphere *sphere_new(size_t ndims, double *center, double radius) {
   Sphere *sphere = g_new(Sphere, 1);
   sphere->ndims = ndims;
+  sphere->copy = sphere_copy;
   sphere->center = g_new(double, ndims);
   for (size_t i = 0; i < ndims; i++) {
     sphere->center[i] = center[i];
@@ -72,9 +201,11 @@ Sphere *sphere_new(size_t ndims, double *center, double radius) {
   if (ndims == 2) {
     sphere->belongs = sphere2d_belongs;
     sphere->bbox = sphere2d_bbox;
+    sphere->voxelize = particle2d_voxelize;
   } else if (ndims == 3) {
     sphere->belongs = sphere3d_belongs;
     sphere->bbox = sphere3d_bbox;
+    sphere->voxelize = particle3d_voxelize;
   }
   return sphere;
 }
@@ -84,160 +215,7 @@ void sphere_free(Sphere *sphere) {
   g_free(sphere);
 }
 
-Sphere *sphere_copy(Sphere *sphere) {
-  return sphere_new(sphere->ndims, sphere->center, sphere->radius);
-}
-
-void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
-                 int *i_max) {
-  *i_min = ceil(h_inv * x_min - 0.5);
-  *i_max = floor(h_inv * x_max - 0.5);
-}
-
-void discretize3d(double *center, double radius, double *dim, size_t *size,
-                  guint8 *grid) {
-  const double c0 = center[0], c1 = center[1], c2 = center[2];
-  const double L0 = dim[0], L1 = dim[1], L2 = dim[2];
-  const int n0 = size[0], n1 = size[1], n2 = size[2];
-  const double h0 = L0 / n0, h1 = L1 / n1, h2 = L2 / n2;
-  const double sqr_radius = radius * radius;
-
-  int i0_min, i0_max, i1_min, i1_max, i2_min, i2_max;
-  init_bounds(c0 - radius, c0 + radius, n0 / L0, &i0_min, &i0_max);
-  init_bounds(c1 - radius, c1 + radius, n1 / L1, &i1_min, &i1_max);
-  init_bounds(c2 - radius, c2 + radius, n2 / L2, &i2_min, &i2_max);
-
-  int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
-  double x0 = (i0_min + 0.5) * h0 - c0;
-  double sqr_x0 = x0 * x0;
-  for (int i0 = i0_min; i0 <= i0_max; i0++) {
-    int j1 = i1_min >= 0 ? i1_min : i1_min + n1;
-    double x1 = (i1_min + 0.5) * h1 - c1;
-    double sqr_x1 = x1 * x1;
-    for (int i1 = i1_min; i1 <= i1_max; i1++) {
-      int j2 = i2_min >= 0 ? i2_min : i2_min + n2;
-      double x2 = (i2_min + 0.5) * h2 - c2;
-      double sqr_x2 = x2 * x2;
-      for (int i2 = i2_min; i2 <= i2_max; i2++) {
-        if (sqr_x0 + sqr_x1 + sqr_x2 <= sqr_radius) {
-          ++grid[(j0 * n1 + j1) * n2 + j2];
-        }
-        ++j2;
-        x2 += h2;
-        if (j2 == n2) {
-          j2 = 0;
-        }
-        sqr_x2 = x2 * x2;
-      }
-      ++j1;
-      x1 += h1;
-      if (j1 == n1) {
-        j1 = 0;
-      }
-      sqr_x1 = x1 * x1;
-    }
-    ++j0;
-    x0 += h0;
-    if (j0 == n0) {
-      j0 = 0;
-    }
-    sqr_x0 = x0 * x0;
-  }
-}
-
-void discretize2d(double *center, double radius, double *dim, size_t *size,
-                  guint8 *grid) {
-  const double c0 = center[0], c1 = center[1];
-  const double L0 = dim[0], L1 = dim[1];
-  const int n0 = size[0], n1 = size[1];
-  const double h0 = L0 / n0, h1 = L1 / n1;
-  const double sqr_radius = radius * radius;
-
-  int i0_min, i0_max, i1_min, i1_max;
-  init_bounds(c0 - radius, c0 + radius, n0 / L0, &i0_min, &i0_max);
-  init_bounds(c1 - radius, c1 + radius, n1 / L1, &i1_min, &i1_max);
-
-  int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
-  double x0 = (i0_min + 0.5) * h0 - c0;
-  double sqr_x0 = x0 * x0;
-  for (int i0 = i0_min; i0 <= i0_max; i0++) {
-    int j1 = i1_min >= 0 ? i1_min : i1_min + n1;
-    double x1 = (i1_min + 0.5) * h1 - c1;
-    double sqr_x1 = x1 * x1;
-    for (int i1 = i1_min; i1 <= i1_max; i1++) {
-      if (sqr_x0 + sqr_x1 <= sqr_radius) {
-        ++grid[j0 * n1 + j1];
-      }
-      ++j1;
-      x1 += h1;
-      if (j1 == n1) {
-        j1 = 0;
-      }
-      sqr_x1 = x1 * x1;
-    }
-    ++j0;
-    x0 += h0;
-    if (j0 == n0) {
-      j0 = 0;
-    }
-    sqr_x0 = x0 * x0;
-  }
-}
-
-void test() {
-  int ndims = 3;
-  double dim[] = {5., 6., 7.};
-  size_t size[] = {100, 200, 300};
-  size_t num_spheres = 20;
-
-  const size_t n0 = size[0], n1 = size[1], n2 = size[2];
-  const double L0 = dim[0], L1 = dim[1], L2 = dim[2];
-  const double h0 = L0 / n0, h1 = L1 / n1, h2 = L2 / n2;
-
-  guint8 *expected = g_new(guint8, n0 * n1 * n2);
-  guint8 *actual = g_new(guint8, n0 * n1 * n2);
-
-  GRand *rand_ = g_rand_new_with_seed(20190224);
-  double *center = g_new(double, ndims *num_spheres);
-  double *radius = g_new(double, num_spheres);
-  for (size_t k = 0; k < num_spheres; k++) {
-    center[3 * k + 0] = g_rand_double_range(rand_, 0., L0);
-    center[3 * k + 1] = g_rand_double_range(rand_, 0., L1);
-    center[3 * k + 2] = g_rand_double_range(rand_, 0., L2);
-    radius[k] = g_rand_double_range(rand_, 0., 0.5);
-    discretize3d(center + 3 * k, radius[k], dim, size, actual);
-  }
-
-  double x0, x1, x2;
-  size_t num_differences = 0;
-  for (size_t i0 = 0; i0 < n0; i0++) {
-    for (size_t i1 = 0; i1 < n1; i1++) {
-      for (size_t i2 = 0; i2 < n2; i2++) {
-        size_t j = (i0 * n1 + i1) * n2 + i2;
-        expected[j] = 0;
-        for (size_t k = 0; k < num_spheres; k++) {
-          x0 = (i0 + 0.5) * h0 - center[3 * k + 0];
-          if (x0 < -.5 * L0) x0 += L0;
-          if (x0 > .5 * L0) x0 -= L0;
-          x1 = (i1 + 0.5) * h1 - center[3 * k + 1];
-          if (x1 < -.5 * L1) x1 += L1;
-          if (x1 > .5 * L1) x1 -= L1;
-          x2 = (i2 + 0.5) * h2 - center[3 * k + 2];
-          if (x2 < -.5 * L2) x2 += L2;
-          if (x2 > .5 * L2) x2 -= L2;
-          if ((x0 * x0 + x1 * x1 + x2 * x2) <= radius[k] * radius[k]) {
-            ++expected[j];
-          }
-        }
-        g_assert_cmpuint(expected[j], ==, actual[j]);
-      }
-    }
-  }
-  g_assert_cmpuint(num_differences, ==, 0);
-
-  g_free(center);
-  g_free(radius);
-  g_rand_free(rand_);
-  g_free(actual);
-  g_free(expected);
+Particle *sphere_copy(Particle *particle) {
+  Sphere *sphere = (Sphere *)particle;
+  return (Particle*) sphere_new(sphere->ndims, sphere->center, sphere->radius);
 }
