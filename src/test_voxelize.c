@@ -55,20 +55,19 @@ void test_sphere_bbox(gconstpointer test_data_) {
 }
 
 typedef struct {
-  Sphere *sphere;
+  Particle *particle;
   double *dim;
   size_t *size;
-} SphereVoxelizeTestData;
+} ParticleVoxelizeTestData;
 
-SphereVoxelizeTestData *sphere_voxelize_test_data_new(Sphere *sphere,
-                                                      double *dim,
-                                                      size_t *size) {
-  size_t ndims = sphere->ndims;
-  SphereVoxelizeTestData *data = g_new(SphereVoxelizeTestData, 1);
-  /* data->sphere = (Sphere *)sphere->copy((Particle *)sphere); */
-  data->sphere = sphere_new(sphere->ndims, sphere->center, sphere->radius);
-  data->dim = g_new(double, sphere->ndims);
-  data->size = g_new(size_t, sphere->ndims);
+ParticleVoxelizeTestData *particle_voxelize_test_data_new(Particle *particle,
+                                                          double *dim,
+                                                          size_t *size) {
+  size_t ndims = particle->ndims;
+  ParticleVoxelizeTestData *data = g_new(ParticleVoxelizeTestData, 1);
+  data->particle = particle->copy(particle);
+  data->dim = g_new(double, ndims);
+  data->size = g_new(size_t, ndims);
   for (size_t i = 0; i < ndims; i++) {
     data->dim[i] = dim[i];
     data->size[i] = size[i];
@@ -76,17 +75,17 @@ SphereVoxelizeTestData *sphere_voxelize_test_data_new(Sphere *sphere,
   return data;
 }
 
-void sphere_voxelize_test_data_free(gpointer test_data_) {
-  SphereVoxelizeTestData *test_data = (SphereVoxelizeTestData *)test_data_;
+void particle_voxelize_test_data_free(gpointer test_data_) {
+  ParticleVoxelizeTestData *test_data = (ParticleVoxelizeTestData *)test_data_;
   /* TODO: this is not a polymorphic call. */
-  sphere_free(test_data->sphere);
+  particle_free(test_data->particle);
   g_free(test_data->dim);
   g_free(test_data->size);
 }
 
 void test_sphere_voxelize(gconstpointer data_) {
-  SphereVoxelizeTestData *data = (SphereVoxelizeTestData *)data_;
-  const size_t ndims = data->sphere->ndims;
+  ParticleVoxelizeTestData *data = (ParticleVoxelizeTestData *)data_;
+  const size_t ndims = data->particle->ndims;
 
   const size_t n0 = data->size[0];
   const size_t n1 = data->size[1];
@@ -100,17 +99,16 @@ void test_sphere_voxelize(gconstpointer data_) {
   const double h1 = L1 / n1;
   const double h2 = ndims == 3 ? L2 / n2 : 0.;
 
-  const double c0 = data->sphere->center[0];
-  const double c1 = data->sphere->center[1];
-  const double c2 = ndims == 3 ? data->sphere->center[2] : 0.;
+  const double c0 = data->particle->center[0];
+  const double c1 = data->particle->center[1];
+  const double c2 = ndims == 3 ? data->particle->center[2] : 0.;
 
-  const double r = data->sphere->radius;
+  const double r = ((Sphere *)data->particle)->radius;
   const double sqr_r = r * r;
 
   guint8 *actual = g_new0(guint8, n0 * n1 * n2);
 
-  data->sphere->voxelize((Particle *)data->sphere, data->dim, data->size,
-                         actual, 1);
+  data->particle->voxelize(data->particle, data->dim, data->size, actual, 1);
 
   for (size_t i0 = 0; i0 < n0; i0++) {
     double x0 = (i0 + 0.5) * h0 - c0;
@@ -141,11 +139,14 @@ void setup_sphere_voxelize_tests() {
   size_t size[] = {50, 60, 70};
 
   Sphere *sphere = sphere_new(3, c, r);
-  SphereVoxelizeTestData *data = sphere_voxelize_test_data_new(sphere, dim, size);
+  ParticleVoxelizeTestData *data =
+      particle_voxelize_test_data_new((Particle *)sphere, dim, size);
   sphere_free(sphere);
 
   g_test_add_data_func_full("/sphere/voxelize/1", data, test_sphere_voxelize,
-                            sphere_voxelize_test_data_free);
+                            particle_voxelize_test_data_free);
+}
+
 }
 
 int main(int argc, char **argv) {
