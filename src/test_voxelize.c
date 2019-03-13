@@ -202,7 +202,7 @@ void test_spheroid_voxelize(gconstpointer data_) {
         double cp_dot_q_dot_cp =
             q_dot_cp[0] * x + q_dot_cp[1] * y + q_dot_cp[2] * z;
         guint8 expected = cp_dot_q_dot_cp <= 1. ? 1 : 0;
-        g_assert_cmpuint(expected, ==, actual[(i * nx + j) * ny + k]);
+        g_assert_cmpuint(expected, ==, actual[(i * ny + j) * nz + k]);
       }
     }
   }
@@ -218,7 +218,7 @@ void setup_spheroid_voxelize_tests() {
   double phi = 0.5;
   double d[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
 
-  Spheroid *spheroid = spheroid_new(3, c, 0.69, .37, d);
+  Spheroid *spheroid = spheroid_new(3, c, 0.37, .19, d);
   ParticleVoxelizeTestData *data =
       particle_voxelize_test_data_new((Particle *)spheroid, dim, size);
   spheroid_free(spheroid);

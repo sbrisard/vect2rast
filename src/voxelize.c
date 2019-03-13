@@ -228,7 +228,7 @@ static void spheroid_bbox(Particle *particle, double *min, double *max) {
   const double c2_m_a2 = c * c - a2;
   for (size_t i = 0; i < spheroid->ndims; i++) {
     const double d_i = spheroid->axis[i];
-    const double dx_i = a2 + (c2_m_a2)*d_i * d_i;
+    const double dx_i = sqrt(a2 + c2_m_a2 * d_i * d_i);
     min[i] = spheroid->center[i] - dx_i;
     max[i] = spheroid->center[i] + dx_i;
   }
@@ -265,6 +265,7 @@ Spheroid *spheroid_new(size_t ndims, double *center, double equatorial_radius,
   spheroid->copy = spheroid_copy;
   spheroid->belongs = spheroid_belongs;
   spheroid->bbox = spheroid_bbox;
+  spheroid->voxelize = particle3d_voxelize;
   return spheroid;
 }
 
