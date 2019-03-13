@@ -25,7 +25,7 @@ typedef struct Particle {
 DllExport Particle *particle_new(size_t ndims, double *center);
 DllExport void particle_free(Particle *);
 
-typedef struct {
+typedef struct Sphere {
   struct Particle;
   double radius;
 } Sphere;
@@ -33,7 +33,7 @@ typedef struct {
 DllExport Sphere *sphere_new(size_t ndims, double *center, double radius);
 DllExport void sphere_free(Sphere *);
 
-typedef struct {
+typedef struct Spheroid {
   struct Particle;
   double equatorial_radius;
   double polar_radius;
