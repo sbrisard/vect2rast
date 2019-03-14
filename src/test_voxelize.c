@@ -130,18 +130,42 @@ void test_particle_voxelize(ParticleVoxelizeTestData *data) {
   g_free(actual);
 }
 
-void setup_sphere_voxelize_tests() {
-  double c[] = {0.75, 1.3, 1.85};
-  double r = 0.69;
+void setup_sphere_tests() {
+  double c[] = {1.2, -3.4, 5.6};
+  double r = 7.8;
+  Sphere *sphere = sphere_new(3, c, r);
+  double theta = 0.35;
+  double phi = 1.9;
+  double n[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
+  double s = 0.95;
+  double p1[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
+  s = 1.05;
+  double p2[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
+
+  ParticleBelongsTestData *data1, *data2;
+  data1 = particle_belongs_test_data_new(sphere, p1, true);
+  data2 = particle_belongs_test_data_new(sphere, p2, false);
+  g_test_add_data_func_full("/sphere/belongs/1", data1, test_sphere_belongs,
+                            particle_belongs_test_data_free);
+  g_test_add_data_func_full("/sphere/belongs/2", data2, test_sphere_belongs,
+                            particle_belongs_test_data_free);
+  g_test_add_data_func_full("/sphere/bbox", sphere->copy(sphere),
+                            test_sphere_bbox, sphere_free);
+  sphere_free(sphere);
+
+  c[0] = 0.75;
+  c[1] = 1.3;
+  c[2] = 1.85;
+  r = 0.69;
   double dim[] = {1.5, 2.6, 3.7};
   size_t size[] = {50, 60, 70};
 
-  Sphere *sphere = sphere_new(3, c, r);
-  ParticleVoxelizeTestData *data =
-      particle_voxelize_test_data_new(sphere, dim, size);
+  sphere = sphere_new(3, c, r);
+  ParticleVoxelizeTestData *data3;
+  data3 = particle_voxelize_test_data_new(sphere, dim, size);
   sphere_free(sphere);
 
-  g_test_add_data_func_full("/sphere/voxelize/1", data, test_particle_voxelize,
+  g_test_add_data_func_full("/sphere/voxelize/1", data3, test_particle_voxelize,
                             particle_voxelize_test_data_free);
 }
 
@@ -228,28 +252,7 @@ void setup_spheroid_voxelize_tests() {
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
 
-  double c[] = {1.2, -3.4, 5.6};
-  double r = 7.8;
-  Sphere *sphere = sphere_new(3, c, r);
-  double theta = 0.35;
-  double phi = 1.9;
-  double n[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
-  double s = 0.95;
-  double p1[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
-  s = 1.05;
-  double p2[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
-  g_test_add_data_func_full(
-      "/sphere/belongs/true", particle_belongs_test_data_new(sphere, p1, true),
-      test_sphere_belongs, particle_belongs_test_data_free);
-  g_test_add_data_func_full("/sphere/belongs/false",
-                            particle_belongs_test_data_new(sphere, p2, false),
-                            test_sphere_belongs,
-                            particle_belongs_test_data_free);
-  g_test_add_data_func_full("/sphere/bbox", sphere->copy(sphere),
-                            test_sphere_bbox, sphere_free);
-  sphere_free(sphere);
-
-  setup_sphere_voxelize_tests();
+  setup_sphere_tests();
   setup_spheroid_voxelize_tests();
 
   return g_test_run();
