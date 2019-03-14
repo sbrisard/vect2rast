@@ -217,7 +217,7 @@ void sphere_free(Sphere *sphere) {
 
 Particle *sphere_copy(Particle *particle) {
   Sphere *sphere = (Sphere *)particle;
-  return (Particle *)sphere_new(sphere->ndims, sphere->center, sphere->radius);
+  return sphere_new(sphere->ndims, sphere->center, sphere->radius);
 }
 
 static void spheroid_bbox(Particle *particle, double *min, double *max) {
@@ -277,7 +277,7 @@ void spheroid_free(Spheroid *spheroid) {
 
 Particle *spheroid_copy(Particle *particle) {
   Spheroid *spheroid = (Spheroid *)particle;
-  return (Particle *)spheroid_new(spheroid->ndims, spheroid->center,
-                                  spheroid->equatorial_radius,
-                                  spheroid->polar_radius, spheroid->axis);
+  return spheroid_new(spheroid->ndims, spheroid->center,
+                      spheroid->equatorial_radius, spheroid->polar_radius,
+                      spheroid->axis);
 }

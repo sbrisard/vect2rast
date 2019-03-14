@@ -24,30 +24,22 @@ ParticleBelongsTestData *particle_belongs_test_data_new(Particle *particle,
   return data;
 }
 
-void particle_belongs_test_data_free(gpointer data_) {
-  ParticleBelongsTestData *data = (ParticleBelongsTestData *)data_;
+void particle_belongs_test_data_free(ParticleBelongsTestData *data) {
   g_free(data->particle);
   g_free(data->point);
   g_free(data);
 }
 
-void test_sphere_belongs(gconstpointer test_data_) {
-  ParticleBelongsTestData *test_data = (ParticleBelongsTestData *)test_data_;
-  Sphere *sphere = (Sphere *)test_data->particle;
-  g_assert_cmpuint(sphere->belongs((Particle *)sphere, test_data->point), ==,
+void test_sphere_belongs(ParticleBelongsTestData *test_data) {
+  Particle *particle = test_data->particle;
+  g_assert_cmpuint(particle->belongs(particle, test_data->point), ==,
                    test_data->expected);
 }
 
-void sphere_bbox_test_data_free(gpointer test_data_) {
-  Sphere *sphere = (Sphere *)test_data_;
-  sphere_free(sphere);
-}
-
-void test_sphere_bbox(gconstpointer test_data_) {
-  Sphere *sphere = (Sphere *)test_data_;
+void test_sphere_bbox(Sphere *sphere) {
   double *min = g_new(double, sphere->ndims);
   double *max = g_new(double, sphere->ndims);
-  sphere->bbox((Particle *)sphere, min, max);
+  sphere->bbox(sphere, min, max);
   for (size_t i = 0; i < sphere->ndims; i++) {
     g_assert_cmpfloat(min[i], ==, sphere->center[i] - sphere->radius);
     g_assert_cmpfloat(max[i], ==, sphere->center[i] + sphere->radius);
@@ -75,16 +67,14 @@ ParticleVoxelizeTestData *particle_voxelize_test_data_new(Particle *particle,
   return data;
 }
 
-void particle_voxelize_test_data_free(gpointer test_data_) {
-  ParticleVoxelizeTestData *test_data = (ParticleVoxelizeTestData *)test_data_;
+void particle_voxelize_test_data_free(ParticleVoxelizeTestData *test_data) {
   /* TODO: this is not a polymorphic call. */
   particle_free(test_data->particle);
   g_free(test_data->dim);
   g_free(test_data->size);
 }
 
-void test_sphere_voxelize(gconstpointer data_) {
-  ParticleVoxelizeTestData *data = (ParticleVoxelizeTestData *)data_;
+void test_sphere_voxelize(ParticleVoxelizeTestData *data) {
   const size_t ndims = data->particle->ndims;
 
   const size_t n0 = data->size[0];
@@ -140,15 +130,14 @@ void setup_sphere_voxelize_tests() {
 
   Sphere *sphere = sphere_new(3, c, r);
   ParticleVoxelizeTestData *data =
-      particle_voxelize_test_data_new((Particle *)sphere, dim, size);
+      particle_voxelize_test_data_new(sphere, dim, size);
   sphere_free(sphere);
 
   g_test_add_data_func_full("/sphere/voxelize/1", data, test_sphere_voxelize,
                             particle_voxelize_test_data_free);
 }
 
-void test_spheroid_voxelize(gconstpointer data_) {
-  ParticleVoxelizeTestData *data = (ParticleVoxelizeTestData *)data_;
+void test_spheroid_voxelize(ParticleVoxelizeTestData *data) {
   const size_t ndims = data->particle->ndims;
   const Spheroid *spheroid = (Spheroid *)data->particle;
 
@@ -220,7 +209,7 @@ void setup_spheroid_voxelize_tests() {
 
   Spheroid *spheroid = spheroid_new(3, c, 0.37, .19, d);
   ParticleVoxelizeTestData *data =
-      particle_voxelize_test_data_new((Particle *)spheroid, dim, size);
+      particle_voxelize_test_data_new(spheroid, dim, size);
   spheroid_free(spheroid);
 
   g_test_add_data_func_full("/spheroid/voxelize/1", data,
@@ -242,15 +231,14 @@ int main(int argc, char **argv) {
   s = 1.05;
   double p2[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
   g_test_add_data_func_full(
-      "/sphere/belongs/true",
-      particle_belongs_test_data_new((Particle *)sphere, p1, true),
+      "/sphere/belongs/true", particle_belongs_test_data_new(sphere, p1, true),
       test_sphere_belongs, particle_belongs_test_data_free);
-  g_test_add_data_func_full(
-      "/sphere/belongs/false",
-      particle_belongs_test_data_new((Particle *)sphere, p2, false),
-      test_sphere_belongs, particle_belongs_test_data_free);
-  g_test_add_data_func_full("/sphere/bbox", sphere->copy((Particle *)sphere),
-                            test_sphere_bbox, sphere_bbox_test_data_free);
+  g_test_add_data_func_full("/sphere/belongs/false",
+                            particle_belongs_test_data_new(sphere, p2, false),
+                            test_sphere_belongs,
+                            particle_belongs_test_data_free);
+  g_test_add_data_func_full("/sphere/bbox", sphere->copy(sphere),
+                            test_sphere_bbox, sphere_free);
   sphere_free(sphere);
 
   setup_sphere_voxelize_tests();
