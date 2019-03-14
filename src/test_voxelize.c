@@ -84,23 +84,21 @@ void particle_voxelize_test_data_free(ParticleVoxelizeTestData *test_data) {
 void test_particle_voxelize(ParticleVoxelizeTestData *data) {
   const size_t ndims = data->particle->ndims;
 
-  const size_t n0 = data->size[0];
-  const size_t n1 = data->size[1];
-  const size_t n2 = ndims == 3 ? data->size[2] : 1;
+  size_t n[] = {data->size[0], data->size[1], 1};
+  double L[] = {data->dim[0], data->dim[1], 0.};
+  double c[] = {data->particle->center[0], data->particle->center[1], 0.};
+  if (ndims == 3) {
+    const size_t i = ndims - 1;
+    n[i] = data->size[i];
+    L[i] = data->dim[i];
+    c[i] = data->particle->center[i];
+  }
+  double h[3];
+  for (size_t i = 0; i < 3; i++) {
+    h[i] = L[i] / n[i];
+  }
 
-  const double L0 = data->dim[0];
-  const double L1 = data->dim[1];
-  const double L2 = data->dim[2];
-
-  const double h0 = L0 / n0;
-  const double h1 = L1 / n1;
-  const double h2 = ndims == 3 ? L2 / n2 : 0.;
-
-  const double c0 = data->particle->center[0];
-  const double c1 = data->particle->center[1];
-  const double c2 = ndims == 3 ? data->particle->center[2] : 0.;
-
-  guint8 *actual = g_new0(guint8, n0 * n1 * n2);
+  guint8 *actual = g_new0(guint8, n[0] * n[1] * n[2]);
 
   data->particle->voxelize(data->particle, data->dim, data->size, actual, 1);
 
@@ -111,16 +109,16 @@ void test_particle_voxelize(ParticleVoxelizeTestData *data) {
     particle->center[i] = 0.;
   }
   double *point = g_new(double, ndims);
-  for (size_t i0 = 0; i0 < n0; i0++) {
-    point[0] = (i0 + 0.5) * h0 - c0;
-    minimum_image(point[0], L0);
-    for (size_t i1 = 0; i1 < n1; i1++) {
-      point[1] = (i1 + 0.5) * h1 - c1;
-      minimum_image(point[1], L1);
-      for (size_t i2 = 0; i2 < n2; i2++) {
-        point[2] = (i2 + 0.5) * h2 - c2;
-        minimum_image(point[2], L2);
-        size_t j = (i0 * n1 + i1) * n2 + i2;
+  for (size_t i0 = 0; i0 < n[0]; i0++) {
+    point[0] = (i0 + 0.5) * h[0] - c[0];
+    minimum_image(point[0], L[0]);
+    for (size_t i1 = 0; i1 < n[1]; i1++) {
+      point[1] = (i1 + 0.5) * h[1] - c[1];
+      minimum_image(point[1], L[1]);
+      for (size_t i2 = 0; i2 < n[2]; i2++) {
+        point[2] = (i2 + 0.5) * h[2] - c[2];
+        minimum_image(point[2], L[2]);
+        size_t j = (i0 * n[1] + i1) * n[2] + i2;
         guint8 expected = particle->belongs(particle, point);
         g_assert_cmpuint(expected, ==, actual[j]);
       }
