@@ -74,11 +74,11 @@ ParticleVoxelizeTestData *particle_voxelize_test_data_new(Particle *particle,
   return data;
 }
 
-void particle_voxelize_test_data_free(ParticleVoxelizeTestData *test_data) {
+void particle_voxelize_test_data_free(ParticleVoxelizeTestData *data) {
   /* TODO: this is not a polymorphic call. */
-  particle_free(test_data->particle);
-  g_free(test_data->dim);
-  g_free(test_data->size);
+  particle_free(data->particle);
+  g_free(data->dim);
+  g_free(data->size);
 }
 
 void test_particle_voxelize(ParticleVoxelizeTestData *data) {
