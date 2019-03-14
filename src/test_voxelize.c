@@ -5,6 +5,13 @@
 
 #include "voxelize.h"
 
+#define minimum_image(x, L)  \
+  {                          \
+    double L_half = .5 * L;  \
+    if (x < -L_half) x += L; \
+    if (x > L_half) x -= L;  \
+  }
+
 typedef struct {
   Particle *particle;
   double *point;
@@ -74,7 +81,7 @@ void particle_voxelize_test_data_free(ParticleVoxelizeTestData *test_data) {
   g_free(test_data->size);
 }
 
-void test_sphere_voxelize(ParticleVoxelizeTestData *data) {
+void test_particle_voxelize(ParticleVoxelizeTestData *data) {
   const size_t ndims = data->particle->ndims;
 
   const size_t n0 = data->size[0];
@@ -93,32 +100,35 @@ void test_sphere_voxelize(ParticleVoxelizeTestData *data) {
   const double c1 = data->particle->center[1];
   const double c2 = ndims == 3 ? data->particle->center[2] : 0.;
 
-  const double r = ((Sphere *)data->particle)->radius;
-  const double sqr_r = r * r;
-
   guint8 *actual = g_new0(guint8, n0 * n1 * n2);
 
   data->particle->voxelize(data->particle, data->dim, data->size, actual, 1);
 
+  /* Create copy of particle, centered at the origin, since we will compute the
+   * minimum image of the CP vector (C: center; P: current point). */
+  Particle *particle = data->particle->copy(data->particle);
+  for (size_t i = 0; i < ndims; i++) {
+    particle->center[i] = 0.;
+  }
+  double *point = g_new(double, ndims);
   for (size_t i0 = 0; i0 < n0; i0++) {
-    double x0 = (i0 + 0.5) * h0 - c0;
-    if (x0 < -.5 * L0) x0 += L0;
-    if (x0 > .5 * L0) x0 -= L0;
+    point[0] = (i0 + 0.5) * h0 - c0;
+    minimum_image(point[0], L0);
     for (size_t i1 = 0; i1 < n1; i1++) {
-      double x1 = (i1 + 0.5) * h1 - c1;
-      if (x1 < -.5 * L1) x1 += L1;
-      if (x1 > .5 * L1) x1 -= L1;
+      point[1] = (i1 + 0.5) * h1 - c1;
+      minimum_image(point[1], L1);
       for (size_t i2 = 0; i2 < n2; i2++) {
-        double x2 = (i2 + 0.5) * h2 - c2;
-        if (x2 < -.5 * L2) x2 += L2;
-        if (x2 > .5 * L2) x2 -= L2;
-
+        point[2] = (i2 + 0.5) * h2 - c2;
+        minimum_image(point[2], L2);
         size_t j = (i0 * n1 + i1) * n2 + i2;
-        guint8 expected = (x0 * x0 + x1 * x1 + x2 * x2) <= sqr_r ? 1 : 0;
+        guint8 expected = particle->belongs(particle, point);
         g_assert_cmpuint(expected, ==, actual[j]);
       }
     }
   }
+  /* TODO: memory leak. */
+  particle_free(particle);
+  g_free(point);
   g_free(actual);
 }
 
@@ -133,7 +143,7 @@ void setup_sphere_voxelize_tests() {
       particle_voxelize_test_data_new(sphere, dim, size);
   sphere_free(sphere);
 
-  g_test_add_data_func_full("/sphere/voxelize/1", data, test_sphere_voxelize,
+  g_test_add_data_func_full("/sphere/voxelize/1", data, test_particle_voxelize,
                             particle_voxelize_test_data_free);
 }
 
