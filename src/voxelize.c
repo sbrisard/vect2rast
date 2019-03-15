@@ -119,7 +119,9 @@ void particle_init(Particle *particle, size_t ndims, double *center,
                    particle_free_t free, particle_copy_t copy,
                    particle_belongs_t belongs, particle_bbox_t bbox) {
   particle->ndims = ndims;
-  particle->center = g_new(double, ndims);
+  if (particle->center == NULL) {
+    particle->center = g_new(double, ndims);
+  }
   for (size_t i = 0; i < ndims; i++) {
     particle->center[i] = center[i];
   }
@@ -137,7 +139,7 @@ void particle_init(Particle *particle, size_t ndims, double *center,
 }
 
 Particle *particle_new(size_t ndims, double *center) {
-  Particle *particle = g_new(Particle, 1);
+  Particle *particle = g_new0(Particle, 1);
   particle->free = particle_free;
   particle->copy = particle_copy;
   particle_init(particle, ndims, center, particle_free, particle_copy, NULL,
@@ -147,7 +149,9 @@ Particle *particle_new(size_t ndims, double *center) {
 
 Particle *particle_copy(Particle *src, Particle *dest) {
   if (dest == NULL) {
-    dest = g_new(Particle, 1);
+    /* Use g_new0 so as to make sure that dest->center is indeed NULL, and will
+     * be allocated by particle_init. */
+    dest = g_new0(Particle, 1);
   }
   particle_init(dest, src->ndims, src->center, src->free, src->copy,
                 src->belongs, src->bbox);
@@ -207,7 +211,7 @@ static void sphere3d_bbox(Particle *particle, double *min, double *max) {
 static Particle *sphere_copy(Particle *, Particle *);
 
 Sphere *sphere_new(size_t ndims, double *center, double radius) {
-  Sphere *sphere = g_new(Sphere, 1);
+  Sphere *sphere = g_new0(Sphere, 1);
   particle_belongs_t sphere_belongs;
   particle_bbox_t sphere_bbox;
   if (ndims == 2) {
@@ -227,13 +231,12 @@ Sphere *sphere_new(size_t ndims, double *center, double radius) {
 }
 
 Particle *sphere_copy(Particle *src, Particle *dest) {
-  Sphere *dest_ = dest == NULL ? g_new(Sphere, 1) : dest;
+  Sphere *dest_ = dest == NULL ? g_new0(Sphere, 1) : dest;
   particle_copy(src, dest_);
-  dest_->radius = ((Sphere *) src)->radius;
+  dest_->radius = ((Sphere *)src)->radius;
   return dest_;
 }
 
-/*
 static void spheroid_bbox(Particle *particle, double *min, double *max) {
   Spheroid *spheroid = (Spheroid *)particle;
   const double a = spheroid->equatorial_radius;
@@ -260,8 +263,10 @@ static bool spheroid_belongs(Particle *particle, double *point) {
   return spheroid->_q1 * x_dot_x + spheroid->_q2 * d_dot_x * d_dot_x <= 1.;
 }
 
-static Particle *spheroid_copy(Particle *);
+particle_copy_t spheroid_copy;
+/* static Particle *spheroid_copy(Particle *, Particle *); */
 
+/*
 Spheroid *spheroid_new(size_t ndims, double *center, double equatorial_radius,
                        double polar_radius, double *axis) {
   Spheroid *spheroid = g_new(Spheroid, 1);
