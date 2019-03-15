@@ -10,6 +10,10 @@
 
 #include "voxelize.h"
 
+static particle_copy_t particle_copy;
+static particle_copy_t sphere_copy;
+static particle_copy_t spheroid_copy;
+
 static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
                         int *i_max) {
   *i_min = ceil(h_inv * x_min - 0.5);
@@ -20,8 +24,6 @@ static void particle_free(Particle *particle) {
   g_free(particle->center);
   g_free(particle);
 }
-
-static Particle *particle_copy(Particle *, Particle *);
 
 static void particle3d_voxelize(Particle *particle, double *dim, size_t *size,
                                 guint8 *grid, guint8 value) {
@@ -116,8 +118,8 @@ static void particle2d_voxelize(Particle *particle, double *dim, size_t *size,
 }
 
 void particle_init(Particle *particle, size_t ndims, double *center,
-                   particle_free_t free, particle_copy_t copy,
-                   particle_belongs_t belongs, particle_bbox_t bbox) {
+                   particle_free_t *free, particle_copy_t *copy,
+                   particle_belongs_t *belongs, particle_bbox_t *bbox) {
   particle->ndims = ndims;
   if (particle->center == NULL) {
     particle->center = g_new(double, ndims);
@@ -208,12 +210,10 @@ static void sphere3d_bbox(Particle *particle, double *min, double *max) {
   *max = (*c) + r;
 }
 
-static Particle *sphere_copy(Particle *, Particle *);
-
 Sphere *sphere_new(size_t ndims, double *center, double radius) {
   Sphere *sphere = g_new0(Sphere, 1);
-  particle_belongs_t sphere_belongs;
-  particle_bbox_t sphere_bbox;
+  particle_belongs_t *sphere_belongs;
+  particle_bbox_t *sphere_bbox;
   if (ndims == 2) {
     sphere_belongs = sphere2d_belongs;
     sphere_bbox = sphere2d_bbox;
@@ -262,8 +262,6 @@ static bool spheroid_belongs(Particle *particle, double *point) {
   }
   return spheroid->_q1 * x_dot_x + spheroid->_q2 * d_dot_x * d_dot_x <= 1.;
 }
-
-Particle *spheroid_copy(Particle *, Particle *);
 
 void spheroid_free(Spheroid *spheroid) {
   g_free(spheroid->axis);
