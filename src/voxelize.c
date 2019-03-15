@@ -263,41 +263,41 @@ static bool spheroid_belongs(Particle *particle, double *point) {
   return spheroid->_q1 * x_dot_x + spheroid->_q2 * d_dot_x * d_dot_x <= 1.;
 }
 
-particle_copy_t spheroid_copy;
-/* static Particle *spheroid_copy(Particle *, Particle *); */
+Particle *spheroid_copy(Particle *, Particle *);
 
-/*
-Spheroid *spheroid_new(size_t ndims, double *center, double equatorial_radius,
-                       double polar_radius, double *axis) {
-  Spheroid *spheroid = g_new(Spheroid, 1);
-  spheroid->ndims = ndims;
-  spheroid->center = g_new(double, ndims);
+void spheroid_free(Spheroid *spheroid) {
+  g_free(spheroid->axis);
+  particle_free(spheroid);
+}
+
+void spheroid_init(Spheroid *spheroid, double *center, double equatorial_radius,
+                   double polar_radius, double *axis) {
+  particle_init(spheroid, 3, center, spheroid_free, spheroid_copy,
+                spheroid_belongs, spheroid_bbox);
   spheroid->equatorial_radius = equatorial_radius;
   spheroid->polar_radius = polar_radius;
-  spheroid->axis = g_new(double, ndims);
-  for (size_t i = 0; i < ndims; i++) {
-    spheroid->center[i] = center[i];
+  if (spheroid->axis == NULL) {
+    spheroid->axis = g_new(double, spheroid->ndims);
+  }
+  for (size_t i = 0; i < spheroid->ndims; i++) {
     spheroid->axis[i] = axis[i];
   }
   spheroid->_q1 = 1. / (equatorial_radius * equatorial_radius);
   spheroid->_q2 = 1. / (polar_radius * polar_radius) - spheroid->_q1;
-  spheroid->copy = spheroid_copy;
-  spheroid->belongs = spheroid_belongs;
-  spheroid->bbox = spheroid_bbox;
-  spheroid->voxelize = particle3d_voxelize;
+}
+
+Spheroid *spheroid_new(double *center, double equatorial_radius,
+                       double polar_radius, double *axis) {
+  Spheroid *spheroid = g_new0(Spheroid, 1);
+  spheroid_init(spheroid, center, equatorial_radius, polar_radius, axis);
+  /* TODO Normalize axis? */
   return spheroid;
 }
 
-void spheroid_free(Spheroid *spheroid) {
-  g_free(spheroid->center);
-  g_free(spheroid->axis);
-  g_free(spheroid);
+Particle *spheroid_copy(Particle *src, Particle *dest) {
+  Spheroid *src_ = src;
+  Spheroid *dest_ = dest == NULL ? g_new0(Spheroid, 1) : dest;
+  spheroid_init(dest_, src->center, src_->equatorial_radius, src_->polar_radius,
+                src_->axis);
+  return dest_;
 }
-
-Particle *spheroid_copy(Particle *particle) {
-  Spheroid *spheroid = (Spheroid *)particle;
-  return spheroid_new(spheroid->ndims, spheroid->center,
-                      spheroid->equatorial_radius, spheroid->polar_radius,
-                      spheroid->axis);
-}
-*/

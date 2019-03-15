@@ -170,69 +170,7 @@ void setup_sphere_tests() {
                             particle_voxelize_test_data_free);
 }
 
-/*
-void test_spheroid_voxelize(ParticleVoxelizeTestData *data) {
-  const size_t ndims = data->particle->ndims;
-  const Spheroid *spheroid = (Spheroid *)data->particle;
-
-  const size_t nx = data->size[0];
-  const size_t ny = data->size[1];
-  const size_t nz = ndims == 3 ? data->size[2] : 1;
-
-  const double Lx = data->dim[0];
-  const double Ly = data->dim[1];
-  const double Lz = data->dim[2];
-
-  const double hx = Lx / nx;
-  const double hy = Ly / ny;
-  const double hz = ndims == 3 ? Lz / nz : 0.;
-
-  const double cx = data->particle->center[0];
-  const double cy = data->particle->center[1];
-  const double cz = ndims == 3 ? data->particle->center[2] : 0.;
-
-  double q[ndims * ndims];
-  const double q1 =
-      1. / (spheroid->equatorial_radius * spheroid->equatorial_radius);
-  const double q2 = 1. / (spheroid->polar_radius * spheroid->polar_radius) - q1;
-  for (size_t i = 0; i < ndims; i++) {
-    for (size_t j = 0; j < ndims; j++) {
-      q[ndims * i + j] = q2 * spheroid->axis[i] * spheroid->axis[j];
-    }
-    q[ndims * i + i] += q1;
-  }
-
-  guint8 *actual = g_new0(guint8, nx * ny * nz);
-
-  data->particle->voxelize(data->particle, data->dim, data->size, actual, 1);
-
-  for (size_t i = 0; i < nx; i++) {
-    double x = (i + 0.5) * hx - cx;
-    if (x < -.5 * Lx) x += Lx;
-    if (x > .5 * Lx) x -= Lx;
-    for (size_t j = 0; j < ny; j++) {
-      double y = (j + 0.5) * hy - cy;
-      if (y < -.5 * Ly) y += Ly;
-      if (y > .5 * Ly) y -= Ly;
-      for (size_t k = 0; k < nz; k++) {
-        double z = (k + 0.5) * hz - cz;
-        if (z < -.5 * Lz) z += Lz;
-        if (z > .5 * Lz) z -= Lz;
-
-        double q_dot_cp[] = {q[0] * x + q[1] * y + q[2] * z,
-                             q[3] * x + q[4] * y + q[5] * z,
-                             q[6] * x + q[7] * y + q[8] * z};
-        double cp_dot_q_dot_cp =
-            q_dot_cp[0] * x + q_dot_cp[1] * y + q_dot_cp[2] * z;
-        guint8 expected = cp_dot_q_dot_cp <= 1. ? 1 : 0;
-        g_assert_cmpuint(expected, ==, actual[(i * ny + j) * nz + k]);
-      }
-    }
-  }
-  g_free(actual);
-}
-
-void setup_spheroid_voxelize_tests() {
+void setup_spheroid_tests() {
   double c[] = {0.75, 1.3, 1.85};
   double dim[] = {1.5, 2.6, 3.7};
   size_t size[] = {50, 60, 70};
@@ -241,22 +179,21 @@ void setup_spheroid_voxelize_tests() {
   double phi = 0.5;
   double d[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
 
-  Spheroid *spheroid = spheroid_new(3, c, 0.37, .19, d);
+  Spheroid *spheroid = spheroid_new(c, 0.37, .19, d);
   ParticleVoxelizeTestData *data =
       particle_voxelize_test_data_new(spheroid, dim, size);
-  spheroid_free(spheroid);
+  spheroid->free(spheroid);
 
   g_test_add_data_func_full("/spheroid/voxelize/1", data,
-                            test_spheroid_voxelize,
+                            test_particle_voxelize,
                             particle_voxelize_test_data_free);
 }
-*/
 
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
 
   setup_sphere_tests();
-  /* setup_spheroid_voxelize_tests(); */
+  setup_spheroid_tests();
 
   return g_test_run();
 }

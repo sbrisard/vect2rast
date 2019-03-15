@@ -21,7 +21,6 @@ typedef void (*particle_bbox_t)(Particle *, double *, double *);
 typedef void (*particle_voxelize_t)(Particle *, double *, size_t *, guint8 *,
                                     guint8);
 
-
 struct Particle {
   /* Data */
   size_t ndims;
@@ -42,7 +41,6 @@ typedef struct Sphere {
 } Sphere;
 
 DllExport Sphere *sphere_new(size_t ndims, double *center, double radius);
-DllExport void sphere_free(Sphere *);
 
 typedef struct Spheroid {
   struct Particle;
@@ -52,7 +50,6 @@ typedef struct Spheroid {
   double _q1, _q2;
 } Spheroid;
 
-DllExport Spheroid *spheroid_new(size_t, double *, double, double, double *);
-DllExport void spheroid_free(Spheroid *);
+DllExport Spheroid *spheroid_new(double *, double, double, double *);
 
 #endif
