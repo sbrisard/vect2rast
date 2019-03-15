@@ -13,17 +13,28 @@
 #define DllExport
 #endif
 
-typedef struct Particle {
+typedef struct Particle Particle;
+typedef void (*particle_free_t)(Particle *);
+typedef Particle *(*particle_copy_t)(Particle *, Particle *);
+typedef bool (*particle_belongs_t)(Particle *, double *);
+typedef void (*particle_bbox_t)(Particle *, double *, double *);
+typedef void (*particle_voxelize_t)(Particle *, double *, size_t *, guint8 *,
+                                    guint8);
+
+
+struct Particle {
+  /* Data */
   size_t ndims;
   double *center;
-  struct Particle *(*copy)(struct Particle *);
-  bool (*belongs)(struct Particle *, double *);
-  void (*bbox)(struct Particle *, double *, double *);
-  void (*voxelize)(struct Particle *, double *, size_t *, guint8 *, guint8);
-} Particle;
+  /* Methods */
+  particle_free_t free;
+  particle_copy_t copy;
+  particle_belongs_t belongs;
+  particle_bbox_t bbox;
+  particle_voxelize_t voxelize;
+};
 
 DllExport Particle *particle_new(size_t ndims, double *center);
-DllExport void particle_free(Particle *);
 
 typedef struct Sphere {
   struct Particle;

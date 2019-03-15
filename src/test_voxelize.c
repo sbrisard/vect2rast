@@ -22,7 +22,7 @@ ParticleBelongsTestData *particle_belongs_test_data_new(Particle *particle,
                                                         double *point,
                                                         bool expected) {
   ParticleBelongsTestData *data = g_new(ParticleBelongsTestData, 1);
-  data->particle = particle->copy(particle);
+  data->particle = particle->copy(particle, NULL);
   data->point = g_new(double, particle->ndims);
   data->expected = expected;
   for (size_t i = 0; i < particle->ndims; i++) {
@@ -64,7 +64,7 @@ ParticleVoxelizeTestData *particle_voxelize_test_data_new(Particle *particle,
                                                           size_t *size) {
   size_t ndims = particle->ndims;
   ParticleVoxelizeTestData *data = g_new(ParticleVoxelizeTestData, 1);
-  data->particle = particle->copy(particle);
+  data->particle = particle->copy(particle, NULL);
   data->dim = g_new(double, ndims);
   data->size = g_new(size_t, ndims);
   for (size_t i = 0; i < ndims; i++) {
@@ -76,7 +76,7 @@ ParticleVoxelizeTestData *particle_voxelize_test_data_new(Particle *particle,
 
 void particle_voxelize_test_data_free(ParticleVoxelizeTestData *data) {
   /* TODO: this is not a polymorphic call. */
-  particle_free(data->particle);
+  data->particle->free(data->particle);
   g_free(data->dim);
   g_free(data->size);
 }
@@ -104,7 +104,7 @@ void test_particle_voxelize(ParticleVoxelizeTestData *data) {
 
   /* Create copy of particle, centered at the origin, since we will compute the
    * minimum image of the CP vector (C: center; P: current point). */
-  Particle *particle = data->particle->copy(data->particle);
+  Particle *particle = data->particle->copy(data->particle, NULL);
   for (size_t i = 0; i < ndims; i++) {
     particle->center[i] = 0.;
   }
@@ -125,7 +125,7 @@ void test_particle_voxelize(ParticleVoxelizeTestData *data) {
     }
   }
   /* TODO: memory leak. */
-  particle_free(particle);
+  particle->free(particle);
   g_free(point);
   g_free(actual);
 }
@@ -149,9 +149,10 @@ void setup_sphere_tests() {
                             particle_belongs_test_data_free);
   g_test_add_data_func_full("/sphere/belongs/2", data2, test_sphere_belongs,
                             particle_belongs_test_data_free);
-  g_test_add_data_func_full("/sphere/bbox", sphere->copy(sphere),
-                            test_sphere_bbox, sphere_free);
-  sphere_free(sphere);
+  Sphere *sphere2 = sphere->copy(sphere, NULL);
+  g_test_add_data_func_full("/sphere/bbox", sphere2, test_sphere_bbox,
+                            sphere2->free);
+  sphere->free(sphere);
 
   c[0] = 0.75;
   c[1] = 1.3;
@@ -163,12 +164,13 @@ void setup_sphere_tests() {
   sphere = sphere_new(3, c, r);
   ParticleVoxelizeTestData *data3;
   data3 = particle_voxelize_test_data_new(sphere, dim, size);
-  sphere_free(sphere);
+  sphere->free(sphere);
 
   g_test_add_data_func_full("/sphere/voxelize/1", data3, test_particle_voxelize,
                             particle_voxelize_test_data_free);
 }
 
+/*
 void test_spheroid_voxelize(ParticleVoxelizeTestData *data) {
   const size_t ndims = data->particle->ndims;
   const Spheroid *spheroid = (Spheroid *)data->particle;
@@ -248,12 +250,13 @@ void setup_spheroid_voxelize_tests() {
                             test_spheroid_voxelize,
                             particle_voxelize_test_data_free);
 }
+*/
 
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
 
   setup_sphere_tests();
-  setup_spheroid_voxelize_tests();
+  /* setup_spheroid_voxelize_tests(); */
 
   return g_test_run();
 }
