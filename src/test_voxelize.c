@@ -44,12 +44,9 @@ void test_sphere_belongs(ParticleBelongsTestData *test_data) {
 }
 
 void test_sphere_bbox(Sphere *sphere) {
-  double *min = g_new(double, sphere->ndims);
-  double *max = g_new(double, sphere->ndims);
-  sphere->bbox(sphere, min, max);
   for (size_t i = 0; i < sphere->ndims; i++) {
-    g_assert_cmpfloat(min[i], ==, sphere->center[i] - sphere->radius);
-    g_assert_cmpfloat(max[i], ==, sphere->center[i] + sphere->radius);
+    g_assert_cmpfloat(sphere->bbmin[i], ==, sphere->center[i] - sphere->radius);
+    g_assert_cmpfloat(sphere->bbmax[i], ==, sphere->center[i] + sphere->radius);
   }
 }
 

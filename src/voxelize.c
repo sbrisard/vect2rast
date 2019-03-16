@@ -20,6 +20,14 @@ static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
   *i_max = floor(h_inv * x_max - 0.5);
 }
 
+static void *particle_allocate(Particle *particle, size_t ndims) {
+  particle->ndims = ndims;
+  particle->center = g_new(double, ndims);
+  particle->bbmin = g_new(double, ndims);
+  particle->bbmax = g_new(double, ndims);
+  return particle;
+}
+
 static void particle_free(Particle *particle) {
   g_free(particle->center);
   g_free(particle);
@@ -32,15 +40,13 @@ static void particle3d_voxelize(Particle *particle, double *dim, size_t *size,
   const int n0 = size[0], n1 = size[1], n2 = size[2];
   const double h0 = L0 / n0, h1 = L1 / n1, h2 = L2 / n2;
 
-  double *min = g_new(double, ndims);
-  double *max = g_new(double, ndims);
-  particle->bbox(particle, min, max);
   int i0_min, i0_max, i1_min, i1_max, i2_min, i2_max;
-  init_bounds(min[0], max[0], n0 / L0, &i0_min, &i0_max);
-  init_bounds(min[1], max[1], n1 / L1, &i1_min, &i1_max);
-  init_bounds(min[2], max[2], n2 / L2, &i2_min, &i2_max);
-  g_free(max);
-  g_free(min);
+  init_bounds(particle->bbmin[0], particle->bbmax[0], n0 / L0, &i0_min,
+              &i0_max);
+  init_bounds(particle->bbmin[1], particle->bbmax[1], n1 / L1, &i1_min,
+              &i1_max);
+  init_bounds(particle->bbmin[2], particle->bbmax[2], n2 / L2, &i2_min,
+              &i2_max);
 
   double *x = g_new(double, ndims);
   int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
@@ -83,14 +89,11 @@ static void particle2d_voxelize(Particle *particle, double *dim, size_t *size,
   const int n0 = size[0], n1 = size[1];
   const double h0 = L0 / n0, h1 = L1 / n1;
 
-  double *min = g_new(double, ndims);
-  double *max = g_new(double, ndims);
-  particle->bbox(particle, min, max);
   int i0_min, i0_max, i1_min, i1_max;
-  init_bounds(min[0], max[0], n0 / L0, &i0_min, &i0_max);
-  init_bounds(min[1], max[1], n1 / L1, &i1_min, &i1_max);
-  g_free(max);
-  g_free(min);
+  init_bounds(particle->bbmin[0], particle->bbmax[0], n0 / L0, &i0_min,
+              &i0_max);
+  init_bounds(particle->bbmin[1], particle->bbmax[1], n1 / L1, &i1_min,
+              &i1_max);
 
   double *x = g_new(double, ndims);
   int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
@@ -117,20 +120,17 @@ static void particle2d_voxelize(Particle *particle, double *dim, size_t *size,
   g_free(x);
 }
 
-void particle_init(Particle *particle, size_t ndims, double *center,
-                   particle_free_t *free, particle_copy_t *copy,
-                   particle_belongs_t *belongs, particle_bbox_t *bbox) {
-  particle->ndims = ndims;
-  if (particle->center == NULL) {
-    particle->center = g_new(double, ndims);
-  }
+Particle *particle_new(size_t ndims, double *center, double *bbmin,
+                       double *bbmax) {
+  Particle *particle = g_new(Particle, 1);
+  particle_allocate(particle, ndims);
   for (size_t i = 0; i < ndims; i++) {
     particle->center[i] = center[i];
+    particle->bbmin[i] = bbmin[i];
+    particle->bbmax[i] = bbmax[i];
   }
-  particle->free = free;
-  particle->copy = copy;
-  particle->belongs = belongs;
-  particle->bbox = bbox;
+  particle->free = particle_free;
+  particle->copy = particle_copy;
   if (ndims == 2) {
     particle->voxelize = particle2d_voxelize;
   } else if (ndims == 3) {
@@ -138,27 +138,23 @@ void particle_init(Particle *particle, size_t ndims, double *center,
   } else {
     particle->voxelize = NULL;
   }
-}
-
-Particle *particle_new(size_t ndims, double *center) {
-  Particle *particle = g_new0(Particle, 1);
-  particle->free = particle_free;
-  particle->copy = particle_copy;
-  particle_init(particle, ndims, center, particle_free, particle_copy, NULL,
-                NULL);
   return particle;
 }
 
 Particle *particle_copy(Particle *src, Particle *dest) {
   if (dest == NULL) {
-    /* Use g_new0 so as to make sure that dest->center is indeed NULL, and will
-     * be allocated by particle_init. */
-    dest = g_new0(Particle, 1);
+    dest = g_new(Particle, 1);
+    particle_allocate(dest, src->ndims);
   }
-  particle_init(dest, src->ndims, src->center, src->free, src->copy,
-                src->belongs, src->bbox);
-  /* TODO This does not allow for alternate implementations of the
-     voxelize() method. */
+  for (size_t i = 0; i < src->ndims; i++) {
+    dest->center[i] = src->center[i];
+    dest->bbmin[i] = src->bbmin[i];
+    dest->bbmax[i] = src->bbmax[i];
+  }
+  dest->free = src->free;
+  dest->copy = src->copy;
+  dest->belongs = src->belongs;
+  dest->voxelize = src->voxelize;
   return dest;
 }
 
@@ -179,76 +175,40 @@ static bool sphere3d_belongs(Particle *particle, double *point) {
   return x * x + y * y + z * z <= r * r;
 }
 
-static void sphere2d_bbox(Particle *particle, double *min, double *max) {
-  Sphere *sphere = (Sphere *)particle;
-  double r = sphere->radius;
-  double *c = sphere->center;
-  *min = (*c) - r;
-  *max = (*c) + r;
-  ++min;
-  ++max;
-  ++c;
-  *min = (*c) - r;
-  *max = (*c) + r;
-}
-
-static void sphere3d_bbox(Particle *particle, double *min, double *max) {
-  Sphere *sphere = (Sphere *)particle;
-  double r = sphere->radius;
-  double *c = sphere->center;
-  *min = (*c) - r;
-  *max = (*c) + r;
-  ++min;
-  ++max;
-  ++c;
-  *min = (*c) - r;
-  *max = (*c) + r;
-  ++min;
-  ++max;
-  ++c;
-  *min = (*c) - r;
-  *max = (*c) + r;
-}
-
 Sphere *sphere_new(size_t ndims, double *center, double radius) {
-  Sphere *sphere = g_new0(Sphere, 1);
-  particle_belongs_t *sphere_belongs;
-  particle_bbox_t *sphere_bbox;
-  if (ndims == 2) {
-    sphere_belongs = sphere2d_belongs;
-    sphere_bbox = sphere2d_bbox;
-  } else if (ndims == 3) {
-    sphere_belongs = sphere3d_belongs;
-    sphere_bbox = sphere3d_bbox;
-  } else {
-    sphere_belongs = NULL;
-    sphere_bbox = NULL;
+  Sphere *sphere = g_new(Sphere, 1);
+  particle_allocate(sphere, ndims);
+  for (size_t i = 0; i < ndims; i++) {
+    sphere->center[i] = center[i];
+    sphere->bbmin[i] = center[i] - radius;
+    sphere->bbmax[i] = center[i] + radius;
   }
-  particle_init(sphere, ndims, center, particle_free, sphere_copy,
-                sphere_belongs, sphere_bbox);
   sphere->radius = radius;
+  sphere->free = particle_free;
+  sphere->copy = sphere_copy;
+  if (ndims == 2) {
+    sphere->belongs = sphere2d_belongs;
+    sphere->voxelize = particle2d_voxelize;
+  } else if (ndims == 3) {
+    sphere->belongs = sphere3d_belongs;
+    sphere->voxelize = particle3d_voxelize;
+  } else {
+    sphere->belongs = NULL;
+    sphere->voxelize = NULL;
+  }
   return sphere;
 }
 
 Particle *sphere_copy(Particle *src, Particle *dest) {
-  Sphere *dest_ = dest == NULL ? g_new0(Sphere, 1) : dest;
-  particle_copy(src, dest_);
-  dest_->radius = ((Sphere *)src)->radius;
-  return dest_;
-}
-
-static void spheroid_bbox(Particle *particle, double *min, double *max) {
-  Spheroid *spheroid = (Spheroid *)particle;
-  const double a = spheroid->equatorial_radius;
-  const double c = spheroid->polar_radius;
-  const double a2 = a * a;
-  const double c2_m_a2 = c * c - a2;
-  for (size_t i = 0; i < spheroid->ndims; i++) {
-    const double d_i = spheroid->axis[i];
-    const double dx_i = sqrt(a2 + c2_m_a2 * d_i * d_i);
-    min[i] = spheroid->center[i] - dx_i;
-    max[i] = spheroid->center[i] + dx_i;
+  Sphere *src_ = src;
+  Sphere *dest_ = dest;
+  if (dest_ == NULL) {
+    dest_ = g_new(Sphere, 1);
+    particle_allocate(dest_, src->ndims);
   }
+  particle_copy(src, dest_);
+  dest_->radius = src_->radius;
+  return dest_;
 }
 
 static bool spheroid_belongs(Particle *particle, double *point) {
@@ -263,39 +223,56 @@ static bool spheroid_belongs(Particle *particle, double *point) {
   return spheroid->_q1 * x_dot_x + spheroid->_q2 * d_dot_x * d_dot_x <= 1.;
 }
 
+void spheroid_allocate(Spheroid *spheroid) {
+  particle_allocate(spheroid, 3);
+  spheroid->axis = g_new(double, spheroid->ndims);
+}
+
 void spheroid_free(Spheroid *spheroid) {
   g_free(spheroid->axis);
   particle_free(spheroid);
 }
 
-void spheroid_init(Spheroid *spheroid, double *center, double equatorial_radius,
-                   double polar_radius, double *axis) {
-  particle_init(spheroid, 3, center, spheroid_free, spheroid_copy,
-                spheroid_belongs, spheroid_bbox);
-  spheroid->equatorial_radius = equatorial_radius;
-  spheroid->polar_radius = polar_radius;
-  if (spheroid->axis == NULL) {
-    spheroid->axis = g_new(double, spheroid->ndims);
-  }
-  for (size_t i = 0; i < spheroid->ndims; i++) {
-    spheroid->axis[i] = axis[i];
-  }
-  spheroid->_q1 = 1. / (equatorial_radius * equatorial_radius);
-  spheroid->_q2 = 1. / (polar_radius * polar_radius) - spheroid->_q1;
-}
-
 Spheroid *spheroid_new(double *center, double equatorial_radius,
                        double polar_radius, double *axis) {
-  Spheroid *spheroid = g_new0(Spheroid, 1);
-  spheroid_init(spheroid, center, equatorial_radius, polar_radius, axis);
-  /* TODO Normalize axis? */
+  Spheroid *spheroid = g_new(Spheroid, 1);
+  spheroid->ndims = 3;
+  spheroid_allocate(spheroid);
+  spheroid->equatorial_radius = equatorial_radius;
+  spheroid->polar_radius = polar_radius;
+  spheroid->_q1 = 1. / (equatorial_radius * equatorial_radius);
+  spheroid->_q2 = 1. / (polar_radius * polar_radius) - spheroid->_q1;
+  const double a2 = equatorial_radius * equatorial_radius;
+  const double c2_m_a2 = polar_radius * polar_radius - a2;
+  for (size_t i = 0; i < spheroid->ndims; i++) {
+    /* TODO Normalize axis? */
+    spheroid->center[i] = center[i];
+    spheroid->axis[i] = axis[i];
+    const double r = sqrt(a2 + c2_m_a2 * axis[i] * axis[i]);
+    spheroid->bbmin[i] = spheroid->center[i] - r;
+    spheroid->bbmax[i] = spheroid->center[i] + r;
+  }
+  spheroid->free = spheroid_free;
+  spheroid->copy = spheroid_copy;
+  spheroid->belongs = spheroid_belongs;
+  spheroid->voxelize = particle3d_voxelize;
   return spheroid;
 }
 
 Particle *spheroid_copy(Particle *src, Particle *dest) {
   Spheroid *src_ = src;
-  Spheroid *dest_ = dest == NULL ? g_new0(Spheroid, 1) : dest;
-  spheroid_init(dest_, src->center, src_->equatorial_radius, src_->polar_radius,
-                src_->axis);
+  Spheroid *dest_ = dest;
+  if (dest_ == NULL) {
+    dest_ = g_new(Spheroid, 1);
+    spheroid_allocate(dest_);
+  }
+  particle_copy(src, dest_);
+  dest_->equatorial_radius = src_->equatorial_radius;
+  dest_->polar_radius = src_->polar_radius;
+  dest_->_q1 = src_->_q1;
+  dest_->_q2 = src_->_q2;
+  for (size_t i = 0; i < src_->ndims; i++) {
+    dest_->axis[i] = src_->axis[i];
+  }
   return dest_;
 }
