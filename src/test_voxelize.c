@@ -12,6 +12,60 @@
     if (x > L_half) x -= L;  \
   }
 
+void init_icosahedron(double *vertex) {
+  const double phi = .5 * (1. + sqrt(5.));
+  const double u = 1. / sqrt(1 + phi * phi);
+  const double v = phi * u;
+  vertex[0] = 0.;
+  vertex[1] = -u;
+  vertex[2] = -v;
+  vertex += 3;
+  vertex[0] = 0.;
+  vertex[1] = -u;
+  vertex[2] = +v;
+  vertex += 3;
+  vertex[0] = 0.;
+  vertex[1] = +u;
+  vertex[2] = -v;
+  vertex += 3;
+  vertex[0] = 0.;
+  vertex[1] = +u;
+  vertex[2] = +v;
+  vertex += 3;
+  vertex[0] = -u;
+  vertex[1] = -v;
+  vertex[2] = 0.;
+  vertex += 3;
+  vertex[0] = -u;
+  vertex[1] = +v;
+  vertex[2] = 0.;
+  vertex += 3;
+  vertex[0] = +u;
+  vertex[1] = -v;
+  vertex[2] = 0.;
+  vertex += 3;
+  vertex[0] = +u;
+  vertex[1] = +v;
+  vertex[2] = 0.;
+  vertex += 3;
+  vertex[0] = -v;
+  vertex[1] = 0.;
+  vertex[2] = -u;
+  vertex += 3;
+  vertex[0] = -v;
+  vertex[1] = 0.;
+  vertex[2] = +u;
+  vertex += 3;
+  vertex[0] = +v;
+  vertex[1] = 0.;
+  vertex[2] = -u;
+  vertex += 3;
+  vertex[0] = +v;
+  vertex[1] = 0.;
+  vertex[2] = +u;
+  vertex += 3;
+}
+
 typedef struct {
   Particle *particle;
   double *point;
@@ -128,9 +182,48 @@ void test_particle_voxelize(ParticleVoxelizeTestData *data) {
 }
 
 void setup_sphere_tests() {
+  size_t ndims = 3;
+  size_t ndirs = 12;
   double c[] = {1.2, -3.4, 5.6};
   double r = 7.8;
   Sphere *sphere = sphere_new(3, c, r);
+
+  /* Sphere->bbmin, Sphere->bbmax */
+  g_test_add_data_func_full("/sphere/bbox", sphere->copy(sphere, NULL),
+                            test_sphere_bbox, sphere->free);
+
+  /* Sphere->belongs() */
+  double s1 = 0.95;
+  double s2 = 1.05;
+  double *n = g_new(double, ndims *ndirs);
+  init_icosahedron(n);
+  for (size_t j = 0; j < ndirs; j++) {
+    double *p1 = g_new(double, ndims);
+    double *p2 = g_new(double, ndims);
+    for (size_t i = 0; i < ndims; i++) {
+      p1[i] = c[i] + s1 * r * n[ndims * j + i];
+      p2[i] = c[i] + s2 * r * n[ndims * j + i];
+    }
+    ParticleBelongsTestData *data1, *data2;
+    data1 = particle_belongs_test_data_new(sphere, p1, true);
+    data2 = particle_belongs_test_data_new(sphere, p2, false);
+    char *name1 = g_new(char *, 255);
+    char *name2 = g_new(char *, 255);
+    sprintf(name1, "/sphere/belongs/true/%d", j);
+    sprintf(name2, "/sphere/belongs/false/%d", j);
+    g_test_add_data_func_full(name1, data1, test_sphere_belongs,
+                              particle_belongs_test_data_free);
+    g_test_add_data_func_full(name2, data2, test_sphere_belongs,
+                              particle_belongs_test_data_free);
+    g_free(p1);
+    g_free(p2);
+    g_free(name1);
+    g_free(name2);
+  }
+  g_free(n);
+
+  sphere->free(sphere);
+  /*
   double theta = 0.35;
   double phi = 1.9;
   double n[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
@@ -139,17 +232,6 @@ void setup_sphere_tests() {
   s = 1.05;
   double p2[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
 
-  ParticleBelongsTestData *data1, *data2;
-  data1 = particle_belongs_test_data_new(sphere, p1, true);
-  data2 = particle_belongs_test_data_new(sphere, p2, false);
-  g_test_add_data_func_full("/sphere/belongs/1", data1, test_sphere_belongs,
-                            particle_belongs_test_data_free);
-  g_test_add_data_func_full("/sphere/belongs/2", data2, test_sphere_belongs,
-                            particle_belongs_test_data_free);
-  Sphere *sphere2 = sphere->copy(sphere, NULL);
-  g_test_add_data_func_full("/sphere/bbox", sphere2, test_sphere_bbox,
-                            sphere2->free);
-  sphere->free(sphere);
 
   c[0] = 0.75;
   c[1] = 1.3;
@@ -165,6 +247,7 @@ void setup_sphere_tests() {
 
   g_test_add_data_func_full("/sphere/voxelize/1", data3, test_particle_voxelize,
                             particle_voxelize_test_data_free);
+  */
 }
 
 void setup_spheroid_tests() {
