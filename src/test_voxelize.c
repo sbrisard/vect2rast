@@ -1,6 +1,7 @@
 #include <glib.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdio.h>
 #include <stdlib.h>
 
 #include "voxelize.h"
@@ -175,7 +176,6 @@ void test_particle_voxelize(ParticleVoxelizeTestData *data) {
       }
     }
   }
-  /* TODO: memory leak. */
   particle->free(particle);
   g_free(point);
   g_free(actual);
@@ -183,10 +183,10 @@ void test_particle_voxelize(ParticleVoxelizeTestData *data) {
 
 void setup_sphere_tests() {
   size_t ndims = 3;
-  size_t ndirs = 12;
   double c[] = {1.2, -3.4, 5.6};
   double r = 7.8;
   Sphere *sphere = sphere_new(3, c, r);
+  char *name = g_new(char *, 255);
 
   /* Sphere->bbmin, Sphere->bbmax */
   g_test_add_data_func_full("/sphere/bbox", sphere->copy(sphere, NULL),
@@ -195,59 +195,55 @@ void setup_sphere_tests() {
   /* Sphere->belongs() */
   double s1 = 0.95;
   double s2 = 1.05;
+  size_t ndirs = 12;
   double *n = g_new(double, ndims *ndirs);
   init_icosahedron(n);
+  double *p = g_new(double, ndims);
   for (size_t j = 0; j < ndirs; j++) {
-    double *p1 = g_new(double, ndims);
-    double *p2 = g_new(double, ndims);
     for (size_t i = 0; i < ndims; i++) {
-      p1[i] = c[i] + s1 * r * n[ndims * j + i];
-      p2[i] = c[i] + s2 * r * n[ndims * j + i];
+      p[i] = c[i] + s1 * r * n[ndims * j + i];
     }
-    ParticleBelongsTestData *data1, *data2;
-    data1 = particle_belongs_test_data_new(sphere, p1, true);
-    data2 = particle_belongs_test_data_new(sphere, p2, false);
-    char *name1 = g_new(char *, 255);
-    char *name2 = g_new(char *, 255);
-    sprintf(name1, "/sphere/belongs/true/%d", j);
-    sprintf(name2, "/sphere/belongs/false/%d", j);
-    g_test_add_data_func_full(name1, data1, test_sphere_belongs,
-                              particle_belongs_test_data_free);
-    g_test_add_data_func_full(name2, data2, test_sphere_belongs,
-                              particle_belongs_test_data_free);
-    g_free(p1);
-    g_free(p2);
-    g_free(name1);
-    g_free(name2);
+    sprintf(name, "/sphere/belongs/true/%d", j);
+    g_test_add_data_func_full(
+        name, particle_belongs_test_data_new(sphere, p, true),
+        test_sphere_belongs, particle_belongs_test_data_free);
+    sprintf(name, "/sphere/belongs/false/%d", j);
+    for (size_t i = 0; i < ndims; i++) {
+      p[i] = c[i] + s2 * r * n[ndims * j + i];
+    }
+    g_test_add_data_func_full(
+        name, particle_belongs_test_data_new(sphere, p, false),
+        test_sphere_belongs, particle_belongs_test_data_free);
   }
+  g_free(p);
   g_free(n);
-
   sphere->free(sphere);
-  /*
-  double theta = 0.35;
-  double phi = 1.9;
-  double n[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
-  double s = 0.95;
-  double p1[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
-  s = 1.05;
-  double p2[] = {c[0] + s * r * n[0], c[1] + s * r * n[1], c[2] + s * r * n[2]};
 
-
-  c[0] = 0.75;
-  c[1] = 1.3;
-  c[2] = 1.85;
-  r = 0.69;
+  /* Sphere->voxelize() */
   double dim[] = {1.5, 2.6, 3.7};
   size_t size[] = {50, 60, 70};
+  double xi = 0.05;
+  double eta = 0.06;
+  double zeta = 0.07;
+  r = 0.5;
 
-  sphere = sphere_new(3, c, r);
-  ParticleVoxelizeTestData *data3;
-  data3 = particle_voxelize_test_data_new(sphere, dim, size);
-  sphere->free(sphere);
+  for (size_t i0 = 0; i0 <= 1; i0++) {
+    c[0] = i0 == 0 ? xi * dim[0] : (1. - xi) * dim[0];
+    for (size_t i1 = 0; i1 <= 1; i1++) {
+      c[1] = i1 == 0 ? eta * dim[1] : (1. - eta) * dim[1];
+      for (size_t i2 = 0; i2 <= 1; i2++) {
+        c[2] = i2 == 0 ? zeta * dim[2] : (1. - zeta) * dim[2];
+        sprintf(name, "/sphere/voxelize/%d", (i0 * 2 + i1) * 2 + i2);
+        sphere = sphere_new(ndims, c, r);
+        g_test_add_data_func_full(
+            name, particle_voxelize_test_data_new(sphere, dim, size),
+            test_particle_voxelize, particle_voxelize_test_data_free);
+        sphere->free(sphere);
+      }
+    }
+  }
 
-  g_test_add_data_func_full("/sphere/voxelize/1", data3, test_particle_voxelize,
-                            particle_voxelize_test_data_free);
-  */
+  g_free(name);
 }
 
 void setup_spheroid_tests() {
