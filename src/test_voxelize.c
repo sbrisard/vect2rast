@@ -92,7 +92,7 @@ void particle_belongs_test_data_free(ParticleBelongsTestData *data) {
   g_free(data);
 }
 
-void test_sphere_belongs(ParticleBelongsTestData *test_data) {
+void test_particle_belongs(ParticleBelongsTestData *test_data) {
   Particle *particle = test_data->particle;
   g_assert_cmpuint(particle->belongs(particle, test_data->point), ==,
                    test_data->expected);
@@ -206,14 +206,14 @@ void setup_sphere_tests() {
     sprintf(name, "/sphere/belongs/true/%d", j);
     g_test_add_data_func_full(
         name, particle_belongs_test_data_new(sphere, p, true),
-        test_sphere_belongs, particle_belongs_test_data_free);
+        test_particle_belongs, particle_belongs_test_data_free);
     sprintf(name, "/sphere/belongs/false/%d", j);
     for (size_t i = 0; i < ndims; i++) {
       p[i] = c[i] + s2 * r * n[ndims * j + i];
     }
     g_test_add_data_func_full(
         name, particle_belongs_test_data_new(sphere, p, false),
-        test_sphere_belongs, particle_belongs_test_data_free);
+        test_particle_belongs, particle_belongs_test_data_free);
   }
   g_free(p);
   g_free(n);
@@ -246,24 +246,96 @@ void setup_sphere_tests() {
   g_free(name);
 }
 
-void setup_spheroid_tests() {
-  double c[] = {0.75, 1.3, 1.85};
-  double dim[] = {1.5, 2.6, 3.7};
-  size_t size[] = {50, 60, 70};
-
-  double theta = 0.3;
-  double phi = 0.5;
-  double d[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
-
-  Spheroid *spheroid = spheroid_new(c, 0.37, .19, d);
-  ParticleVoxelizeTestData *data =
-      particle_voxelize_test_data_new(spheroid, dim, size);
-  spheroid->free(spheroid);
-
-  g_test_add_data_func_full("/spheroid/voxelize/1", data,
-                            test_particle_voxelize,
-                            particle_voxelize_test_data_free);
+void fill_basis(double *e1, double *e2, double *e3) {
+  const double x = e1[0];
+  const double y = e1[1];
+  const double z = e1[2];
+  const double s = 1. / hypot(y, z);
+  e2[0] = 0.;
+  e2[1] = s * z;
+  e2[2] = -s * y;
+  e3[0] = -1. / s;
+  e3[1] = s * x * y;
+  e3[2] = s * x * z;
 }
+
+void setup_spheroid_tests() {
+  char *name = g_new(char, 255);
+  const size_t ndims = 3;
+  const size_t ndirs = 12;
+  double c[] = {1.2, -3.4, 5.6};
+
+  double *n = g_new(double, ndims *ndirs);
+  init_icosahedron(n);
+  double *e1 = g_new(double, ndims);
+  double *e2 = g_new(double, ndims);
+  double *p = g_new(double, ndims);
+  double *radii = g_new(double, ndims);
+
+  double s1 = 0.95;
+  double s2 = 1.05;
+  double r1 = 0.78;
+  double r2 = 0.19;
+  double x1, x2, x3, x, y, z;
+
+  for (size_t i = 0; i < ndirs; i++) {
+    double *e3 = n + i * ndims;
+    fill_basis(e3, e1, e2);
+    Spheroid *oblate = spheroid_new(c, 0.78, 0.19, e3);
+    Spheroid *prolate = spheroid_new(c, 0.19, 0.78, e3);
+    for (size_t j = 0; j < ndirs; j++) {
+      double *n_j = n + ndims * j;
+      x1 = n_j[0] * oblate->equatorial_radius;
+      x2 = n_j[1] * oblate->equatorial_radius;
+      x3 = n_j[2] * oblate->polar_radius;
+      x = x1 * e1[0] + x2 * e2[0] + x3 * e3[0];
+      y = x1 * e1[1] + x2 * e2[1] + x3 * e3[1];
+      z = x1 * e1[2] + x2 * e2[2] + x3 * e3[2];
+
+      p[0] = c[0] + s1 * x;
+      p[1] = c[1] + s1 * y;
+      p[2] = c[2] + s1 * z;
+      sprintf(name, "/spheroid/oblate/belongs/true/%d", i * ndirs + j);
+      g_test_add_data_func_full(
+          name, particle_belongs_test_data_new(oblate, p, true),
+          test_particle_belongs, particle_belongs_test_data_free);
+      p[0] = c[0] + s2 * x;
+      p[1] = c[1] + s2 * y;
+      p[2] = c[2] + s2 * z;
+      sprintf(name, "/spheroid/oblate/belongs/false/%d", i * ndirs + j);
+      g_test_add_data_func_full(
+          name, particle_belongs_test_data_new(oblate, p, false),
+          test_particle_belongs, particle_belongs_test_data_free);
+    }
+    oblate->free(oblate);
+    prolate->free(prolate);
+  }
+
+  g_free(name);
+  g_free(n);
+  g_free(e1);
+  g_free(e2);
+  g_free(p);
+}
+
+/* void setup_spheroid_tests() { */
+/*   double c[] = {0.75, 1.3, 1.85}; */
+/*   double dim[] = {1.5, 2.6, 3.7}; */
+/*   size_t size[] = {50, 60, 70}; */
+
+/*   double theta = 0.3; */
+/*   double phi = 0.5; */
+/*   double d[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)}; */
+
+/*   Spheroid *spheroid = spheroid_new(c, 0.37, .19, d); */
+/*   ParticleVoxelizeTestData *data = */
+/*       particle_voxelize_test_data_new(spheroid, dim, size); */
+/*   spheroid->free(spheroid); */
+
+/*   g_test_add_data_func_full("/spheroid/voxelize/1", data, */
+/*                             test_particle_voxelize, */
+/*                             particle_voxelize_test_data_free); */
+/* } */
 
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
