@@ -318,30 +318,57 @@ void setup_spheroid_tests() {
   g_free(p);
 }
 
-/* void setup_spheroid_tests() { */
-/*   double c[] = {0.75, 1.3, 1.85}; */
-/*   double dim[] = {1.5, 2.6, 3.7}; */
-/*   size_t size[] = {50, 60, 70}; */
+void setup_spheroid_voxelize_tests() {
+  size_t ndims = 3;
+  size_t ndirs = 12;
+  double *n = g_new(double, ndims *ndirs);
+  init_icosahedron(n);
+  double dim[] = {1.5, 2.6, 3.7};
+  size_t size[] = {50, 60, 70};
+  double xi = 0.05;
+  double eta = 0.06;
+  double zeta = 0.07;
 
-/*   double theta = 0.3; */
-/*   double phi = 0.5; */
-/*   double d[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)}; */
-
-/*   Spheroid *spheroid = spheroid_new(c, 0.37, .19, d); */
-/*   ParticleVoxelizeTestData *data = */
-/*       particle_voxelize_test_data_new(spheroid, dim, size); */
-/*   spheroid->free(spheroid); */
-
-/*   g_test_add_data_func_full("/spheroid/voxelize/1", data, */
-/*                             test_particle_voxelize, */
-/*                             particle_voxelize_test_data_free); */
-/* } */
+  double *c;
+  c = g_new(double, ndims);
+  Spheroid *spheroid;
+  size_t test_index = 0;
+  char *name = g_new(char, 255);
+  for (size_t i0 = 0; i0 <= 1; i0++) {
+    c[0] = i0 == 0 ? xi * dim[0] : (1. - xi) * dim[0];
+    for (size_t i1 = 0; i1 <= 1; i1++) {
+      c[1] = i1 == 0 ? eta * dim[1] : (1. - eta) * dim[1];
+      for (size_t i2 = 0; i2 <= 1; i2++) {
+        c[2] = i2 == 0 ? zeta * dim[2] : (1. - zeta) * dim[2];
+        for (size_t j = 0; j < ndirs; j++) {
+          spheroid = spheroid_new(c, 0.78, 0.19, n + j * ndims);
+          sprintf(name, "/spheroid/oblate/voxelize/%d", test_index);
+          g_test_add_data_func_full(
+              name, particle_voxelize_test_data_new(spheroid, dim, size),
+              test_particle_voxelize, particle_voxelize_test_data_free);
+          spheroid->free(spheroid);
+          spheroid = spheroid_new(c, 0.19, 0.78, n + j * ndims);
+          sprintf(name, "/spheroid/prolate/voxelize/%d", test_index);
+          g_test_add_data_func_full(
+              name, particle_voxelize_test_data_new(spheroid, dim, size),
+              test_particle_voxelize, particle_voxelize_test_data_free);
+          spheroid->free(spheroid);
+	  ++test_index;
+        }
+      }
+    }
+  }
+  g_free(n);
+  g_free(c);
+  g_free(name);
+}
 
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
 
   setup_sphere_tests();
   setup_spheroid_tests();
+  setup_spheroid_voxelize_tests();
 
   return g_test_run();
 }
