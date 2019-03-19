@@ -13,58 +13,30 @@
     if (x > L_half) x -= L;  \
   }
 
+#define set_vector(vec, x, y, z) \
+  {                              \
+    vec[0] = x;                  \
+    vec[1] = y;                  \
+    vec[2] = z;                  \
+    vec += 3;                    \
+  }
+
 void init_icosahedron(double *vertex) {
   const double phi = .5 * (1. + sqrt(5.));
   const double u = 1. / sqrt(1 + phi * phi);
   const double v = phi * u;
-  vertex[0] = 0.;
-  vertex[1] = -u;
-  vertex[2] = -v;
-  vertex += 3;
-  vertex[0] = 0.;
-  vertex[1] = -u;
-  vertex[2] = +v;
-  vertex += 3;
-  vertex[0] = 0.;
-  vertex[1] = +u;
-  vertex[2] = -v;
-  vertex += 3;
-  vertex[0] = 0.;
-  vertex[1] = +u;
-  vertex[2] = +v;
-  vertex += 3;
-  vertex[0] = -u;
-  vertex[1] = -v;
-  vertex[2] = 0.;
-  vertex += 3;
-  vertex[0] = -u;
-  vertex[1] = +v;
-  vertex[2] = 0.;
-  vertex += 3;
-  vertex[0] = +u;
-  vertex[1] = -v;
-  vertex[2] = 0.;
-  vertex += 3;
-  vertex[0] = +u;
-  vertex[1] = +v;
-  vertex[2] = 0.;
-  vertex += 3;
-  vertex[0] = -v;
-  vertex[1] = 0.;
-  vertex[2] = -u;
-  vertex += 3;
-  vertex[0] = -v;
-  vertex[1] = 0.;
-  vertex[2] = +u;
-  vertex += 3;
-  vertex[0] = +v;
-  vertex[1] = 0.;
-  vertex[2] = -u;
-  vertex += 3;
-  vertex[0] = +v;
-  vertex[1] = 0.;
-  vertex[2] = +u;
-  vertex += 3;
+  set_vector(vertex, 0., -u, -v);
+  set_vector(vertex, 0., -u, +v);
+  set_vector(vertex, 0., +u, -v);
+  set_vector(vertex, 0., +u, +v);
+  set_vector(vertex, -u, -v, 0.);
+  set_vector(vertex, -u, +v, 0.);
+  set_vector(vertex, +u, -v, 0.);
+  set_vector(vertex, +u, +v, 0.);
+  set_vector(vertex, -v, 0., -u);
+  set_vector(vertex, -v, 0., +u);
+  set_vector(vertex, +v, 0., -u);
+  set_vector(vertex, +v, 0., +u);
 }
 
 typedef struct {
@@ -353,7 +325,7 @@ void setup_spheroid_voxelize_tests() {
               name, particle_voxelize_test_data_new(spheroid, dim, size),
               test_particle_voxelize, particle_voxelize_test_data_free);
           spheroid->free(spheroid);
-	  ++test_index;
+          ++test_index;
         }
       }
     }
