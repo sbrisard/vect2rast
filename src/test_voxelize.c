@@ -231,7 +231,7 @@ void fill_basis(double *e1, double *e2, double *e3) {
   e3[2] = s * x * z;
 }
 
-void setup_spheroid_tests() {
+void setup_spheroid_belongs_tests() {
   char *name = g_new(char, 255);
   const size_t ndims = 3;
   const size_t ndirs = 12;
@@ -335,12 +335,16 @@ void setup_spheroid_voxelize_tests() {
   g_free(name);
 }
 
+void setup_spheroid_tests() {
+  setup_spheroid_belongs_tests();
+  setup_spheroid_voxelize_tests();
+}
+
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
 
   setup_sphere_tests();
   setup_spheroid_tests();
-  setup_spheroid_voxelize_tests();
 
   return g_test_run();
 }
