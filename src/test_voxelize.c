@@ -231,6 +231,37 @@ void fill_basis(double *e1, double *e2, double *e3) {
   e3[2] = s * x * z;
 }
 
+void test_spheroid_bbox(Sphere *spheroid) {
+  /* TODO: implement test. */
+}
+
+void setup_spheroid_bbox_tests() {
+  char *name = g_new(char, 255);
+  const size_t ndims = 3;
+  const size_t ndirs = 12;
+  double c[] = {1.2, -3.4, 5.6};
+
+  double *n = g_new(double, ndims *ndirs);
+  init_icosahedron(n);
+
+  Spheroid *spheroid;
+  size_t test_index = 0;
+  for (size_t i = 0; i < ndirs; i++) {
+    spheroid = spheroid_new(c, 0.78, 0.19, n + i * ndims);
+    spheroid->free(spheroid);
+    sprintf(name, "/spheroid/oblate/bbox/%d", test_index);
+
+    spheroid = spheroid_new(c, 0.19, 0.78, n + i * ndims);
+    spheroid->free(spheroid);
+    sprintf(name, "/spheroid/prolate/bbox/%d", test_index);
+
+    ++test_index;
+  }
+
+  g_free(name);
+  g_free(n);
+}
+
 void setup_spheroid_belongs_tests() {
   char *name = g_new(char, 255);
   const size_t ndims = 3;
@@ -336,6 +367,7 @@ void setup_spheroid_voxelize_tests() {
 }
 
 void setup_spheroid_tests() {
+  setup_spheroid_bbox_tests();
   setup_spheroid_belongs_tests();
   setup_spheroid_voxelize_tests();
 }
