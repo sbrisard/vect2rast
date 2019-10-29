@@ -1,7 +1,7 @@
-project('voxelize', 'c')
+project('v2r', 'c')
 glib = dependency('glib-2.0')
 
-voxelize_lib = library('voxelize', ['voxelize.c', 'voxelize.h'], dependencies: glib, install: true)
-voxelize_test = executable('test_voxelize', 'test_voxelize.c', dependencies: glib, link_with: voxelize_lib)
+v2r_lib = library('v2r', ['v2r.c', 'v2r.h'], dependencies: glib, install: true)
+v2r_test = executable('test_v2r', 'test_v2r.c', dependencies: glib, link_with: v2r_lib)
 
-test('tests of voxelize', voxelize_test)
+test('tests of v2r', v2r_test)
