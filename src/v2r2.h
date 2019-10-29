@@ -34,6 +34,6 @@ typedef struct V2RSphereData_ {
   double radius;
 } V2RSphereData;
 
-DllExport V2RObject *v2r_object_new(V2RObjectType *, double *, double *, double *);
+DllExport V2RObject *v2r_object_new(V2RObjectType *);
 
 #endif
