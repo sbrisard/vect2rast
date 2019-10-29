@@ -31,9 +31,11 @@ struct V2RObject_ {
 
 DllExport V2RObject *v2r_object_new(V2RObjectType const *);
 DllExport void v2r_object_free(V2RObject *);
+DllExport V2RObject *v2r_object_copy(V2RObject const *);
 
-typedef struct V2RSphereData_ {
-  double radius;
-} V2RSphereData;
+#define V2R_SPHERE_RADIUS_INDEX 0
+#define V2R_SPHERE_SQR_RADIUS_INDEX 1
+
+DllExport V2RObject *v2r_sphere_new(size_t, double *, double);
 
 #endif

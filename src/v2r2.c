@@ -27,7 +27,7 @@ void v2r_object_free(V2RObject *object) {
   free(object->data);
 }
 
-V2RObject *v2r_object_copy(V2RObject *object) {
+V2RObject *v2r_object_copy(V2RObject const *object) {
   V2RObject *copy = v2r_object_new(object->type);
   for (size_t i = 0; i < object->type->ndims; i++) {
     copy->center[i] = object->center[i];
@@ -37,9 +37,6 @@ V2RObject *v2r_object_copy(V2RObject *object) {
   memcpy(copy->data, object->data, object->type->data_size);
   return copy;
 }
-
-#define V2R_SPHERE_RADIUS_INDEX 0
-#define V2R_SPHERE_SQR_RADIUS_INDEX 1
 
 bool v2r_sphere_belongs(V2RObject *sphere, double *point) {
   double r2 = 0.0;
