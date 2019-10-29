@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "voxelize.h"
+#include "v2r.h"
 
 #define minimum_image(x, L)  \
   {                          \

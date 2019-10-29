@@ -5,7 +5,7 @@
 
 #include <glib.h>
 
-#include "voxelize.h"
+#include "v2r.h"
 
 static particle_copy_t particle_copy;
 static particle_copy_t sphere_copy;
