@@ -6,7 +6,7 @@
 
 #include "v2r2.h"
 
-V2RObject *v2r_object_new(V2RObjectType *type) {
+V2RObject *v2r_object_new(V2RObjectType const *type) {
   const size_t ndims = type->ndims;
   V2RObject *object = malloc(sizeof(V2RObject));
 
