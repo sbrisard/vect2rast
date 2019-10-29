@@ -3,14 +3,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <glib.h>
-
 #include "v2r2.h"
 
 V2RObject *v2r_object_new(V2RObjectType *type, double *center, double *bbmin,
                           double *bbmax) {
   const size_t ndims = type->ndims;
-  V2RObject *object = (V2RObject *)g_new(V2RObject, 1);
+  V2RObject *object = malloc(sizeof(V2RObject));
 
   const size_t size = ndims * sizeof(double);
   object->center = malloc(size);
@@ -35,4 +33,10 @@ void v2r_object_free(V2RObject *object) {
   free(object->center);
   free(object->bbmin);
   free(object->bbmax);
+}
+
+
+int main(int argc, char** argv) {
+  printf("coucou\n");
+  return 0;
 }
