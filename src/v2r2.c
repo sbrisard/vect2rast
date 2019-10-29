@@ -14,20 +14,16 @@ V2RObject *v2r_object_new(V2RObjectType *type) {
   object->bbmin = malloc(size);
   object->bbmax = malloc(size);
 
-  object->data = NULL;
+  object->data = malloc(type->data_size);
 
   return object;
 }
 
-void v2r_object_dispose(V2RObject *object) { free(object->data); }
-
 void v2r_object_free(V2RObject *object) {
-  if (object->type->dispose) {
-    object->type->dispose(object);
-  }
   free(object->center);
   free(object->bbmin);
   free(object->bbmax);
+  free(object->data);
 }
 
 double v2r_sphere_radius2(V2RObject *sphere) {
@@ -41,8 +37,7 @@ bool v2r_sphere2d_belongs(V2RObject *sphere, double *point) {
 }
 
 const V2RObjectType Sphere2D = {.ndims = 2,
-				.dispose = NULL,
-				.free = NULL,
+				.free = v2r_object_free,
 				.copy = NULL,
 				.belongs = v2r_sphere2d_belongs};
 

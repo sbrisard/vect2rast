@@ -13,10 +13,9 @@ typedef struct V2RObject_ V2RObject;
 typedef struct V2RObjectType_ V2RObjectType;
 
 struct V2RObjectType_ {
-  /* Data */
   size_t ndims;
-  /* Methods */
-  void (*dispose)(V2RObject *);
+  size_t data_size;
+
   void (*free)(V2RObject *);
   void (*copy)(V2RObject *, V2RObject *);
   bool (*belongs)(V2RObject *, double *);
