@@ -1,7 +1,7 @@
-`voxelize` is a library for the pixelization/voxelization of 2d/3d continuous
-objects such as spheres, spheroids, …
+`v2r` is a library for the vector → raster conversion of simple geometrical
+ objects such as spheres, spheroids, …
 
-`voxelize` is released under a BSD 3-Clause License.
+`v2r` is released under a BSD 3-Clause License.
 
 ## Installation
 
@@ -15,13 +15,13 @@ First install
 Clone the repository of the project
 
 ```
-git clone https://github.com/sbrisard/voxelize.git
+git clone https://github.com/sbrisard/v2r.git
 ```
 
 and `cd` into the `src` directory
 
 ```
-cd voxelize/src
+cd v2r/src
 meson build
 cd build
 ninja install
@@ -44,7 +44,7 @@ meson test
 or (more verbose output)
 
 ```
-./test_voxelize
+./test_v2r
 ```
 
 ### Installation of the Python wrapper
