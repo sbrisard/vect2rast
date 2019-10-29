@@ -50,8 +50,6 @@ bool v2r_sphere2d_belongs(V2RObject *sphere, double *point) {
 
 const V2RObjectType Sphere2D = {.ndims = 2,
                                 .data_size = 2 * sizeof(double),
-                                .free = v2r_object_free,
-                                .copy = NULL,
                                 .belongs = v2r_sphere2d_belongs};
 
 V2RObject *v2r_sphere2d_new(double *center, double radius) {

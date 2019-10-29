@@ -16,8 +16,6 @@ struct V2RObjectType_ {
   size_t ndims;
   size_t data_size;
 
-  void (*free)(V2RObject *);
-  V2RObject * (*copy)(V2RObject *);
   bool (*belongs)(V2RObject *, double *);
 };
 
@@ -29,10 +27,11 @@ struct V2RObject_ {
   void *data;
 };
 
+DllExport V2RObject *v2r_object_new(V2RObjectType const *);
+DllExport void v2r_object_free(V2RObject *);
+
 typedef struct V2RSphereData_ {
   double radius;
 } V2RSphereData;
-
-DllExport V2RObject *v2r_object_new(V2RObjectType const *);
 
 #endif
