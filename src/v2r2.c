@@ -38,14 +38,14 @@ V2RObject *v2r_object_copy(V2RObject *object) {
   return copy;
 }
 
-double v2r_sphere_radius2(V2RObject *sphere) {
-  return ((double *)sphere->data)[1];
-}
+#define V2R_SPHERE_RADIUS_INDEX 0
+#define V2R_SPHERE_SQR_RADIUS_INDEX 1
 
 bool v2r_sphere2d_belongs(V2RObject *sphere, double *point) {
   double x = point[0] - sphere->center[0];
   double y = point[1] - sphere->center[1];
-  return x * x + y * y <= v2r_sphere_radius2(sphere);
+  return x * x + y * y <=
+         V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_SQR_RADIUS_INDEX);
 }
 
 const V2RObjectType Sphere2D = {.ndims = 2,
@@ -65,9 +65,8 @@ V2RObject *v2r_sphere2d_new(double *center, double radius) {
   object->bbmin[1] = x1 - radius;
   object->bbmax[1] = x1 + radius;
 
-  double *data = (double *)(object->data);
-  data[0] = radius;
-  data[1] = radius * radius;
+  V2R_OBJECT_DOUBLE_AT(object, V2R_SPHERE_RADIUS_INDEX) = radius;
+  V2R_OBJECT_DOUBLE_AT(object, V2R_SPHERE_SQR_RADIUS_INDEX) = radius * radius;
 
   return object;
 }
@@ -79,7 +78,8 @@ int main(int argc, char **argv) {
   double radius = 0.5;
   V2RObject *sphere = v2r_sphere2d_new(center, radius);
 
-  printf("r**2 = %g\n", v2r_sphere_radius2(sphere));
+  printf("r**2 = %g\n",
+         V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_SQR_RADIUS_INDEX));
 
   return 0;
 }
