@@ -49,9 +49,10 @@ bool v2r_sphere2d_belongs(V2RObject *sphere, double *point) {
 }
 
 const V2RObjectType Sphere2D = {.ndims = 2,
-				.free = v2r_object_free,
-				.copy = NULL,
-				.belongs = v2r_sphere2d_belongs};
+                                .data_size = 2 * sizeof(double),
+                                .free = v2r_object_free,
+                                .copy = NULL,
+                                .belongs = v2r_sphere2d_belongs};
 
 V2RObject *v2r_sphere2d_new(double *center, double radius) {
   V2RObject *object = v2r_object_new(&Sphere2D);
@@ -66,18 +67,15 @@ V2RObject *v2r_sphere2d_new(double *center, double radius) {
   object->bbmin[1] = x1 - radius;
   object->bbmax[1] = x1 + radius;
 
-  double *data = malloc(2 * sizeof(double));
+  double *data = (double *)(object->data);
   data[0] = radius;
   data[1] = radius * radius;
-  object->data = data;
 
   return object;
 }
 
-
 int main(int argc, char **argv) {
   printf("coucou\n");
-
 
   double center[] = {1., 2.};
   double radius = 0.5;
