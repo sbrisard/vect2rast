@@ -17,7 +17,7 @@ struct V2RObjectType_ {
   size_t data_size;
 
   void (*free)(V2RObject *);
-  void (*copy)(V2RObject *, V2RObject *);
+  V2RObject * (*copy)(V2RObject *);
   bool (*belongs)(V2RObject *, double *);
 };
 

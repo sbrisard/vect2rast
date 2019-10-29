@@ -2,6 +2,7 @@
 #include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #include "v2r2.h"
 
@@ -24,6 +25,17 @@ void v2r_object_free(V2RObject *object) {
   free(object->bbmin);
   free(object->bbmax);
   free(object->data);
+}
+
+V2RObject *v2r_object_copy(V2RObject *object) {
+  V2RObject *copy = v2r_object_new(object->type);
+  for (size_t i = 0; i < object->type->ndims; i++) {
+    copy->center[i] = object->center[i];
+    copy->bbmin[i] = object->bbmin[i];
+    copy->bbmax[i] = object->bbmax[i];
+  }
+  memcpy(copy->data, object->data, object->type->data_size);
+  return copy;
 }
 
 double v2r_sphere_radius2(V2RObject *sphere) {
