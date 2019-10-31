@@ -48,11 +48,13 @@ bool v2r_sphere_belongs(V2RObject *sphere, double *point) {
   return r2 <= V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_SQR_RADIUS_INDEX);
 }
 
-V2RObjectType const Sphere2D = {.ndims = 2,
+V2RObjectType const Sphere2D = {.name = "Disk",
+				.ndims = 2,
                                 .data_size = 2 * sizeof(double),
                                 .belongs = v2r_sphere_belongs};
 
-V2RObjectType const Sphere3D = {.ndims = 3,
+V2RObjectType const Sphere3D = {.name = "Sphere",
+				.ndims = 3,
                                 .data_size = 2 * sizeof(double),
                                 .belongs = v2r_sphere_belongs};
 
@@ -85,6 +87,9 @@ int main(int argc, char **argv) {
   double center[] = {1., 2.};
   double radius = 0.5;
   V2RObject *sphere = v2r_sphere_new(2, center, radius);
+
+  printf("%s\n", Sphere2D.name);
+  printf("Type name = %s\n", sphere->type->name);
 
   printf("r**2 = %g\n",
          V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_SQR_RADIUS_INDEX));

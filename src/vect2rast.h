@@ -15,6 +15,7 @@ typedef struct V2RObject_ V2RObject;
 typedef struct V2RObjectType_ V2RObjectType;
 
 struct V2RObjectType_ {
+  char *name;
   size_t ndims;
   size_t data_size;
 
