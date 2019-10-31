@@ -20,6 +20,10 @@ V2R_NDSphereData *v2r_ndsphere_data_new(double radius) {
   return data;
 }
 
+double v2r_ndsphere_radius(V2R_Object const *sphere){
+  return V2R_NDSPHERE_DATA(sphere)->radius;
+}
+
 bool v2r_disk_belongs(V2R_Object *disk, double *point) {
   const double x = point[0] - disk->center[0];
   const double y = point[1] - disk->center[1];
@@ -49,8 +53,4 @@ V2R_Object *v2r_disk_new(double *center, double radius) {
   object->data = v2r_ndsphere_data_new(radius);
 
   return object;
-}
-
-double v2r_ndsphere_radius(V2R_Object const *sphere){
-  return V2R_NDSPHERE_DATA(sphere)->radius;
 }
