@@ -16,7 +16,7 @@ V2RObject *v2r_object_new(V2RObjectType const *type) {
   object->bbmin = malloc(size);
   object->bbmax = malloc(size);
 
-  object->data = malloc(type->data_size);
+  object->data = NULL;
 
   return object;
 }
@@ -35,6 +35,7 @@ V2RObject *v2r_object_copy(V2RObject const *object) {
     copy->bbmin[i] = object->bbmin[i];
     copy->bbmax[i] = object->bbmax[i];
   }
+  copy->data = malloc(object->type->data_size);
   memcpy(copy->data, object->data, object->type->data_size);
   return copy;
 }

@@ -28,7 +28,7 @@ bool v2r_disk_belongs(V2RObject *disk, double *point) {
 
 V2RObjectType const Disk = {.name = "Disk",
                             .ndims = 2,
-                            .data_size = 2 * sizeof(double),
+                            .data_size = sizeof(DiskData),
                             .belongs = v2r_disk_belongs};
 
 V2RObject *v2r_disk_new(double *center, double radius) {
