@@ -35,5 +35,6 @@ DllExport V2R_Object *v2r_object_copy(V2R_Object const *);
 
 DllExport double v2r_ndsphere_radius(V2R_Object const *);
 DllExport V2R_Object *v2r_disk_new(double *, double);
+DllExport V2R_Object *v2r_sphere_new(double *, double);
 
 #endif

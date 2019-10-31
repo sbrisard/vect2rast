@@ -14,29 +14,27 @@ void test_ndsphere_bbox(V2R_Object const *sphere) {
   }
 }
 
-void test_ndsphere_setup_tests() {
+void test_disk_setup_tests() {
   double c[] = {1.2, -3.4};
   double r = 7.8;
-  V2R_Object *disk = v2r_disk_new(c, r);
 
-  g_test_add_data_func("/sphere/bbox", v2r_object_copy(disk),
-                       test_ndsphere_bbox);
-  /* size_t ndims = 3; */
-  /* double c[] = {1.2, -3.4, 5.6}; */
-  /* double r = 7.8; */
-  /* V2R_Object const *sphere = v2r_sphere_new(c, r); */
+  g_test_add_data_func_full("/disk/bbox", v2r_disk_new(c, r),
+                            test_ndsphere_bbox, v2r_object_free);
+}
 
-  /* V2R_Object *sphere1 = v2r_object_copy(sphere); */
-  /* g_test_add_data_func_full("/sphere/bbox", sphere1, test_sphere_bbox, */
-  /*                           v2r_object_free); */
+void test_sphere_setup_tests() {
+  double c[] = {1.2, -3.4, 5.6};
+  double r = 7.8;
 
-  v2r_object_free(disk);
+  g_test_add_data_func_full("/sphere/bbox", v2r_sphere_new(c, r),
+                            test_ndsphere_bbox, v2r_object_free);
 }
 
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
 
-  test_ndsphere_setup_tests();
+  test_disk_setup_tests();
+  test_sphere_setup_tests();
 
   return g_test_run();
 }
