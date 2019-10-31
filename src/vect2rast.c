@@ -39,41 +39,32 @@ V2RObject *v2r_object_copy(V2RObject const *object) {
   return copy;
 }
 
-bool v2r_sphere_belongs(V2RObject *sphere, double *point) {
+bool v2r_disk_belongs(V2RObject *disk, double *point) {
   double r2 = 0.0;
-  for (size_t i = 0; i < sphere->type->ndims; i++) {
-    const double x_i = point[i] - sphere->center[i];
-    r2 += x_i * x_i;
-  }
-  return r2 <= V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_SQR_RADIUS_INDEX);
+  const double x = point[0] - disk->center[0];
+  const double y = point[1] - disk->center[1];
+  return x * x + y * y <=
+         V2R_OBJECT_DOUBLE_AT(disk, V2R_SPHERE_SQR_RADIUS_INDEX);
 }
 
-V2RObjectType const Sphere2D = {.name = "Disk",
-				.ndims = 2,
-                                .data_size = 2 * sizeof(double),
-                                .belongs = v2r_sphere_belongs};
+V2RObjectType const Disk = {.name = "Disk",
+                            .ndims = 2,
+                            .data_size = 2 * sizeof(double),
+                            .belongs = v2r_disk_belongs};
 
-V2RObjectType const Sphere3D = {.name = "Sphere",
-				.ndims = 3,
-                                .data_size = 2 * sizeof(double),
-                                .belongs = v2r_sphere_belongs};
+V2RObject *v2r_disk_new(double *center, double radius) {
+  V2RObject *object = v2r_object_new(&Disk);
 
-V2RObject *v2r_sphere_new(size_t ndims, double *center, double radius) {
-  V2RObject *object;
-  if (ndims == 2) {
-    object = v2r_object_new(&Sphere2D);
-  } else if (ndims == 3) {
-    object = v2r_object_new(&Sphere3D);
-  } else {
-    return NULL;
-  }
+  const double x = center[0];
+  const double y = center[1];
 
-  for (size_t i = 0; i < ndims; i++) {
-    const double x_i = center[i];
-    object->center[i] = x_i;
-    object->bbmin[i] = x_i - radius;
-    object->bbmax[i] = x_i + radius;
-  }
+  object->center[0] = x;
+  object->bbmin[0] = x-radius;
+  object->bbmax[0] = x+radius;
+
+  object->center[1] = y;
+  object->bbmin[1] = y-radius;
+  object->bbmax[1] = y+radius;
 
   V2R_OBJECT_DOUBLE_AT(object, V2R_SPHERE_RADIUS_INDEX) = radius;
   V2R_OBJECT_DOUBLE_AT(object, V2R_SPHERE_SQR_RADIUS_INDEX) = radius * radius;
@@ -81,18 +72,23 @@ V2RObject *v2r_sphere_new(size_t ndims, double *center, double radius) {
   return object;
 }
 
+/* V2RObjectType const Sphere3D = {.name = "Sphere", */
+/*                                 .ndims = 3, */
+/*                                 .data_size = 2 * sizeof(double), */
+/*                                 .belongs = v2r_sphere_belongs}; */
+
+
 int main(int argc, char **argv) {
   printf("coucou\n");
 
   double center[] = {1., 2.};
   double radius = 0.5;
-  V2RObject *sphere = v2r_sphere_new(2, center, radius);
+  V2RObject *disk = v2r_disk_new(center, radius);
 
-  printf("%s\n", Sphere2D.name);
-  printf("Type name = %s\n", sphere->type->name);
+  printf("Type name = %s\n", disk->type->name);
 
   printf("r**2 = %g\n",
-         V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_SQR_RADIUS_INDEX));
+         V2R_OBJECT_DOUBLE_AT(disk, V2R_SPHERE_SQR_RADIUS_INDEX));
 
   return 0;
 }

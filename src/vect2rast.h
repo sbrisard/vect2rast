@@ -37,6 +37,6 @@ DllExport V2RObject *v2r_object_copy(V2RObject const *);
 #define V2R_SPHERE_RADIUS_INDEX 0
 #define V2R_SPHERE_SQR_RADIUS_INDEX 1
 
-DllExport V2RObject *v2r_sphere_new(size_t, double *, double);
+DllExport V2RObject *v2r_disk_new(double *, double);
 
 #endif
