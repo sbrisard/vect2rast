@@ -10,8 +10,6 @@
 #define DllExport
 #endif
 
-#define V2R_OBJECT_DOUBLE_AT(object, i) ((double *)(object)->data)[i]
-
 typedef struct V2RObject_ V2RObject;
 typedef struct V2RObjectType_ V2RObjectType;
 
