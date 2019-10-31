@@ -1,7 +1,7 @@
-`v2r` is a library for the vector → raster conversion of simple geometrical
- objects such as spheres, spheroids, …
+`vect2rast` is a library for the vector → raster conversion of simple
+ geometrical objects such as spheres, spheroids, …
 
-`v2r` is released under a BSD 3-Clause License.
+`vect2rast` is released under a BSD 3-Clause License.
 
 ## Installation
 
@@ -21,7 +21,7 @@ git clone https://github.com/sbrisard/v2r.git
 and `cd` into the `src` directory
 
 ```
-cd v2r/src
+cd vect2rast/src
 meson build
 cd build
 ninja install
@@ -31,7 +31,7 @@ ninja install
 it). To install the library in a custom location, replace the second line with
 
 ```
-meson -Dprefix=voxelize/installation/directory build
+meson -Dprefix=vect2rast/installation/directory build
 ```
 
 To run the tests, stay in the `build/` subdirectory and run the following
@@ -44,7 +44,7 @@ meson test
 or (more verbose output)
 
 ```
-./test_v2r
+./test_vect2rast
 ```
 
 ### Installation of the Python wrapper

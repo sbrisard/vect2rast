@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "v2r2.h"
+#include <vect2rast.h>
 
 V2RObject *v2r_object_new(V2RObjectType const *type) {
   const size_t ndims = type->ndims;

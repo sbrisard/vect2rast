@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "v2r2.h"
+#include <vect2rast.h>
 
 void test_sphere_bbox(V2RObject const *sphere) {
   const double radius = V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_RADIUS_INDEX);
