@@ -1,6 +1,7 @@
 #ifndef __V2R_H__
 #define __V2R_H__
 
+#include <stdbool.h>
 #include <stdlib.h>
 
 #if _WIN32
@@ -35,7 +36,6 @@ DllExport void v2r_object_free(V2RObject *);
 DllExport V2RObject *v2r_object_copy(V2RObject const *);
 
 DllExport double v2r_ndsphere_radius(V2RObject const *);
-
 DllExport V2RObject *v2r_disk_new(double *, double);
 
 #endif
