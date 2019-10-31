@@ -6,9 +6,9 @@
 
 #include <vect2rast.h>
 
-V2RObject *v2r_object_new(V2RObjectType const *type) {
+V2R_Object *v2r_object_new(V2R_ObjectType const *type) {
   const size_t ndims = type->ndims;
-  V2RObject *object = malloc(sizeof(V2RObject));
+  V2R_Object *object = malloc(sizeof(V2R_Object));
   object->type = type;
 
   const size_t size = ndims * sizeof(double);
@@ -21,15 +21,15 @@ V2RObject *v2r_object_new(V2RObjectType const *type) {
   return object;
 }
 
-void v2r_object_free(V2RObject *object) {
+void v2r_object_free(V2R_Object *object) {
   free(object->center);
   free(object->bbmin);
   free(object->bbmax);
   free(object->data);
 }
 
-V2RObject *v2r_object_copy(V2RObject const *object) {
-  V2RObject *copy = v2r_object_new(object->type);
+V2R_Object *v2r_object_copy(V2R_Object const *object) {
+  V2R_Object *copy = v2r_object_new(object->type);
   for (size_t i = 0; i < object->type->ndims; i++) {
     copy->center[i] = object->center[i];
     copy->bbmin[i] = object->bbmin[i];
@@ -40,7 +40,7 @@ V2RObject *v2r_object_copy(V2RObject const *object) {
   return copy;
 }
 
-/* V2RObjectType const Sphere3D = {.name = "Sphere", */
+/* V2R_ObjectType const Sphere3D = {.name = "Sphere", */
 /*                                 .ndims = 3, */
 /*                                 .data_size = 2 * sizeof(double), */
 /*                                 .belongs = v2r_sphere_belongs}; */
