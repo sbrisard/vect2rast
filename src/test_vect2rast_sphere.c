@@ -7,7 +7,7 @@
 #include <vect2rast.h>
 
 void test_ndsphere_bbox(V2RObject const *sphere) {
-  const double radius = V2R_OBJECT_DOUBLE_AT(sphere, V2R_SPHERE_RADIUS_INDEX);
+  const double radius = v2r_ndsphere_radius(sphere);
   for (size_t i = 0; i < sphere->type->ndims; i++) {
     g_assert_cmpfloat(sphere->bbmin[i], ==, sphere->center[i] - radius);
     g_assert_cmpfloat(sphere->bbmax[i], ==, sphere->center[i] + radius);

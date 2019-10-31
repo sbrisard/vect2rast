@@ -39,12 +39,31 @@ V2RObject *v2r_object_copy(V2RObject const *object) {
   return copy;
 }
 
+struct SphereData_ {
+  double radius;
+  double radius2;
+};
+
+typedef struct SphereData_ DiskData;
+typedef struct SphereData_ SphereData;
+
+SphereData *v2r_sphere_data_new(double radius) {
+  SphereData *data = malloc(sizeof(SphereData));
+  data->radius = radius;
+  data->radius2 = radius * radius;
+  return data;
+}
+
+
+#define V2R_NDSPHERE_DATA(sphere) ((SphereData *)((sphere)->data))
+
+void v2r_sphere_data_free(SphereData *data) { free(data); }
+
 bool v2r_disk_belongs(V2RObject *disk, double *point) {
-  double r2 = 0.0;
   const double x = point[0] - disk->center[0];
   const double y = point[1] - disk->center[1];
-  return x * x + y * y <=
-         V2R_OBJECT_DOUBLE_AT(disk, V2R_SPHERE_SQR_RADIUS_INDEX);
+  DiskData *data = disk->data;
+  return x * x + y * y <= data->radius2;
 }
 
 V2RObjectType const Disk = {.name = "Disk",
@@ -59,24 +78,26 @@ V2RObject *v2r_disk_new(double *center, double radius) {
   const double y = center[1];
 
   object->center[0] = x;
-  object->bbmin[0] = x-radius;
-  object->bbmax[0] = x+radius;
+  object->bbmin[0] = x - radius;
+  object->bbmax[0] = x + radius;
 
   object->center[1] = y;
-  object->bbmin[1] = y-radius;
-  object->bbmax[1] = y+radius;
+  object->bbmin[1] = y - radius;
+  object->bbmax[1] = y + radius;
 
-  V2R_OBJECT_DOUBLE_AT(object, V2R_SPHERE_RADIUS_INDEX) = radius;
-  V2R_OBJECT_DOUBLE_AT(object, V2R_SPHERE_SQR_RADIUS_INDEX) = radius * radius;
+  object->data = v2r_sphere_data_new(radius);
 
   return object;
+}
+
+double v2r_ndsphere_radius(V2RObject const *sphere){
+  return V2R_NDSPHERE_DATA(sphere)->radius;
 }
 
 /* V2RObjectType const Sphere3D = {.name = "Sphere", */
 /*                                 .ndims = 3, */
 /*                                 .data_size = 2 * sizeof(double), */
 /*                                 .belongs = v2r_sphere_belongs}; */
-
 
 int main(int argc, char **argv) {
   printf("coucou\n");
@@ -87,8 +108,8 @@ int main(int argc, char **argv) {
 
   printf("Type name = %s\n", disk->type->name);
 
-  printf("r**2 = %g\n",
-         V2R_OBJECT_DOUBLE_AT(disk, V2R_SPHERE_SQR_RADIUS_INDEX));
+  printf("r = %g\n", V2R_NDSPHERE_DATA(disk)->radius);
+  printf("r**2 = %g\n", V2R_NDSPHERE_DATA(disk)->radius2);
 
   return 0;
 }
