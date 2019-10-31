@@ -6,11 +6,11 @@
 
 #include <vect2rast.h>
 
-void test_ndsphere_bbox(V2R_Object const *sphere) {
-  const double radius = v2r_ndsphere_radius(sphere);
-  for (size_t i = 0; i < sphere->type->ndims; i++) {
-    g_assert_cmpfloat(sphere->bbmin[i], ==, sphere->center[i] - radius);
-    g_assert_cmpfloat(sphere->bbmax[i], ==, sphere->center[i] + radius);
+void test_ndsphere_bbox(V2R_Object const *ndsphere) {
+  const double radius = v2r_ndsphere_radius(ndsphere);
+  for (size_t i = 0; i < ndsphere->type->ndims; i++) {
+    g_assert_cmpfloat(ndsphere->bbmin[i], ==, ndsphere->center[i] - radius);
+    g_assert_cmpfloat(ndsphere->bbmax[i], ==, ndsphere->center[i] + radius);
   }
 }
 
