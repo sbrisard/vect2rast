@@ -9,6 +9,7 @@
 V2RObject *v2r_object_new(V2RObjectType const *type) {
   const size_t ndims = type->ndims;
   V2RObject *object = malloc(sizeof(V2RObject));
+  object->type = type;
 
   const size_t size = ndims * sizeof(double);
   object->center = malloc(size);
