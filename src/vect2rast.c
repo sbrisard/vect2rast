@@ -7,11 +7,11 @@
 #include <vect2rast.h>
 
 V2R_Object *v2r_object_new(V2R_ObjectType const *type) {
-  const size_t ndims = type->ndims;
+  size_t const ndims = type->ndims;
   V2R_Object *object = malloc(sizeof(V2R_Object));
   object->type = type;
 
-  const size_t size = ndims * sizeof(double);
+  size_t const size = ndims * sizeof(double);
   object->center = malloc(size);
   object->bbmin = malloc(size);
   object->bbmax = malloc(size);

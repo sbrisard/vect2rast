@@ -18,7 +18,7 @@ struct V2R_ObjectType_ {
   size_t ndims;
   size_t data_size;
 
-  bool (*belongs)(V2R_Object *, double *);
+  bool (*belongs)(V2R_Object const *, double const *);
 };
 
 struct V2R_Object_ {
@@ -34,7 +34,7 @@ DllExport void v2r_object_free(V2R_Object *);
 DllExport V2R_Object *v2r_object_copy(V2R_Object const *);
 
 DllExport double v2r_ndsphere_radius(V2R_Object const *);
-DllExport V2R_Object *v2r_disk_new(double *, double);
-DllExport V2R_Object *v2r_sphere_new(double *, double);
+DllExport V2R_Object *v2r_disk_new(double const *, double);
+DllExport V2R_Object *v2r_sphere_new(double const *, double);
 
 #endif
