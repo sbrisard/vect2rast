@@ -71,8 +71,43 @@ void test_sphere_new() {
   v2r_object_free(sphere);
 }
 
+void test_sphere_belongs() {
+  double const c[] = {1.2, -3.4, 5.6};
+  double const r = 7.8;
+  V2R_Object const *sphere = v2r_sphere_new(c, r);
+
+  size_t const num_points = 10;
+
+  double const r1 = 0.95 * r;
+  double const r2 = 1.05 * r;
+
+  for (size_t i = 0; i < num_points; i++) {
+    double const theta = M_PI * i / (num_points - 1.);
+    double const sin_theta = sin(theta);
+    double const cos_theta = cos(theta);
+    for (size_t j = 0; j < num_points; j++) {
+      double const phi = 2 * M_PI * i / (double)num_points;
+      double const sin_phi = sin(phi);
+      double const cos_phi = cos(phi);
+
+      double const nx = sin_theta * cos_phi;
+      double const ny = sin_theta * sin_phi;
+      double const nz = cos_theta;
+
+      double const p1[] = {c[0] + r1 * nx, c[1] + r1 * ny, c[2] + r1 * nz};
+      g_assert_cmpuint(sphere->type->belongs(sphere, p1), ==, true);
+
+      double const p2[] = {c[0] + r2 * nx, c[1] + r2 * ny, c[2] + r2 * nz};
+      g_assert_cmpuint(sphere->type->belongs(sphere, p2), ==, false);
+    }
+  }
+
+  v2r_object_free(sphere);
+}
+
 void test_sphere_setup_tests() {
   g_test_add_func("/sphere/new", test_sphere_new);
+  g_test_add_func("/sphere/belongs", test_sphere_belongs);
 }
 
 int main(int argc, char **argv) {
