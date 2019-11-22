@@ -100,13 +100,10 @@ void test_sphere_belongs() {
   v2r_object_free(sphere);
 }
 
-int main(int argc, char **argv) {
-  g_test_init(&argc, &argv, NULL);
-
+void v2r_setup_test_ndsphere() {
   g_test_add_func("/disk/new", test_disk_new);
   g_test_add_func("/disk/belongs", test_disk_belongs);
   g_test_add_func("/sphere/new", test_sphere_new);
-  g_test_add_func("/sphere/belongs", test_sphere_belongs);
-
-  return g_test_run();
+  g_test_add_func("/sphere/belongs", test_sphere_belongs);    
 }
+

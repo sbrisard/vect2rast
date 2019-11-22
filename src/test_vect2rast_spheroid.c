@@ -1,0 +1,32 @@
+#include <glib.h>
+#include <math.h>
+#include <stdbool.h>
+#include <stdio.h>
+#include <stdlib.h>
+
+#include "vect2rast.h"
+
+void v2r_test_spheroid_new() {
+  size_t const dim = 3;
+  double const x[] = {1.2, -3.4, 5.6};
+  double const theta = .3 * M_PI;
+  double const phi = .5 * M_PI;
+  double const n[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
+  double const a = 7.8;
+  double const c = 9.1;
+
+  V2R_Object *spheroid = v2r_spheroid_new(x, a, c, n);
+  g_assert_cmpint(spheroid->type->dim, ==, dim);
+  g_assert_cmpfloat(v2r_spheroid_equatorial_radius(spheroid), ==, a);
+  g_assert_cmpfloat(v2r_spheroid_polar_radius(spheroid), ==, c);
+
+  for (size_t i = 0; i < dim; i++) {
+    g_assert_cmpfloat(spheroid->center[i], ==, x[i]);
+  }
+
+  v2r_object_free(spheroid);
+}
+
+void v2r_setup_test_spheroid() {
+    g_test_add_func("/spheroid/new", v2r_test_spheroid_new);
+}
