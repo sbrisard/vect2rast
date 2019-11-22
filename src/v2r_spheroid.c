@@ -1,5 +1,6 @@
-#include "vect2rast.h"
 #include <math.h>
+
+#include "vect2rast.h"
 
 #define V2R_SPHEROID_DATA(spheroid) ((V2R_SpheroidData *)((spheroid)->data))
 

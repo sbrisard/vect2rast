@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <vect2rast.h>
+#include "vect2rast.h"
 
 void test_disk_new() {
   size_t const ndims = 2;

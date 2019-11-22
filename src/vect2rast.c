@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <vect2rast.h>
+#include "vect2rast.h"
 
 V2R_Object *v2r_object_new(V2R_ObjectType const *type) {
   size_t const ndims = type->ndims;
