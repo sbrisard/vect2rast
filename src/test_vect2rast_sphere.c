@@ -48,11 +48,6 @@ void test_disk_belongs() {
   v2r_object_free(disk);
 }
 
-void test_disk_setup_tests() {
-  g_test_add_func("/disk/new", test_disk_new);
-  g_test_add_func("/disk/belongs", test_disk_belongs);
-}
-
 void test_sphere_new() {
   size_t const dim = 3;
   double const c[] = {1.2, -3.4, 5.6};
@@ -105,16 +100,13 @@ void test_sphere_belongs() {
   v2r_object_free(sphere);
 }
 
-void test_sphere_setup_tests() {
-  g_test_add_func("/sphere/new", test_sphere_new);
-  g_test_add_func("/sphere/belongs", test_sphere_belongs);
-}
-
 int main(int argc, char **argv) {
   g_test_init(&argc, &argv, NULL);
 
-  test_disk_setup_tests();
-  test_sphere_setup_tests();
+  g_test_add_func("/disk/new", test_disk_new);
+  g_test_add_func("/disk/belongs", test_disk_belongs);
+  g_test_add_func("/sphere/new", test_sphere_new);
+  g_test_add_func("/sphere/belongs", test_sphere_belongs);
 
   return g_test_run();
 }
