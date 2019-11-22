@@ -20,8 +20,11 @@ void v2r_test_spheroid_new() {
   g_assert_cmpfloat(v2r_spheroid_equatorial_radius(spheroid), ==, a);
   g_assert_cmpfloat(v2r_spheroid_polar_radius(spheroid), ==, c);
 
+  double n_act[3];
+  v2r_spheroid_axis(spheroid, n_act);
   for (size_t i = 0; i < dim; i++) {
     g_assert_cmpfloat(spheroid->center[i], ==, x[i]);
+    g_assert_cmpfloat(n_act[i], ==, n[i]);
   }
 
   v2r_object_free(spheroid);

@@ -38,6 +38,13 @@ double v2r_spheroid_polar_radius(V2R_Object const *spheroid) {
   return V2R_SPHEROID_DATA(spheroid)->polar_radius;
 }
 
+void v2r_spheroid_axis(V2R_Object const *spheroid, double *axis) {
+  V2R_SpheroidData *data = V2R_SPHEROID_DATA(spheroid);
+  for (size_t i = 0; i < spheroid->type->dim; i++) {
+    axis[i] = data->axis[i];
+  }
+}
+
 V2R_ObjectType const Spheroid = {.name = "Spheroid",
                                  .dim = 3,
                                  .belongs = v2r_spheroid_belongs,

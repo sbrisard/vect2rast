@@ -38,6 +38,7 @@ DllExport V2R_Object *v2r_sphere_new(double const *center, double radius);
 
 DllExport double v2r_spheroid_equatorial_radius(V2R_Object const *spheroid);
 DllExport double v2r_spheroid_polar_radius(V2R_Object const *spheroid);
+DllExport void v2r_spheroid_axis(V2R_Object const *spheroid, double *axis);
 DllExport V2R_Object *v2r_spheroid_new(double const *center,
                                        double equatorial_radius,
                                        double polar_radius, double const *axis);
