@@ -11,7 +11,7 @@ void test_disk_new() {
   double const c[] = {1.2, -3.4};
   double const r = 7.8;
 
-  V2R_Object const *disk = v2r_disk_new(c, r);
+  V2R_Object *disk = v2r_disk_new(c, r);
   g_assert_cmpint(disk->type->dim, ==, dim);
   g_assert_cmpfloat(v2r_ndsphere_radius(disk), ==, r);
 
@@ -27,7 +27,7 @@ void test_disk_new() {
 void test_disk_belongs() {
   double const c[] = {1.2, -3.4};
   double const r = 7.8;
-  V2R_Object const *disk = v2r_disk_new(c, r);
+  V2R_Object *disk = v2r_disk_new(c, r);
 
   size_t const num_points = 10;
 
@@ -58,7 +58,7 @@ void test_sphere_new() {
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
 
-  V2R_Object const *sphere = v2r_sphere_new(c, r);
+  V2R_Object *sphere = v2r_sphere_new(c, r);
   g_assert_cmpint(sphere->type->dim, ==, dim);
   g_assert_cmpfloat(v2r_ndsphere_radius(sphere), ==, r);
 
@@ -74,7 +74,7 @@ void test_sphere_new() {
 void test_sphere_belongs() {
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
-  V2R_Object const *sphere = v2r_sphere_new(c, r);
+  V2R_Object *sphere = v2r_sphere_new(c, r);
 
   size_t const num_points = 10;
 
