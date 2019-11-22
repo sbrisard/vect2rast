@@ -1,4 +1,4 @@
-#include <vect2rast.h>
+#include "vect2rast.h"
 
 #define V2R_NDSPHERE_DATA(sphere) ((V2R_NDSphereData *)((sphere)->data))
 
