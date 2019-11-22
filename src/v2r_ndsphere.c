@@ -30,7 +30,7 @@ bool v2r_disk_belongs(V2R_Object const *disk, double const *point) {
 }
 
 V2R_ObjectType const Disk = {
-    .name = "Disk", .ndims = 2, .belongs = v2r_disk_belongs, .data_free = free};
+    .name = "Disk", .dim = 2, .belongs = v2r_disk_belongs, .data_free = free};
 
 V2R_Object *v2r_disk_new(double const *center, double radius) {
   V2R_Object *object = v2r_object_new(&Disk);
@@ -60,7 +60,7 @@ bool v2r_sphere_belongs(V2R_Object const *sphere, double const *point) {
 }
 
 V2R_ObjectType const Sphere = {.name = "Sphere",
-                               .ndims = 3,
+                               .dim = 3,
                                .belongs = v2r_sphere_belongs,
                                .data_free = free};
 

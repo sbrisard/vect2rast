@@ -22,7 +22,7 @@ static bool v2r_spheroid_belongs(V2R_Object const *spheroid,
   V2R_SpheroidData const *data = spheroid->data;
   double x_dot_x = 0.;
   double d_dot_x = 0.;
-  for (size_t i = 0; i < spheroid->type->ndims; i++) {
+  for (size_t i = 0; i < spheroid->type->dim; i++) {
     const double x_i = point[i] - spheroid->center[i];
     x_dot_x += x_i * x_i;
     d_dot_x += data->axis[i] * x_i;
@@ -31,7 +31,7 @@ static bool v2r_spheroid_belongs(V2R_Object const *spheroid,
 }
 
 V2R_ObjectType const Spheroid = {.name = "Spheroid",
-                                 .ndims = 3,
+                                 .dim = 3,
                                  .belongs = v2r_spheroid_belongs,
                                  .data_free = v2r_spheroid_data_free};
 
@@ -39,7 +39,7 @@ V2R_Object *v2r_spheroid_new(double const *center, double equatorial_radius,
                              double polar_radius, double const *axis) {
   V2R_SpheroidData *data = malloc(sizeof(V2R_SpheroidData));
   V2R_Object *object = v2r_object_new(&Spheroid);
-  data->axis = malloc(Spheroid.ndims * sizeof(double));
+  data->axis = malloc(Spheroid.dim * sizeof(double));
   object->data = data;
 
   data->equatorial_radius = equatorial_radius;
@@ -49,7 +49,7 @@ V2R_Object *v2r_spheroid_new(double const *center, double equatorial_radius,
   const double c2_m_a2 = c2 - a2;
   data->q1 = 1. / a2;
   data->q2 = 1. / c2 - data->q1;
-  for (size_t i = 0; i < Spheroid.ndims; i++) {
+  for (size_t i = 0; i < Spheroid.dim; i++) {
     /* TODO Normalize axis? */
     data->axis[i] = axis[i];
     object->center[i] = center[i];

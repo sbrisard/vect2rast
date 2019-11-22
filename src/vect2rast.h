@@ -15,7 +15,7 @@ typedef struct V2R_ObjectType_ V2R_ObjectType;
 
 struct V2R_ObjectType_ {
   char *name;
-  size_t ndims;
+  size_t dim;
 
   void (*data_free)(void *);
   bool (*belongs)(V2R_Object const *, double const *);
