@@ -18,7 +18,7 @@ struct V2R_ObjectType_ {
   size_t dim;
 
   void (*data_free)(void *);
-  bool (*belongs)(V2R_Object const *, double const *);
+  bool (*belongs)(V2R_Object const *object, double const *point);
 };
 
 struct V2R_Object_ {
@@ -29,17 +29,17 @@ struct V2R_Object_ {
   void *data;
 };
 
-DllExport V2R_Object *v2r_object_new(V2R_ObjectType const *);
-DllExport void v2r_object_free(V2R_Object *);
+DllExport V2R_Object *v2r_object_new(V2R_ObjectType const *object);
+DllExport void v2r_object_free(V2R_Object *object);
 
-DllExport double v2r_ndsphere_radius(V2R_Object const *);
-DllExport V2R_Object *v2r_disk_new(double const *, double);
-DllExport V2R_Object *v2r_sphere_new(double const *, double);
+DllExport double v2r_ndsphere_radius(V2R_Object const *sphere);
+DllExport V2R_Object *v2r_disk_new(double const *center, double radius);
+DllExport V2R_Object *v2r_sphere_new(double const *center, double radius);
 
-
-DllExport v2r_spheroid_equatorial_radius(V2R_Object const *spheroid);
-DllExport v2r_spheroid_polar_radius(V2R_Object const *spheroid);
-DllExport V2R_Object *v2r_spheroid_new(double const *, double, double,
-                                       double const *);
+DllExport double v2r_spheroid_equatorial_radius(V2R_Object const *spheroid);
+DllExport double v2r_spheroid_polar_radius(V2R_Object const *spheroid);
+DllExport V2R_Object *v2r_spheroid_new(double const *center,
+                                       double equatorial_radius,
+                                       double polar_radius, double const *axis);
 
 #endif
