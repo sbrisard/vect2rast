@@ -10,8 +10,9 @@ typedef struct V2R_SpheroidData_ {
   double q1, q2;
 } V2R_SpheroidData;
 
-void v2r_spheroid_data_free(V2R_SpheroidData *data) {
-  free(data->axis);
+void v2r_spheroid_data_free(void *data) {
+  V2R_SpheroidData *spheroid_data = data;
+  free(spheroid_data->axis);
   free(data);
 }
 
@@ -30,8 +31,8 @@ static bool v2r_spheroid_belongs(V2R_Object const *spheroid,
 
 V2R_ObjectType const Spheroid = {.name = "Spheroid",
                                  .ndims = 3,
-                                 .data_size = sizeof(V2R_SpheroidData),
-                                 .belongs = v2r_spheroid_belongs};
+                                 .belongs = v2r_spheroid_belongs,
+                                 .data_free = v2r_spheroid_data_free};
 
 V2R_Object *v2r_spheroid_new(double const *center, double equatorial_radius,
                              double polar_radius, double const *axis) {

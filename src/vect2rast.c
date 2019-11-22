@@ -22,25 +22,8 @@ V2R_Object *v2r_object_new(V2R_ObjectType const *type) {
 }
 
 void v2r_object_free(V2R_Object *object) {
+  object->type->data_free(object->data);
   free(object->center);
   free(object->bbmin);
   free(object->bbmax);
-  free(object->data);
 }
-
-V2R_Object *v2r_object_copy(V2R_Object const *object) {
-  V2R_Object *copy = v2r_object_new(object->type);
-  for (size_t i = 0; i < object->type->ndims; i++) {
-    copy->center[i] = object->center[i];
-    copy->bbmin[i] = object->bbmin[i];
-    copy->bbmax[i] = object->bbmax[i];
-  }
-  copy->data = malloc(object->type->data_size);
-  memcpy(copy->data, object->data, object->type->data_size);
-  return copy;
-}
-
-/* V2R_ObjectType const Sphere3D = {.name = "Sphere", */
-/*                                 .ndims = 3, */
-/*                                 .data_size = 2 * sizeof(double), */
-/*                                 .belongs = v2r_sphere_belongs}; */

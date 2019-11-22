@@ -11,8 +11,6 @@ typedef struct V2R_NDSphereData_ V2R_NDSphereData;
 typedef struct V2R_NDSphereData_ V2R_DiskData;
 typedef struct V2R_NDSphereData_ V2R_SphereData;
 
-void v2r_ndsphere_data_free(V2R_NDSphereData *data) { free(data); }
-
 V2R_NDSphereData *v2r_ndsphere_data_new(double radius) {
   V2R_NDSphereData *data = malloc(sizeof(V2R_NDSphereData));
   data->radius = radius;
@@ -31,10 +29,8 @@ bool v2r_disk_belongs(V2R_Object const *disk, double const *point) {
   return x * x + y * y <= data->radius2;
 }
 
-V2R_ObjectType const Disk = {.name = "Disk",
-                             .ndims = 2,
-                             .data_size = sizeof(V2R_DiskData),
-                             .belongs = v2r_disk_belongs};
+V2R_ObjectType const Disk = {
+    .name = "Disk", .ndims = 2, .belongs = v2r_disk_belongs, .data_free = free};
 
 V2R_Object *v2r_disk_new(double const *center, double radius) {
   V2R_Object *object = v2r_object_new(&Disk);
@@ -65,8 +61,8 @@ bool v2r_sphere_belongs(V2R_Object const *sphere, double const *point) {
 
 V2R_ObjectType const Sphere = {.name = "Sphere",
                                .ndims = 3,
-                               .data_size = sizeof(V2R_SphereData),
-                               .belongs = v2r_sphere_belongs};
+                               .belongs = v2r_sphere_belongs,
+                               .data_free = free};
 
 V2R_Object *v2r_sphere_new(double const *center, double radius) {
   V2R_Object *object = v2r_object_new(&Sphere);
