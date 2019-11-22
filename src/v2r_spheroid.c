@@ -30,6 +30,14 @@ static bool v2r_spheroid_belongs(V2R_Object const *spheroid,
   return data->q1 * x_dot_x + data->q2 * d_dot_x * d_dot_x <= 1.;
 }
 
+double v2r_spheroid_equatorial_radius(V2R_Object const *spheroid) {
+  return V2R_SPHEROID_DATA(spheroid)->equatorial_radius;
+}
+
+double v2r_spheroid_polar_radius(V2R_Object const *spheroid) {
+  return V2R_SPHEROID_DATA(spheroid)->polar_radius;
+}
+
 V2R_ObjectType const Spheroid = {.name = "Spheroid",
                                  .dim = 3,
                                  .belongs = v2r_spheroid_belongs,

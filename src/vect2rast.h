@@ -36,6 +36,9 @@ DllExport double v2r_ndsphere_radius(V2R_Object const *);
 DllExport V2R_Object *v2r_disk_new(double const *, double);
 DllExport V2R_Object *v2r_sphere_new(double const *, double);
 
+
+DllExport v2r_spheroid_equatorial_radius(V2R_Object const *spheroid);
+DllExport v2r_spheroid_polar_radius(V2R_Object const *spheroid);
 DllExport V2R_Object *v2r_spheroid_new(double const *, double, double,
                                        double const *);
 
