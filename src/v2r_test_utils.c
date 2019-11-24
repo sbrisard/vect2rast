@@ -40,31 +40,16 @@ double *v2r_test_generate_directions_2d() {
   return directions;
 }
 
-#define set_vector(vec, x, y, z)                                               \
-  {                                                                            \
-    vec[0] = x;                                                                \
-    vec[1] = y;                                                                \
-    vec[2] = z;                                                                \
-    vec += 3;                                                                  \
-  }
-
 double *v2r_test_generate_directions_3d() {
   const size_t dim = 3;
-  double *directions = malloc(dim * V2R_TEST_NUM_DIRECTIONS_3D * sizeof(double));
-  const double phi = .5 * (1. + sqrt(5.));
-  const double u = 1. / sqrt(1 + phi * phi);
-  const double v = phi * u;
-  set_vector(directions, 0., -u, -v);
-  set_vector(directions, 0., -u, +v);
-  set_vector(directions, 0., +u, -v);
-  set_vector(directions, 0., +u, +v);
-  set_vector(directions, -u, -v, 0.);
-  set_vector(directions, -u, +v, 0.);
-  set_vector(directions, +u, -v, 0.);
-  set_vector(directions, +u, +v, 0.);
-  set_vector(directions, -v, 0., -u);
-  set_vector(directions, -v, 0., +u);
-  set_vector(directions, +v, 0., -u);
-  set_vector(directions, +v, 0., +u);
+  const size_t size = dim * V2R_TEST_NUM_DIRECTIONS_3D * sizeof(double);
+  double phi = .5 * (1. + sqrt(5.));
+  double u = 1. / sqrt(1 + phi * phi);
+  double v = phi * u;
+  double dir[] = {0., -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v,
+                  -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v, 0.,
+                  -v, 0., -u, -v, 0., +u, +v, 0., -u, +v, 0., +u};
+  double *directions = malloc(size);
+  memcpy(directions, dir, size);
   return directions;
 }
