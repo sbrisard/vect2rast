@@ -8,7 +8,7 @@ typedef struct V2R_TestBelongsData_ {
   bool belongs;
 } V2R_TestBelongsData;
 
-DllExport void *v2r_test_belongs_data_new(V2R_Object *object,
+DllExport void *v2r_test_belongs_data_new(V2R_Object const *object,
                                           double const *point, bool belongs);
 DllExport void v2r_test_belongs_data_free(void *data);
 DllExport void v2r_test_belongs(void const *data);

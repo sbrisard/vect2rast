@@ -71,13 +71,11 @@ void v2r_setup_test_disk_belongs() {
   v2r_object_free(disk);
 }
 
-void v2r_setup_test_sphere_belongs() {
-  const size_t dim = 3;
-  double const c[] = {1.2, -3.4, 5.6};
-  double const r = 7.8;
-  V2R_Object *sphere = v2r_sphere_new(c, r);
-  double *directions = v2r_test_generate_directions(dim);
-  double *n = directions;
+void v2r_setup_test_sphere_belongs(V2R_Object const *ndsphere) {
+  const size_t dim = ndsphere->type->dim;
+  double const *directions = v2r_test_generate_directions(dim);
+  double const *n = directions;
+  double const r = v2r_ndsphere_radius(ndsphere);
   double const r_in = 0.95 * r;
   double const r_out = 1.05 * r;
 
@@ -85,27 +83,33 @@ void v2r_setup_test_sphere_belongs() {
   double p_in[dim], p_out[dim];
   for (size_t i = 0; i < v2r_test_get_num_directions(dim); i++, n += dim) {
     for (size_t j = 0; j < dim; j++) {
-      p_in[j] = c[j] + r_in * n[j];
-      p_out[j] = c[j] + r_out * n[j];
+      p_in[j] = ndsphere->center[j] + r_in * n[j];
+      p_out[j] = ndsphere->center[j] + r_out * n[j];
     }
 
     sprintf(name, "/sphere/belongs/in/%02d", (int)i);
     g_test_add_data_func_full(name,
-                              v2r_test_belongs_data_new(sphere, p_in, true),
+                              v2r_test_belongs_data_new(ndsphere, p_in, true),
                               v2r_test_belongs, v2r_test_belongs_data_free);
 
     sprintf(name, "/sphere/belongs/out/%02d", (int)i);
     g_test_add_data_func_full(name,
-                              v2r_test_belongs_data_new(sphere, p_out, false),
+                              v2r_test_belongs_data_new(ndsphere, p_out, false),
                               v2r_test_belongs, v2r_test_belongs_data_free);
   }
-  v2r_object_free(sphere);
   free(directions);
 }
 
 void v2r_setup_test_ndsphere() {
   g_test_add_func("/disk/new", test_disk_new);
   g_test_add_func("/sphere/new", test_sphere_new);
+
+  double const c[] = {1.2, -3.4, 5.6};
+  double const r = 7.8;
+  V2R_Object *disk = v2r_disk_new(c, r);
+  V2R_Object *sphere = v2r_sphere_new(c, r);
   v2r_setup_test_disk_belongs();
-  v2r_setup_test_sphere_belongs();
+  v2r_setup_test_sphere_belongs(sphere);
+  v2r_object_free(disk);
+  v2r_object_free(sphere);
 }
