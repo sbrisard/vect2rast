@@ -13,31 +13,6 @@
     if (x > L_half) x -= L;  \
   }
 
-#define set_vector(vec, x, y, z) \
-  {                              \
-    vec[0] = x;                  \
-    vec[1] = y;                  \
-    vec[2] = z;                  \
-    vec += 3;                    \
-  }
-
-void init_icosahedron(double *vertex) {
-  const double phi = .5 * (1. + sqrt(5.));
-  const double u = 1. / sqrt(1 + phi * phi);
-  const double v = phi * u;
-  set_vector(vertex, 0., -u, -v);
-  set_vector(vertex, 0., -u, +v);
-  set_vector(vertex, 0., +u, -v);
-  set_vector(vertex, 0., +u, +v);
-  set_vector(vertex, -u, -v, 0.);
-  set_vector(vertex, -u, +v, 0.);
-  set_vector(vertex, +u, -v, 0.);
-  set_vector(vertex, +u, +v, 0.);
-  set_vector(vertex, -v, 0., -u);
-  set_vector(vertex, -v, 0., +u);
-  set_vector(vertex, +v, 0., -u);
-  set_vector(vertex, +v, 0., +u);
-}
 
 typedef struct {
   Particle *particle;

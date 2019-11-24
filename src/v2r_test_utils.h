@@ -3,6 +3,7 @@
 #include "vect2rast.h"
 
 #define V2R_TEST_NUM_DIRECTIONS_2D 10
+#define V2R_TEST_NUM_DIRECTIONS_3D 12
 
 typedef struct V2R_TestBelongsData_ {
   V2R_Object *object;
@@ -16,5 +17,5 @@ DllExport void v2r_test_belongs_data_free(void *data);
 DllExport void v2r_test_belongs(void const *data);
 
 DllExport double *v2r_test_generate_directions_2d();
-
+DllExport double *v2r_test_generate_directions_3d();
 #endif
