@@ -17,6 +17,7 @@ struct V2R_ObjectType_ {
   char *name;
   size_t dim;
 
+  void *(*data_copy)(void const *);
   void (*data_free)(void *);
   bool (*belongs)(V2R_Object const *object, double const *point);
 };
@@ -30,7 +31,9 @@ struct V2R_Object_ {
 };
 
 DllExport V2R_Object *v2r_object_new(V2R_ObjectType const *object);
+DllExport V2R_Object *v2r_object_copy(V2R_Object *const object);
 DllExport void v2r_object_free(V2R_Object *object);
+
 
 DllExport double v2r_ndsphere_radius(V2R_Object const *sphere);
 DllExport V2R_Object *v2r_disk_new(double const *center, double radius);
