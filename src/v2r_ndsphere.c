@@ -23,6 +23,12 @@ void *v2r_ndsphere_data_copy(void const *data_) {
   return v2r_ndsphere_data_new(data->radius);
 }
 
+bool v2r_ndsphere_data_equals(void const *left_, void const *right_) {
+  V2R_NDSphereData const *left = left;
+  V2R_NDSphereData const *right = right;
+  return ((left->radius == right->radius) && (left->radius2 == right->radius2));
+}
+
 double v2r_ndsphere_radius(V2R_Object const *sphere) {
   return V2R_NDSPHERE_DATA(sphere)->radius;
 }
@@ -38,7 +44,8 @@ V2R_ObjectType const Disk = {.name = "Disk",
                              .dim = 2,
                              .belongs = v2r_disk_belongs,
                              .data_copy = v2r_ndsphere_data_copy,
-                             .data_free = free};
+                             .data_free = free,
+                             .data_equals = v2r_ndsphere_data_equals};
 
 V2R_Object *v2r_disk_new(double const *center, double radius) {
   V2R_Object *object = v2r_object_new(&Disk);
@@ -71,7 +78,8 @@ V2R_ObjectType const Sphere = {.name = "Sphere",
                                .dim = 3,
                                .belongs = v2r_sphere_belongs,
                                .data_copy = v2r_ndsphere_data_copy,
-                               .data_free = free};
+                               .data_free = free,
+                               .data_equals = v2r_ndsphere_data_equals};
 
 V2R_Object *v2r_sphere_new(double const *center, double radius) {
   V2R_Object *object = v2r_object_new(&Sphere);
