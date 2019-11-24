@@ -45,7 +45,7 @@ void test_sphere_new() {
 
 void v2r_setup_test_ndsphere_belongs(V2R_Object const *ndsphere) {
   const size_t dim = ndsphere->type->dim;
-  double const *directions = v2r_test_generate_directions(dim);
+  double *directions = v2r_test_generate_directions(dim);
   double const *n = directions;
   double const r = v2r_ndsphere_radius(ndsphere);
   double const r_in = 0.95 * r;
@@ -73,8 +73,8 @@ void v2r_setup_test_ndsphere_belongs(V2R_Object const *ndsphere) {
 }
 
 void v2r_setup_test_ndsphere() {
-  g_test_add_func("/disk/new", test_disk_new);
-  g_test_add_func("/sphere/new", test_sphere_new);
+  g_test_add_func("/Disk/new", test_disk_new);
+  g_test_add_func("/Sphere/new", test_sphere_new);
 
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
