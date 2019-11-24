@@ -1,4 +1,5 @@
 #include <math.h>
+#include <string.h>
 
 #include "vect2rast.h"
 
@@ -10,6 +11,29 @@ typedef struct V2R_SpheroidData_ {
   double *axis;
   double q1, q2;
 } V2R_SpheroidData;
+
+void *v2r_spheroid_data_new(double equatorial_radius, double polar_radius,
+                            double const *axis) {
+  size_t const dim = 3;
+  size_t const size = dim * sizeof(double);
+  V2R_SpheroidData *data = malloc(sizeof(V2R_SpheroidData));
+  data->equatorial_radius = equatorial_radius;
+  data->polar_radius = polar_radius;
+  const double a2 = equatorial_radius * equatorial_radius;
+  const double c2 = polar_radius * polar_radius;
+  data->q1 = 1. / a2;
+  data->q2 = 1. / c2 - data->q1;
+  data->axis = malloc(size);
+  memcpy(data->axis, axis, size);
+  return data;
+}
+
+void *v2r_spheroid_data_copy(void const *data) {
+  V2R_SpheroidData const *data_ = data;
+  V2R_SpheroidData *copy = v2r_spheroid_data_new(
+      data_->equatorial_radius, data_->polar_radius, data_->axis);
+  return copy;
+}
 
 void v2r_spheroid_data_free(void *data) {
   V2R_SpheroidData *spheroid_data = data;
@@ -48,25 +72,20 @@ void v2r_spheroid_axis(V2R_Object const *spheroid, double *axis) {
 V2R_ObjectType const Spheroid = {.name = "Spheroid",
                                  .dim = 3,
                                  .belongs = v2r_spheroid_belongs,
+                                 .data_copy = v2r_spheroid_data_copy,
                                  .data_free = v2r_spheroid_data_free};
 
 V2R_Object *v2r_spheroid_new(double const *center, double equatorial_radius,
                              double polar_radius, double const *axis) {
-  V2R_SpheroidData *data = malloc(sizeof(V2R_SpheroidData));
-  V2R_Object *object = v2r_object_new(&Spheroid);
-  data->axis = malloc(Spheroid.dim * sizeof(double));
-  object->data = data;
 
-  data->equatorial_radius = equatorial_radius;
-  data->polar_radius = polar_radius;
+  V2R_Object *object = v2r_object_new(&Spheroid);
+  object->data = v2r_spheroid_data_new(equatorial_radius, polar_radius, axis);
+
   const double a2 = equatorial_radius * equatorial_radius;
   const double c2 = polar_radius * polar_radius;
   const double c2_m_a2 = c2 - a2;
-  data->q1 = 1. / a2;
-  data->q2 = 1. / c2 - data->q1;
   for (size_t i = 0; i < Spheroid.dim; i++) {
     /* TODO Normalize axis? */
-    data->axis[i] = axis[i];
     object->center[i] = center[i];
     const double r = sqrt(a2 + c2_m_a2 * axis[i] * axis[i]);
     object->bbmin[i] = object->center[i] - r;
