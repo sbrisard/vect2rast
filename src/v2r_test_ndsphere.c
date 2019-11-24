@@ -101,9 +101,38 @@ void test_sphere_belongs() {
   v2r_object_free(sphere);
 }
 
+void v2r_setup_test_disk_belongs() {
+  double const c[] = {1.2, -3.4};
+  double const r = 7.8;
+  V2R_Object *disk = v2r_disk_new(c, r);
+
+  size_t const num_points = 10;
+
+  double const r_in = 0.95 * r;
+  double const r_out = 1.05 * r;
+
+  char name[256];
+  for (size_t i = 0; i < num_points; i++) {
+    double const theta = 2 * M_PI * i / (double)num_points;
+    double const sin_theta = sin(theta);
+    double const cos_theta = cos(theta);
+    double const p1[] = {c[0] + r_in * cos_theta, c[1] + r_in * sin_theta};
+    double const p2[] = {c[0] + r_out * cos_theta, c[1] + r_out * sin_theta};
+
+    sprintf(name, "/disk/belongs/in/%02d", (int)i);
+    g_test_add_data_func_full(name, v2r_test_belongs_data_new(disk, p1, true),
+                              v2r_test_belongs, v2r_test_belongs_data_free);
+
+    sprintf(name, "/disk/belongs/out/%02d", (int)i);
+    g_test_add_data_func_full(name, v2r_test_belongs_data_new(disk, p2, false),
+                              v2r_test_belongs, v2r_test_belongs_data_free);
+  }
+  v2r_object_free(disk);
+}
+
 void v2r_setup_test_ndsphere() {
   g_test_add_func("/disk/new", test_disk_new);
-  g_test_add_func("/disk/belongs", test_disk_belongs);
   g_test_add_func("/sphere/new", test_sphere_new);
   g_test_add_func("/sphere/belongs", test_sphere_belongs);
+  v2r_setup_test_disk_belongs();
 }
