@@ -27,29 +27,40 @@ void v2r_test_belongs(void const *data) {
                    ==, data_->belongs);
 }
 
-double *v2r_test_generate_directions_2d() {
-  double *directions = malloc(2 * V2R_TEST_NUM_DIRECTIONS_2D * sizeof(double));
-  double *dir = directions;
-  for (size_t i = 0; i < V2R_TEST_NUM_DIRECTIONS_2D; i++) {
-    double const theta = 2 * M_PI * i / (double)V2R_TEST_NUM_DIRECTIONS_2D;
-    *dir = cos(theta);
-    dir += 1;
-    *dir = sin(theta);
-    dir += 1;
+size_t v2r_test_get_num_directions(size_t dim) {
+  switch (dim) {
+  case 2:
+    return 10;
+  case 3:
+    return 12;
+  default:
+    return -1;
   }
-  return directions;
 }
 
-double *v2r_test_generate_directions_3d() {
-  const size_t dim = 3;
-  const size_t size = dim * V2R_TEST_NUM_DIRECTIONS_3D * sizeof(double);
-  double phi = .5 * (1. + sqrt(5.));
-  double u = 1. / sqrt(1 + phi * phi);
-  double v = phi * u;
-  double dir[] = {0., -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v,
-                  -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v, 0.,
-                  -v, 0., -u, -v, 0., +u, +v, 0., -u, +v, 0., +u};
+double *v2r_test_generate_directions(size_t dim) {
+  size_t const num_directions = v2r_test_get_num_directions(dim);
+  size_t const size = dim * num_directions * sizeof(double);
   double *directions = malloc(size);
-  memcpy(directions, dir, size);
+  if (dim == 2) {
+    double *dir = directions;
+    for (size_t i = 0; i < num_directions; i++) {
+      double const theta = 2 * M_PI * i / (double)num_directions;
+      *dir = cos(theta);
+      dir += 1;
+      *dir = sin(theta);
+      dir += 1;
+    }
+  } else if (dim == 3) {
+    double phi = .5 * (1. + sqrt(5.));
+    double u = 1. / sqrt(1 + phi * phi);
+    double v = phi * u;
+    double dir[] = {0., -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v,
+                    -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v, 0.,
+                    -v, 0., -u, -v, 0., +u, +v, 0., -u, +v, 0., +u};
+    memcpy(directions, dir, size);
+  } else {
+    return NULL;
+  }
   return directions;
 }

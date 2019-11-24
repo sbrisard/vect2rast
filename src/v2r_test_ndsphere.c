@@ -44,17 +44,18 @@ void test_sphere_new() {
 }
 
 void v2r_setup_test_disk_belongs() {
+  size_t const dim = 2;
   double const c[] = {1.2, -3.4};
   double const r = 7.8;
   V2R_Object *disk = v2r_disk_new(c, r);
 
-  double *directions = v2r_test_generate_directions_2d();
+  double *directions = v2r_test_generate_directions(dim);
   double *n = directions;
   double const r_in = 0.95 * r;
   double const r_out = 1.05 * r;
 
   char name[256];
-  for (size_t i = 0; i < V2R_TEST_NUM_DIRECTIONS_2D; i++, n += 2) {
+  for (size_t i = 0; i < v2r_test_get_num_directions(dim); i++, n += dim) {
     double const p1[] = {c[0] + r_in * n[0], c[1] + r_in * n[1]};
     double const p2[] = {c[0] + r_out * n[0], c[1] + r_out * n[1]};
 
@@ -75,21 +76,22 @@ void v2r_setup_test_sphere_belongs() {
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
   V2R_Object *sphere = v2r_sphere_new(c, r);
-  double *directions = v2r_test_generate_directions_3d();
+  double *directions = v2r_test_generate_directions(dim);
   double *n = directions;
   double const r_in = 0.95 * r;
   double const r_out = 1.05 * r;
 
   char name[256];
   double p_in[dim], p_out[dim];
-  for (size_t i = 0; i < V2R_TEST_NUM_DIRECTIONS_3D; i++, n += dim) {
+  for (size_t i = 0; i < v2r_test_get_num_directions(dim); i++, n += dim) {
     for (size_t j = 0; j < dim; j++) {
       p_in[j] = c[j] + r_in * n[j];
       p_out[j] = c[j] + r_out * n[j];
     }
 
     sprintf(name, "/sphere/belongs/in/%02d", (int)i);
-    g_test_add_data_func_full(name, v2r_test_belongs_data_new(sphere, p_in, true),
+    g_test_add_data_func_full(name,
+                              v2r_test_belongs_data_new(sphere, p_in, true),
                               v2r_test_belongs, v2r_test_belongs_data_free);
 
     sprintf(name, "/sphere/belongs/out/%02d", (int)i);
