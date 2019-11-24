@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include "v2r_test_utils.h"
 #include "vect2rast.h"
 
 void test_disk_new() {
@@ -104,6 +105,5 @@ void v2r_setup_test_ndsphere() {
   g_test_add_func("/disk/new", test_disk_new);
   g_test_add_func("/disk/belongs", test_disk_belongs);
   g_test_add_func("/sphere/new", test_sphere_new);
-  g_test_add_func("/sphere/belongs", test_sphere_belongs);    
+  g_test_add_func("/sphere/belongs", test_sphere_belongs);
 }
-

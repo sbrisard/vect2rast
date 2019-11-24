@@ -28,7 +28,7 @@ void v2r_object_free(V2R_Object *object) {
   free(object->bbmax);
 }
 
-V2R_Object *v2r_object_copy(V2R_Object *const object) {
+V2R_Object *v2r_object_copy(V2R_Object const *object) {
   V2R_Object *copy = v2r_object_new(object->type);
   size_t const dim = object->type->dim;
   for (size_t i = 0; i < dim; i++) {

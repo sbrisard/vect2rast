@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "vect2rast.h"
 #include "v2r_test_utils.h"
+#include "vect2rast.h"
 
 void v2r_test_spheroid_new() {
   size_t const dim = 3;
@@ -35,6 +35,10 @@ void v2r_setup_test_spheroid_belongs() {
   double center[] = {1.2, -3.4, 5.6};
   double axis[] = {1., 0., 0.};
   V2R_Object *spheroid = v2r_spheroid_new(center, 1.0, 0.1, axis);
+  double *c = malloc(spheroid->type->dim * sizeof(double));
+  c[0] = 1.2;
+  c[1] = -3.4;
+  c[2] = 5.6;
   void *data = v2r_test_belongs_data_new(spheroid, center, true);
   g_test_add_data_func_full("/spheroid/belongs/1", data, v2r_test_belongs,
                             v2r_test_belongs_data_free);
@@ -42,5 +46,5 @@ void v2r_setup_test_spheroid_belongs() {
 
 void v2r_setup_test_spheroid() {
   g_test_add_func("/spheroid/new", v2r_test_spheroid_new);
-  v2r_setup_test_spheroid_belongs();
+  /*v2r_setup_test_spheroid_belongs();*/
 }
