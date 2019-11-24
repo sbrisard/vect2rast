@@ -1,4 +1,5 @@
 #include <glib.h>
+#include <math.h>
 
 #include "v2r_test_utils.h"
 
@@ -24,4 +25,17 @@ void v2r_test_belongs(void const *data) {
   V2R_TestBelongsData const *data_ = data;
   g_assert_cmpuint(data_->object->type->belongs(data_->object, data_->point),
                    ==, data_->belongs);
+}
+
+double *v2r_test_generate_directions_2d() {
+  double *directions = malloc(2 * V2R_TEST_NUM_DIRECTIONS_2D * sizeof(double));
+  double *dir = directions;
+  for (size_t i = 0; i < V2R_TEST_NUM_DIRECTIONS_2D; i++) {
+    double const theta = 2 * M_PI * i / (double)V2R_TEST_NUM_DIRECTIONS_2D;
+    *dir = cos(theta);
+    dir += 1;
+    *dir = sin(theta);
+    dir += 1;
+  }
+  return directions;
 }
