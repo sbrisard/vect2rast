@@ -15,4 +15,8 @@ DllExport void v2r_test_belongs(void const *data);
 
 DllExport size_t v2r_test_get_num_directions(size_t dim);
 DllExport double *v2r_test_generate_directions(size_t dim);
+
+DllExport double v2r_dot(double const *v1, double const *v2);
+DllExport void v2r_cross(double const *v1, double const *v2, double *v3);
+DllExport void v2r_normalize(double *v);
 #endif

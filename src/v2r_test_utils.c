@@ -64,3 +64,20 @@ double *v2r_test_generate_directions(size_t dim) {
   }
   return directions;
 }
+
+double v2r_dot(double const *v1, double const *v2) {
+  return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
+}
+
+void v2r_cross(double const *v1, double const *v2, double *v3) {
+  v3[0] = v1[1] * v2[2] - v1[2] * v2[1];
+  v3[1] = v1[2] * v2[0] - v1[0] * v2[2];
+  v3[2] = v1[0] * v2[1] - v1[1] * v2[0];
+}
+
+void v2r_normalize(double *v) {
+  double s = 1. / sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+  v[0] *= s;
+  v[1] *= s;
+  v[2] *= s;
+}
