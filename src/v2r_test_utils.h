@@ -13,6 +13,16 @@ DllExport void *v2r_test_belongs_data_new(V2R_Object const *object,
 DllExport void v2r_test_belongs_data_free(void *data);
 DllExport void v2r_test_belongs(void const *data);
 
+typedef struct V2R_TestRasterData {
+  V2R_Object *object;
+  double *length;
+  size_t *size;
+} V2R_TestRasterData;
+
+DllExport V2R_TestRasterData *
+v2r_test_raster_data_new(V2R_Object *object, double *length, size_t *size);
+DllExport void v2r_test_raster_data_free(void *data);
+
 DllExport size_t v2r_test_get_num_directions(size_t dim);
 DllExport double *v2r_test_generate_directions(size_t dim);
 

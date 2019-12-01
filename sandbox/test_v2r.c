@@ -52,34 +52,6 @@ void test_sphere_bbox(Sphere *sphere) {
   }
 }
 
-typedef struct {
-  Particle *particle;
-  double *dim;
-  size_t *size;
-} ParticleVoxelizeTestData;
-
-ParticleVoxelizeTestData *particle_voxelize_test_data_new(Particle *particle,
-                                                          double *dim,
-                                                          size_t *size) {
-  size_t ndims = particle->ndims;
-  ParticleVoxelizeTestData *data = g_new(ParticleVoxelizeTestData, 1);
-  data->particle = particle->copy(particle, NULL);
-  data->dim = g_new(double, ndims);
-  data->size = g_new(size_t, ndims);
-  for (size_t i = 0; i < ndims; i++) {
-    data->dim[i] = dim[i];
-    data->size[i] = size[i];
-  }
-  return data;
-}
-
-void particle_voxelize_test_data_free(ParticleVoxelizeTestData *data) {
-  /* TODO: this is not a polymorphic call. */
-  data->particle->free(data->particle);
-  g_free(data->dim);
-  g_free(data->size);
-}
-
 void test_particle_voxelize(ParticleVoxelizeTestData *data) {
   const size_t ndims = data->particle->ndims;
 
