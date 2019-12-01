@@ -53,15 +53,15 @@ static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
  * set.
  *
  * @param object the object to rasterize
- * @param dim 
- * @param size 
- * @param grid 
- * @param value 
+ * @param dim
+ * @param size
+ * @param grid
+ * @param value
  */
-void v2r_raster_object(V2R_Object *object, double *dim, size_t *size, int *grid,
-                       int value) {
+static int v2r_raster_3d(V2R_Object *object, double *length, size_t *size,
+                         int *grid, int value) {
   const size_t ndims = 3;
-  const double L0 = dim[0], L1 = dim[1], L2 = dim[2];
+  const double L0 = length[0], L1 = length[1], L2 = length[2];
   const int n0 = size[0], n1 = size[1], n2 = size[2];
   const double h0 = L0 / n0, h1 = L1 / n1, h2 = L2 / n2;
 
@@ -70,7 +70,7 @@ void v2r_raster_object(V2R_Object *object, double *dim, size_t *size, int *grid,
   init_bounds(object->bbmin[1], object->bbmax[1], n1 / L1, &i1_min, &i1_max);
   init_bounds(object->bbmin[2], object->bbmax[2], n2 / L2, &i2_min, &i2_max);
 
-  double *x = malloc(ndims * sizeof(double));
+  double x[ndims];
   int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
   x[0] = (i0_min + 0.5) * h0;
   for (int i0 = i0_min; i0 <= i0_max; i0++) {
@@ -101,13 +101,13 @@ void v2r_raster_object(V2R_Object *object, double *dim, size_t *size, int *grid,
       j0 = 0;
     }
   }
-  free(x);
+  return 0;
 }
 
-static void v2r_raster_object_2d(V2R_Object *object, double *dim, size_t *size,
-                                 int *grid, int value) {
+static int v2r_raster_2d(V2R_Object *object, double *length, size_t *size,
+                         int *grid, int value) {
   const size_t ndims = 2;
-  const double L0 = dim[0], L1 = dim[1];
+  const double L0 = length[0], L1 = length[1];
   const int n0 = size[0], n1 = size[1];
   const double h0 = L0 / n0, h1 = L1 / n1;
 
@@ -115,7 +115,7 @@ static void v2r_raster_object_2d(V2R_Object *object, double *dim, size_t *size,
   init_bounds(object->bbmin[0], object->bbmax[0], n0 / L0, &i0_min, &i0_max);
   init_bounds(object->bbmin[1], object->bbmax[1], n1 / L1, &i1_min, &i1_max);
 
-  double *x = malloc(ndims * sizeof(double));
+  double x[ndims];
   int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
   x[0] = (i0_min + 0.5) * h0;
   for (int i0 = i0_min; i0 <= i0_max; i0++) {
@@ -137,5 +137,17 @@ static void v2r_raster_object_2d(V2R_Object *object, double *dim, size_t *size,
       j0 = 0;
     }
   }
-  free(x);
+  return 0;
+}
+
+int v2r_raster(V2R_Object *object, double *length, size_t *size, int *grid,
+               int value) {
+  switch (object->type->dim) {
+  case 2:
+    return v2r_raster_2d(object, length, size, grid, value);
+  case 3:
+    return v2r_raster_3d(object, length, size, grid, value);
+  default:
+    return -1;
+  }
 }

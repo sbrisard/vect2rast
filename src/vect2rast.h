@@ -34,6 +34,9 @@ DllExport V2R_Object *v2r_object_new(V2R_ObjectType const *object);
 DllExport V2R_Object *v2r_object_copy(V2R_Object const *object);
 DllExport void v2r_object_free(V2R_Object *object);
 
+DllExport int v2r_raster(V2R_Object *object, double *length, size_t *size,
+                         int *grid, int value);
+
 DllExport double v2r_ndsphere_radius(V2R_Object const *sphere);
 DllExport V2R_Object *v2r_disk_new(double const *center, double radius);
 DllExport V2R_Object *v2r_sphere_new(double const *center, double radius);
