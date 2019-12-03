@@ -6,12 +6,6 @@
 
 #include "v2r.h"
 
-#define minimum_image(x, L)  \
-  {                          \
-    double L_half = .5 * L;  \
-    if (x < -L_half) x += L; \
-    if (x > L_half) x -= L;  \
-  }
 
 
 typedef struct {
@@ -50,54 +44,6 @@ void test_sphere_bbox(Sphere *sphere) {
     g_assert_cmpfloat(sphere->bbmin[i], ==, sphere->center[i] - sphere->radius);
     g_assert_cmpfloat(sphere->bbmax[i], ==, sphere->center[i] + sphere->radius);
   }
-}
-
-void test_particle_voxelize(ParticleVoxelizeTestData *data) {
-  const size_t ndims = data->particle->ndims;
-
-  size_t n[] = {data->size[0], data->size[1], 1};
-  double L[] = {data->dim[0], data->dim[1], 0.};
-  double c[] = {data->particle->center[0], data->particle->center[1], 0.};
-  if (ndims == 3) {
-    const size_t i = ndims - 1;
-    n[i] = data->size[i];
-    L[i] = data->dim[i];
-    c[i] = data->particle->center[i];
-  }
-  double h[3];
-  for (size_t i = 0; i < 3; i++) {
-    h[i] = L[i] / n[i];
-  }
-
-  guint8 *actual = g_new0(guint8, n[0] * n[1] * n[2]);
-
-  data->particle->voxelize(data->particle, data->dim, data->size, actual, 1);
-
-  /* Create copy of particle, centered at the origin, since we will compute the
-   * minimum image of the CP vector (C: center; P: current point). */
-  Particle *particle = data->particle->copy(data->particle, NULL);
-  for (size_t i = 0; i < ndims; i++) {
-    particle->center[i] = 0.;
-  }
-  double *point = g_new(double, ndims);
-  for (size_t i0 = 0; i0 < n[0]; i0++) {
-    point[0] = (i0 + 0.5) * h[0] - c[0];
-    minimum_image(point[0], L[0]);
-    for (size_t i1 = 0; i1 < n[1]; i1++) {
-      point[1] = (i1 + 0.5) * h[1] - c[1];
-      minimum_image(point[1], L[1]);
-      for (size_t i2 = 0; i2 < n[2]; i2++) {
-        point[2] = (i2 + 0.5) * h[2] - c[2];
-        minimum_image(point[2], L[2]);
-        size_t j = (i0 * n[1] + i1) * n[2] + i2;
-        guint8 expected = particle->belongs(particle, point);
-        g_assert_cmpuint(expected, ==, actual[j]);
-      }
-    }
-  }
-  particle->free(particle);
-  g_free(point);
-  g_free(actual);
 }
 
 void setup_sphere_tests() {
@@ -139,28 +85,6 @@ void setup_sphere_tests() {
   sphere->free(sphere);
 
   /* Sphere->voxelize() */
-  double dim[] = {1.5, 2.6, 3.7};
-  size_t size[] = {50, 60, 70};
-  double xi = 0.05;
-  double eta = 0.06;
-  double zeta = 0.07;
-  r = 0.5;
-
-  for (size_t i0 = 0; i0 <= 1; i0++) {
-    c[0] = i0 == 0 ? xi * dim[0] : (1. - xi) * dim[0];
-    for (size_t i1 = 0; i1 <= 1; i1++) {
-      c[1] = i1 == 0 ? eta * dim[1] : (1. - eta) * dim[1];
-      for (size_t i2 = 0; i2 <= 1; i2++) {
-        c[2] = i2 == 0 ? zeta * dim[2] : (1. - zeta) * dim[2];
-        sprintf(name, "/sphere/voxelize/%d", (i0 * 2 + i1) * 2 + i2);
-        sphere = sphere_new(ndims, c, r);
-        g_test_add_data_func_full(
-            name, particle_voxelize_test_data_new(sphere, dim, size),
-            test_particle_voxelize, particle_voxelize_test_data_free);
-        sphere->free(sphere);
-      }
-    }
-  }
 
   g_free(name);
 }

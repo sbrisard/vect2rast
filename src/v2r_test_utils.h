@@ -23,6 +23,7 @@ DllExport V2R_TestRasterData *v2r_test_raster_data_new(V2R_Object *object,
                                                        double *const length,
                                                        size_t *const size);
 DllExport void v2r_test_raster_data_free(void *data);
+DllExport void v2r_test_raster(void const *data);
 
 DllExport size_t v2r_test_get_num_directions(size_t dim);
 DllExport double *v2r_test_generate_directions(size_t dim);
