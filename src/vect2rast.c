@@ -40,8 +40,8 @@ V2R_Object *v2r_object_copy(V2R_Object const *object) {
 
 static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
                         int *i_max) {
-  *i_min = ceil(h_inv * x_min - 0.5);
-  *i_max = floor(h_inv * x_max - 0.5);
+  *i_min = (int) ceil(h_inv * x_min - 0.5);
+  *i_max = (int) floor(h_inv * x_max - 0.5);
 }
 
 /**
