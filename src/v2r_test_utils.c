@@ -27,8 +27,8 @@ void v2r_test_belongs(void const *data) {
                    ==, data_->belongs);
 }
 
-V2R_TestRasterData *v2r_test_raster_data_new(V2R_Object *object, double *length,
-                                             size_t *size) {
+V2R_TestRasterData *v2r_test_raster_data_new(V2R_Object *object, double * const length,
+                                             size_t *const size) {
   size_t const dim = object->type->dim;
   V2R_TestRasterData *data = malloc(sizeof(V2R_TestRasterData));
   data->object = v2r_object_copy(object);
@@ -55,7 +55,7 @@ size_t v2r_test_get_num_directions(size_t dim) {
   case 3:
     return 12;
   default:
-    return -1;
+    return 0;
   }
 }
 
