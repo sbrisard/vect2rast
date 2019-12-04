@@ -23,6 +23,7 @@ void *v2r_spheroid_data_new(double equatorial_radius, double polar_radius,
   const double c2 = polar_radius * polar_radius;
   data->q1 = 1. / a2;
   data->q2 = 1. / c2 - data->q1;
+  // TODO Normalize axis?
   data->axis = malloc(size);
   memcpy(data->axis, axis, size);
   return data;
