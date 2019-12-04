@@ -83,10 +83,12 @@ void v2r_test_raster(void const * data) {
    * minimum image of the CP vector (C: center; P: current point). */
   V2R_Object *object = v2r_object_copy(data_->object);
   for (size_t i = 0; i < dim; i++) {
+      // TODO This should not be allowed!
     object->center[i] = 0.;
   }
   double point[dim];
   for (size_t i0 = 0; i0 < n[0]; i0++) {
+    point[0] = (i0 + 0.5) * h[0] - c[0];
     minimum_image(L[0], L_half[0], point);
     for (size_t i1 = 0; i1 < n[1]; i1++) {
       point[1] = (i1 + 0.5) * h[1] - c[1];
