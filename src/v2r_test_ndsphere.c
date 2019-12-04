@@ -89,9 +89,9 @@ void v2r_setup_test_ndsphere_raster() {
         c[2] = i2 == 0 ? zeta * length[2] : (1. - zeta) * length[2];
         sprintf(name, "/Sphere/raster/%zu", (i0 * 2 + i1) * 2 + i2);
         V2R_Object *sphere = v2r_sphere_new(c, r);
-        g_test_add_data_func_full(name,
-                                  v2r_test_raster_data_new(sphere, length, size),
-                                  v2r_test_raster, v2r_test_raster_data_free);
+        g_test_add_data_func_full(
+            name, v2r_test_raster_data_new(sphere, length, size),
+            v2r_test_raster, v2r_test_raster_data_free);
         v2r_object_free(sphere);
       }
     }
