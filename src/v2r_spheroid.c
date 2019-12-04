@@ -99,10 +99,7 @@ V2R_Object *v2r_spheroid_new(double const *center, double equatorial_radius,
                              double polar_radius, double const *axis) {
   V2R_Object *object = v2r_object_new(&Spheroid);
   object->data = v2r_spheroid_data_new(equatorial_radius, polar_radius, axis);
-
-  for (size_t i = 0; i < Spheroid.dim; i++) {
-    object->center[i] = center[i];
-  }
+  memcpy(object->center, center, Spheroid.dim*sizeof(double));
   v2r_spheroid_init_bounding_box(object);
   return object;
 }
