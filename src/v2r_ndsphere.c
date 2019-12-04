@@ -23,6 +23,16 @@ void *v2r_ndsphere_data_copy(void const *data_) {
   return v2r_ndsphere_data_new(data->radius);
 }
 
+void v2r_ndsphere_init_bounding_box(V2R_Object *sphere) {
+  double const r = V2R_NDSPHERE_DATA(sphere)->radius;
+  double *end = sphere->center + sphere->type->dim;
+  for (double *x = sphere->center, *x1 = sphere->bbmin, *x2 = sphere->bbmax;
+       x < end; x += 1, x1 += 1, x2 += 1) {
+    *x1 = *x - r;
+    *x2 = *x + r;
+  }
+}
+
 double v2r_ndsphere_radius(V2R_Object const *sphere) {
   return V2R_NDSPHERE_DATA(sphere)->radius;
 }
@@ -38,7 +48,8 @@ V2R_ObjectType const Disk = {.name = "Disk",
                              .dim = 2,
                              .belongs = v2r_disk_belongs,
                              .data_copy = v2r_ndsphere_data_copy,
-                             .data_free = free};
+                             .data_free = free,
+			     .init_bounding_box = v2r_ndsphere_init_bounding_box};
 
 V2R_Object *v2r_disk_new(double const *center, double radius) {
   V2R_Object *object = v2r_object_new(&Disk);
@@ -47,14 +58,10 @@ V2R_Object *v2r_disk_new(double const *center, double radius) {
   const double y = center[1];
 
   object->center[0] = x;
-  object->bbmin[0] = x - radius;
-  object->bbmax[0] = x + radius;
-
   object->center[1] = y;
-  object->bbmin[1] = y - radius;
-  object->bbmax[1] = y + radius;
 
   object->data = v2r_ndsphere_data_new(radius);
+  Disk.init_bounding_box(object);
 
   return object;
 }
@@ -71,7 +78,8 @@ V2R_ObjectType const Sphere = {.name = "Sphere",
                                .dim = 3,
                                .belongs = v2r_sphere_belongs,
                                .data_copy = v2r_ndsphere_data_copy,
-                               .data_free = free};
+                               .data_free = free,
+			       .init_bounding_box = v2r_ndsphere_init_bounding_box};
 
 V2R_Object *v2r_sphere_new(double const *center, double radius) {
   V2R_Object *object = v2r_object_new(&Sphere);
@@ -93,6 +101,7 @@ V2R_Object *v2r_sphere_new(double const *center, double radius) {
   object->bbmax[2] = z + radius;
 
   object->data = v2r_ndsphere_data_new(radius);
+  Sphere.init_bounding_box(object);
 
   return object;
 }

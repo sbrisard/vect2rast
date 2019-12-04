@@ -20,6 +20,7 @@ struct V2R_ObjectType_ {
   void *(*data_copy)(void const *);
   void (*data_free)(void *);
   bool (*belongs)(V2R_Object const *object, double const *point);
+  void (*init_bounding_box)(V2R_Object *object);
 };
 
 struct V2R_Object_ {
