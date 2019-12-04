@@ -41,6 +41,24 @@ void v2r_spheroid_data_free(void *data) {
   free(data);
 }
 
+void v2r_spheroid_init_bounding_box(V2R_Object *spheroid) {
+  const size_t dim = spheroid->type->dim;
+  V2R_SpheroidData const *data = spheroid->data;
+  const double a = data->equatorial_radius;
+  const double c = data->polar_radius;
+  const double a2 = a * a;
+  const double c2 = c * c;
+  const double c2_m_a2 = c2 - a2;
+  double *end = spheroid->center + dim;
+  for (double *x = spheroid->center, *n = data->axis, *x1 = spheroid->bbmin,
+              *x2 = spheroid->bbmax;
+       x < end; x += 1, n += 1, x1 += 1, x2 += 1) {
+    const double r = sqrt(a2 + c2_m_a2 * (*n) * (*n));
+    *x1 = *x - r;
+    *x2 = *x + r;
+  }
+}
+
 static bool v2r_spheroid_belongs(V2R_Object const *spheroid,
                                  double const *point) {
   V2R_SpheroidData const *data = spheroid->data;
@@ -69,27 +87,22 @@ void v2r_spheroid_axis(V2R_Object const *spheroid, double *axis) {
   }
 }
 
-V2R_ObjectType const Spheroid = {.name = "Spheroid",
-                                 .dim = 3,
-                                 .belongs = v2r_spheroid_belongs,
-                                 .data_copy = v2r_spheroid_data_copy,
-                                 .data_free = v2r_spheroid_data_free};
+V2R_ObjectType const Spheroid = {
+    .name = "Spheroid",
+    .dim = 3,
+    .belongs = v2r_spheroid_belongs,
+    .data_copy = v2r_spheroid_data_copy,
+    .data_free = v2r_spheroid_data_free,
+    .init_bounding_box = v2r_spheroid_init_bounding_box};
 
 V2R_Object *v2r_spheroid_new(double const *center, double equatorial_radius,
                              double polar_radius, double const *axis) {
-
   V2R_Object *object = v2r_object_new(&Spheroid);
   object->data = v2r_spheroid_data_new(equatorial_radius, polar_radius, axis);
 
-  const double a2 = equatorial_radius * equatorial_radius;
-  const double c2 = polar_radius * polar_radius;
-  const double c2_m_a2 = c2 - a2;
   for (size_t i = 0; i < Spheroid.dim; i++) {
-    /* TODO Normalize axis? */
     object->center[i] = center[i];
-    const double r = sqrt(a2 + c2_m_a2 * axis[i] * axis[i]);
-    object->bbmin[i] = object->center[i] - r;
-    object->bbmax[i] = object->center[i] + r;
   }
+  v2r_spheroid_init_bounding_box(object);
   return object;
 }
