@@ -32,7 +32,8 @@ struct V2R_Object_ {
 };
 
 DllExport V2R_Object *v2r_object_new(V2R_ObjectType const *object);
-DllExport V2R_Object *v2r_object_copy(V2R_Object const *object);
+DllExport V2R_Object *v2r_object_copy(V2R_Object const *object,
+                                      double const *center);
 DllExport void v2r_object_free(V2R_Object *object);
 
 DllExport int v2r_raster(V2R_Object *object, double *length, size_t *size,

@@ -26,15 +26,18 @@ void v2r_object_free(V2R_Object *object) {
   free(object->bbmax);
 }
 
-V2R_Object *v2r_object_copy(V2R_Object const *object) {
+V2R_Object *v2r_object_copy(V2R_Object const *object, double const *center) {
+  size_t const size = object->type->dim * sizeof(double);
   V2R_Object *copy = v2r_object_new(object->type);
-  size_t const dim = object->type->dim;
-  for (size_t i = 0; i < dim; i++) {
-    copy->center[i] = object->center[i];
-    copy->bbmin[i] = object->bbmin[i];
-    copy->bbmax[i] = object->bbmax[i];
-  }
   copy->data = object->type->data_copy(object->data);
+  if (center == NULL) {
+    memcpy(copy->center, object->center, size);
+    memcpy(copy->bbmin, object->bbmin, size);
+    memcpy(copy->bbmax, object->bbmax, size);
+  } else {
+    memcpy(copy->center, center, size);
+    copy->type->init_bounding_box(copy);
+  }
   return copy;
 }
 
@@ -141,11 +144,11 @@ static int v2r_raster_2d(V2R_Object *object, double *const length,
 int v2r_raster(V2R_Object *object, double *length, size_t *size, int *grid,
                int value) {
   switch (object->type->dim) {
-  case 2:
-    return v2r_raster_2d(object, length, size, grid, value);
-  case 3:
-    return v2r_raster_3d(object, length, size, grid, value);
-  default:
-    return -1;
+    case 2:
+      return v2r_raster_2d(object, length, size, grid, value);
+    case 3:
+      return v2r_raster_3d(object, length, size, grid, value);
+    default:
+      return -1;
   }
 }

@@ -6,7 +6,7 @@
 void *v2r_test_belongs_data_new(V2R_Object const *object, double const *point,
                                 bool belongs) {
   V2R_TestBelongsData *data = malloc(sizeof(V2R_TestBelongsData));
-  data->object = v2r_object_copy(object);
+  data->object = v2r_object_copy(object, NULL);
   const size_t size = object->type->dim * sizeof(double);
   data->point = malloc(size);
   memcpy(data->point, point, size);
@@ -32,7 +32,7 @@ V2R_TestRasterData *v2r_test_raster_data_new(V2R_Object *object,
                                              size_t *const size) {
   size_t const dim = object->type->dim;
   V2R_TestRasterData *data = malloc(sizeof(V2R_TestRasterData));
-  data->object = v2r_object_copy(object);
+  data->object = v2r_object_copy(object, NULL);
   data->length = malloc(dim * sizeof(double));
   data->size = malloc(dim * sizeof(size_t));
   for (size_t i = 0; i < dim; i++) {
@@ -81,11 +81,8 @@ void v2r_test_raster(void const * data) {
 
   /* Create copy of particle, centered at the origin, since we will compute the
    * minimum image of the CP vector (C: center; P: current point). */
-  V2R_Object *object = v2r_object_copy(data_->object);
-  for (size_t i = 0; i < dim; i++) {
-      // TODO This should not be allowed!
-    object->center[i] = 0.;
-  }
+  double O[] = {0., 0., 0.};
+  V2R_Object *object = v2r_object_copy(data_->object, O);
   double point[dim];
   for (size_t i0 = 0; i0 < n[0]; i0++) {
     point[0] = (i0 + 0.5) * h[0] - c[0];
