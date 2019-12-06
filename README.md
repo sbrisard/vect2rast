@@ -49,6 +49,23 @@ or (more verbose output)
 
 ### Installation of the Python wrapper
 
+## Documentation
+
+The library defines two basic `struct`s:
+
+- `V2R_Object`: represents any geometric object
+- `V2R_ObjectType`: the “class” of the objects; this `struct` holds the methods
+  of the object.
+
+### Notes for developers
+
+New objects should be implemented in such a way that the `data` does not depend
+on the `center`. In other words, it is assumed that translating a `V2R_Object
+*object` can be performed as follows:
+
+1. modify `object->center`
+2. call `object->type->init_bounding_box()`
+
 <!-- Local Variables: -->
 <!-- fill-column: 80 -->
 <!-- End: -->
