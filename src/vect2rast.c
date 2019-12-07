@@ -59,8 +59,8 @@ static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
  * @param grid
  * @param value
  */
-static int v2r_raster_3d(V2R_Object *object, double *const length,
-                         size_t *const size, int *grid, int value) {
+static int v2r_raster_3d(V2R_Object *object, double const *length,
+                         size_t const *size, int *grid, int value) {
   const size_t ndims = 3;
   const double L0 = length[0], L1 = length[1], L2 = length[2];
   const int n0 = size[0], n1 = size[1], n2 = size[2];
@@ -105,8 +105,8 @@ static int v2r_raster_3d(V2R_Object *object, double *const length,
   return 0;
 }
 
-static int v2r_raster_2d(V2R_Object *object, double *const length,
-                         size_t *const size, int *grid, int value) {
+static int v2r_raster_2d(V2R_Object *object, double const *length,
+                         size_t const *size, int *grid, int value) {
   const size_t ndims = 2;
   const double L0 = length[0], L1 = length[1];
   const int n0 = size[0], n1 = size[1];

@@ -28,8 +28,8 @@ void v2r_test_belongs(void const *data) {
 }
 
 V2R_TestRasterData *v2r_test_raster_data_new(V2R_Object *object,
-                                             double *const length,
-                                             size_t *const size) {
+                                             double const *length,
+                                             size_t const *size) {
   size_t const dim = object->type->dim;
   V2R_TestRasterData *data = malloc(sizeof(V2R_TestRasterData));
   data->object = v2r_object_copy(object, NULL);

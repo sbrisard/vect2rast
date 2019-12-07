@@ -20,8 +20,8 @@ typedef struct V2R_TestRasterData {
 } V2R_TestRasterData;
 
 DllExport V2R_TestRasterData *v2r_test_raster_data_new(V2R_Object *object,
-                                                       double *const length,
-                                                       size_t *const size);
+                                                       double const *length,
+                                                       size_t const *size);
 DllExport void v2r_test_raster_data_free(void *data);
 DllExport void v2r_test_raster(void const *data);
 
