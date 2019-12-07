@@ -3,4 +3,5 @@
 *.o
 *.so
 build/
+cmake-build-debug/
 doc/
