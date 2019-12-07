@@ -62,6 +62,7 @@ static int v2r_raster_3d(V2R_Object *object, double const *length,
                          size_t const *size, int *grid, int value) {
   const size_t ndims = 3;
   const double L0 = length[0], L1 = length[1], L2 = length[2];
+  // TODO This conversion is potentially unsagfe. However, we do need a signed value for periodic boundary conditions
   const int n0 = size[0], n1 = size[1], n2 = size[2];
   const double h0 = L0 / n0, h1 = L1 / n1, h2 = L2 / n2;
 
