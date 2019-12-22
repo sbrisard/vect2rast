@@ -5,3 +5,4 @@
 build/
 cmake-build-debug/
 doc/
+.idea/
