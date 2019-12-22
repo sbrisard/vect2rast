@@ -20,14 +20,12 @@ struct V2R_ObjectType_ {
   void *(*data_copy)(void const *);
   void (*data_free)(void *);
   bool (*belongs)(V2R_Object const *object, double const *point);
-  void (*init_bounding_box)(V2R_Object *object);
+  void (*get_bounding_box)(V2R_Object *object, double *bbmin, double *bbmax);
 };
 
 struct V2R_Object_ {
   V2R_ObjectType *type;
   double *center;
-  double *bbmin;
-  double *bbmax;
   void *data;
 };
 

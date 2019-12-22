@@ -10,8 +10,6 @@ V2R_Object *v2r_object_new(V2R_ObjectType const *type) {
 
   size_t const size = dim * sizeof(double);
   object->center = malloc(size);
-  object->bbmin = malloc(size);
-  object->bbmax = malloc(size);
 
   object->data = NULL;
 
@@ -21,8 +19,6 @@ V2R_Object *v2r_object_new(V2R_ObjectType const *type) {
 void v2r_object_free(V2R_Object *object) {
   object->type->data_free(object->data);
   free(object->center);
-  free(object->bbmin);
-  free(object->bbmax);
 }
 
 V2R_Object *v2r_object_copy(V2R_Object const *object, double const *center) {
@@ -31,11 +27,8 @@ V2R_Object *v2r_object_copy(V2R_Object const *object, double const *center) {
   copy->data = object->type->data_copy(object->data);
   if (center == NULL) {
     memcpy(copy->center, object->center, size);
-    memcpy(copy->bbmin, object->bbmin, size);
-    memcpy(copy->bbmax, object->bbmax, size);
   } else {
     memcpy(copy->center, center, size);
-    copy->type->init_bounding_box(copy);
   }
   return copy;
 }
@@ -67,9 +60,11 @@ static int v2r_raster_3d(V2R_Object *object, double const *length,
   const double h0 = L0 / n0, h1 = L1 / n1, h2 = L2 / n2;
 
   int i0_min, i0_max, i1_min, i1_max, i2_min, i2_max;
-  init_bounds(object->bbmin[0], object->bbmax[0], n0 / L0, &i0_min, &i0_max);
-  init_bounds(object->bbmin[1], object->bbmax[1], n1 / L1, &i1_min, &i1_max);
-  init_bounds(object->bbmin[2], object->bbmax[2], n2 / L2, &i2_min, &i2_max);
+  double bbmin[ndims], bbmax[ndims];
+  object->type->get_bounding_box(object, bbmin, bbmax);
+  init_bounds(bbmin[0], bbmax[0], n0 / L0, &i0_min, &i0_max);
+  init_bounds(bbmin[1], bbmax[1], n1 / L1, &i1_min, &i1_max);
+  init_bounds(bbmin[2], bbmax[2], n2 / L2, &i2_min, &i2_max);
 
   double x[ndims];
   int j0 = i0_min >= 0 ? i0_min : i0_min + n0;
@@ -113,8 +108,10 @@ static int v2r_raster_2d(V2R_Object *object, double const *length,
   const double h0 = L0 / n0, h1 = L1 / n1;
 
   int i0_min, i0_max, i1_min, i1_max;
-  init_bounds(object->bbmin[0], object->bbmax[0], n0 / L0, &i0_min, &i0_max);
-  init_bounds(object->bbmin[1], object->bbmax[1], n1 / L1, &i1_min, &i1_max);
+  double bbmin[ndims], bbmax[ndims];
+  object->type->get_bounding_box(object, bbmin, bbmax);
+  init_bounds(bbmin[0], bbmax[0], n0 / L0, &i0_min, &i0_max);
+  init_bounds(bbmin[1], bbmax[1], n1 / L1, &i1_min, &i1_max);
 
   double x[ndims];
   int j0 = i0_min >= 0 ? i0_min : i0_min + n0;

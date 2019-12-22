@@ -17,8 +17,24 @@ void test_disk_new() {
 
   for (size_t i = 0; i < dim; i++) {
     g_assert_cmpfloat(disk->center[i], ==, c[i]);
-    g_assert_cmpfloat(disk->bbmin[i], ==, c[i] - r);
-    g_assert_cmpfloat(disk->bbmax[i], ==, c[i] + r);
+  }
+
+  v2r_object_free(disk);
+}
+
+void test_disk_get_bounding_box() {
+  size_t const dim = 2;
+  double const c[] = {1.2, -3.4};
+  double const r = 7.8;
+
+  V2R_Object *disk = v2r_disk_new(c, r);
+
+  double bbmin[dim], bbmax[dim];
+  disk->type->get_bounding_box(disk, bbmin, bbmax);
+
+  for (size_t i = 0; i < dim; i++) {
+    g_assert_cmpfloat(bbmin[i], ==, c[i] - r);
+    g_assert_cmpfloat(bbmax[i], ==, c[i] + r);
   }
 
   v2r_object_free(disk);
@@ -35,8 +51,24 @@ void test_sphere_new() {
 
   for (size_t i = 0; i < dim; i++) {
     g_assert_cmpfloat(sphere->center[i], ==, c[i]);
-    g_assert_cmpfloat(sphere->bbmin[i], ==, c[i] - r);
-    g_assert_cmpfloat(sphere->bbmax[i], ==, c[i] + r);
+  }
+
+  v2r_object_free(sphere);
+}
+
+void test_sphere_get_bounding_box() {
+  size_t const dim = 3;
+  double const c[] = {1.2, -3.4, 5.6};
+  double const r = 7.8;
+
+  V2R_Object *sphere = v2r_sphere_new(c, r);
+
+  double bbmin[dim], bbmax[dim];
+  sphere->type->get_bounding_box(sphere, bbmin, bbmax);
+
+  for (size_t i = 0; i < dim; i++) {
+    g_assert_cmpfloat(bbmin[i], ==, c[i] - r);
+    g_assert_cmpfloat(bbmax[i], ==, c[i] + r);
   }
 
   v2r_object_free(sphere);
@@ -58,12 +90,12 @@ void v2r_setup_test_ndsphere_belongs(V2R_Object const *ndsphere) {
       p_out[j] = ndsphere->center[j] + r_out * n[j];
     }
 
-    sprintf(name, "/%s/belongs/in/%02d", ndsphere->type->name, (int)i);
+    sprintf(name, "/%s/belongs/in/%02d", ndsphere->type->name, (int) i);
     g_test_add_data_func_full(name,
                               v2r_test_belongs_data_new(ndsphere, p_in, true),
                               v2r_test_belongs, v2r_test_belongs_data_free);
 
-    sprintf(name, "/%s/belongs/out/%02d", ndsphere->type->name, (int)i);
+    sprintf(name, "/%s/belongs/out/%02d", ndsphere->type->name, (int) i);
     g_test_add_data_func_full(name,
                               v2r_test_belongs_data_new(ndsphere, p_out, false),
                               v2r_test_belongs, v2r_test_belongs_data_free);
@@ -100,7 +132,9 @@ void v2r_setup_test_ndsphere_raster() {
 
 void v2r_setup_test_ndsphere() {
   g_test_add_func("/Disk/new", test_disk_new);
+  g_test_add_func("/Disk/get_bounding_box", test_disk_get_bounding_box);
   g_test_add_func("/Sphere/new", test_sphere_new);
+  g_test_add_func("/Sphere/get_bounding_box", test_sphere_get_bounding_box);
 
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
