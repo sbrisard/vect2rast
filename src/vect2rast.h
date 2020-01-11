@@ -1,3 +1,9 @@
+/**
+ * @file vect2rast.h
+ *
+ * Vector-to-raster conversion of simple geometrical objects
+ */
+
 #ifndef __V2R_H__
 #define __V2R_H__
 
@@ -10,11 +16,25 @@
 #define DllExport
 #endif
 
+/**
+ * @see V2R_Object_
+ */
 typedef struct V2R_Object_ V2R_Object;
+
+/**
+ * @see V2R_ObjectType_
+ */
 typedef struct V2R_ObjectType_ V2R_ObjectType;
 
+/**
+ * @brief The base structure that defines the type of a geometrical object.
+ *
+ * Defines some "class variables" and the object's "methods".
+ */
 struct V2R_ObjectType_ {
+  /** @brief A `NULL`-terminated string that holds the name of the type. */
   char *name;
+  /** @brief The dimension of the embedding space (usually 2 or 3). */
   size_t dim;
 
   void *(*data_copy)(void const *);
@@ -23,9 +43,25 @@ struct V2R_ObjectType_ {
   void (*get_bounding_box)(V2R_Object *object, double *bbmin, double *bbmax);
 };
 
+/**
+ * @brief The base structure that defines a geometrical object.
+ */
 struct V2R_Object_ {
+  /** @brief The type of the geometrical object. */
   V2R_ObjectType *type;
+  /**
+   * @brief The Coordinates of the center.
+   *
+   * Array of length `object->type->dim`.
+   *
+   * @see V2R_ObjectType_::dim.
+   */
   double *center;
+  /**
+   * @brief Additional data that may define the shape, orientation, ...
+   *
+   * The actual structure of the data depends on the type of the object.
+   */
   void *data;
 };
 
