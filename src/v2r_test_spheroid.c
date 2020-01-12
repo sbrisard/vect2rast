@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 #include "v2r_test_utils.h"
-#include "vect2rast.h"
+#include "v2r_spheroid.h"
 
 void v2r_test_spheroid_new() {
   size_t const dim = 3;

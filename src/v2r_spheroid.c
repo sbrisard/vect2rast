@@ -1,16 +1,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "vect2rast.h"
-
-#define V2R_SPHEROID_DATA(spheroid) ((V2R_SpheroidData *)((spheroid)->data))
-
-typedef struct V2R_SpheroidData_ {
-  double equatorial_radius;
-  double polar_radius;
-  double *axis;
-  double q1, q2;
-} V2R_SpheroidData;
+#include "v2r_spheroid.h"
 
 void *v2r_spheroid_data_new(double equatorial_radius, double polar_radius,
                             double const *axis) {
