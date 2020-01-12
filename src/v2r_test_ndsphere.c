@@ -74,7 +74,8 @@ void test_sphere_get_bounding_box() {
   v2r_object_free(sphere);
 }
 
-void v2r_setup_test_ndsphere_belongs(V2R_Object const *ndsphere) {
+void v2r_test_ndsphere_belongs(void const *data) {
+  V2R_Object const *ndsphere = data;
   const size_t dim = ndsphere->type->dim;
   double *directions = v2r_test_generate_directions(dim);
   double const *n = directions;
@@ -82,7 +83,6 @@ void v2r_setup_test_ndsphere_belongs(V2R_Object const *ndsphere) {
   double const r_in = 0.95 * r;
   double const r_out = 1.05 * r;
 
-  char name[256];
   double p_in[dim], p_out[dim];
   for (size_t i = 0; i < v2r_test_get_num_directions(dim); i++, n += dim) {
     for (size_t j = 0; j < dim; j++) {
@@ -90,15 +90,8 @@ void v2r_setup_test_ndsphere_belongs(V2R_Object const *ndsphere) {
       p_out[j] = ndsphere->center[j] + r_out * n[j];
     }
 
-    sprintf(name, "/%s/belongs/in/%02d", ndsphere->type->name, (int) i);
-    g_test_add_data_func_full(name,
-                              v2r_test_belongs_data_new(ndsphere, p_in, true),
-                              v2r_test_belongs, v2r_test_belongs_data_free);
-
-    sprintf(name, "/%s/belongs/out/%02d", ndsphere->type->name, (int) i);
-    g_test_add_data_func_full(name,
-                              v2r_test_belongs_data_new(ndsphere, p_out, false),
-                              v2r_test_belongs, v2r_test_belongs_data_free);
+    g_assert_cmpuint(ndsphere->type->belongs(ndsphere, p_in), ==, true);
+    g_assert_cmpuint(ndsphere->type->belongs(ndsphere, p_out), ==, false);
   }
   free(directions);
 }
@@ -139,10 +132,15 @@ void v2r_setup_test_ndsphere() {
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
   V2R_Object *disk = v2r_disk_new(c, r);
+  g_test_add_data_func_full("/Disk/belongs",
+                            disk,
+                            v2r_test_ndsphere_belongs,
+                            v2r_object_free);
   V2R_Object *sphere = v2r_sphere_new(c, r);
-  v2r_setup_test_ndsphere_belongs(disk);
-  v2r_setup_test_ndsphere_belongs(sphere);
+  g_test_add_data_func_full("/Sphere/belongs",
+                            sphere,
+                            v2r_test_ndsphere_belongs,
+                            v2r_object_free);
+
   v2r_setup_test_ndsphere_raster();
-  v2r_object_free(disk);
-  v2r_object_free(sphere);
 }
