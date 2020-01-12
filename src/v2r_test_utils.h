@@ -1,5 +1,5 @@
-#ifndef __V2R_TEST_UTILS_H__
-#define __V2R_TEST_UTILS_H__
+#ifndef __V2R_TEST_UTILS_H_202001120826__
+#define __V2R_TEST_UTILS_H_202001120826__
 #include "vect2rast.h"
 
 typedef struct V2R_TestRasterData {

@@ -5,8 +5,8 @@
  * raterization functions.
  */
 
-#ifndef __V2R_H__
-#define __V2R_H__
+#ifndef __VECT2RAST_H_202001120825__
+#define __VECT2RAST_H_202001120825__
 
 #include <stdbool.h>
 #include <stdlib.h>
