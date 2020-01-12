@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "v2r_test_utils.h"
 #include "v2r_spheroid.h"
+#include "v2r_test_utils.h"
 
 void v2r_test_spheroid_new() {
   size_t const dim = 3;
@@ -31,9 +31,11 @@ void v2r_test_spheroid_new() {
   v2r_object_free(spheroid);
 }
 
-void v2r_setup_test_spheroid_belongs(double a, double c) {
-  size_t dim = 3;
-  double center[] = {1.2, -3.4, 5.6};
+void v2r_test_spheroid_belongs(void *const data) {
+  size_t const dim = 3;
+  double *const center = data;
+  double const a = center[dim];
+  double const c = center[dim+1];
 
   size_t num_directions = v2r_test_get_num_directions(dim);
   double *first = v2r_test_generate_directions(dim);
@@ -57,21 +59,8 @@ void v2r_setup_test_spheroid_belongs(double a, double c) {
         p_in[k] = spheroid->center[k] + alpha_in * r;
         p_out[k] = spheroid->center[k] + alpha_out * r;
       }
-      sprintf(name, "/%s(a=%g,c=%g,d=(%g,%g,%g))/belongs/n=(%g,%g,%g)/true",
-              spheroid->type->name, a, c, d3[0], d3[1], d3[2], n[0], n[1],
-              n[2]);
-
-      g_test_add_data_func_full(name,
-                                v2r_test_belongs_data_new(spheroid, p_in, true),
-                                v2r_test_belongs, v2r_test_belongs_data_free);
-
-      sprintf(name, "/%s(a=%g,c=%g,d=(%g,%g,%g))/belongs/n=(%g,%g,%g)/false",
-              spheroid->type->name, a, c, d3[0], d3[1], d3[2], n[0], n[1],
-              n[2]);
-
-      g_test_add_data_func_full(
-          name, v2r_test_belongs_data_new(spheroid, p_out, false),
-          v2r_test_belongs, v2r_test_belongs_data_free);
+      g_assert_cmpuint(spheroid->type->belongs(spheroid, p_in), ==, true);
+      g_assert_cmpuint(spheroid->type->belongs(spheroid, p_out), ==, false);
     }
     v2r_object_free(spheroid);
   }
@@ -79,8 +68,22 @@ void v2r_setup_test_spheroid_belongs(double a, double c) {
 }
 
 void v2r_setup_test_spheroid() {
-  g_test_add_func("/spheroid/new", v2r_test_spheroid_new);
+  g_test_add_func("/Spheroid/new", v2r_test_spheroid_new);
 
-  v2r_setup_test_spheroid_belongs(0.5, 0.02);
-  v2r_setup_test_spheroid_belongs(0.02, 0.5);
+  double *oblate = malloc(5 * sizeof(double));
+  oblate[0] = 1.2;
+  oblate[1] = -3.4;
+  oblate[2] = 5.6;
+  oblate[3] = 0.5;
+  oblate[4] = 0.02;
+  g_test_add_data_func_full("/Spheroid/belongs/oblate", oblate,
+                            v2r_test_spheroid_belongs, free);
+  double *prolate = malloc(5 * sizeof(double));
+  prolate[0] = 1.2;
+  prolate[1] = -3.4;
+  prolate[2] = 5.6;
+  prolate[3] = 0.5;
+  prolate[4] = 0.02;
+  g_test_add_data_func_full("/Spheroid/belongs/prolate", prolate,
+                            v2r_test_spheroid_belongs, free);
 }
