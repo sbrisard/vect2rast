@@ -1,15 +1,4 @@
-#include "vect2rast.h"
-
-#define V2R_NDSPHERE_DATA(sphere) ((V2R_NDSphereData *)((sphere)->data))
-
-struct V2R_NDSphereData_ {
-  double radius;
-  double radius2;
-};
-
-typedef struct V2R_NDSphereData_ V2R_NDSphereData;
-typedef struct V2R_NDSphereData_ V2R_DiskData;
-typedef struct V2R_NDSphereData_ V2R_SphereData;
+#include "v2r_ndsphere.h"
 
 V2R_NDSphereData *v2r_ndsphere_data_new(double radius) {
   V2R_NDSphereData *data = malloc(sizeof(V2R_NDSphereData));

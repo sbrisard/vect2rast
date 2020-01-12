@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "v2r_test_utils.h"
-#include "vect2rast.h"
+#include "v2r_ndsphere.h"
 
 void test_disk_new() {
   size_t const dim = 2;
