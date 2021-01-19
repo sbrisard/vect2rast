@@ -1,6 +1,6 @@
 #ifndef __V2R_TEST_UTILS_H_202001120826__
 #define __V2R_TEST_UTILS_H_202001120826__
-#include "vect2rast.h"
+#include "vect2rast/vect2rast.h"
 
 typedef struct V2R_TestRasterData {
   V2R_Object *object;

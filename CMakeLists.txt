@@ -1,14 +1,21 @@
-cmake_minimum_required(VERSION 3.15)
-project(vect2rast C)
+cmake_minimum_required(VERSION 3.13)
 
-set(CMAKE_C_STANDARD 11)
+file(READ ./metadata/version.txt METADATA_VERSION)
+string(STRIP ${METADATA_VERSION} METADATA_VERSION)
+file(READ ./metadata/description.txt METADATA_DESCRIPTION)
+string(STRIP ${METADATA_DESCRIPTION} METADATA_DESCRIPTION)
+file(READ ./metadata/author.txt METADATA_AUTHOR)
+string(STRIP ${METADATA_AUTHOR} METADATA_AUTHOR)
 
-add_library(vect2rast SHARED src/vect2rast.c src/vect2rast.h src/v2r_ndsphere.c src/v2r_spheroid.c)
-target_link_libraries(vect2rast m)
+project(
+  vect2rast
+  VERSION ${METADATA_VERSION}
+  DESCRIPTION ${METADATA_AUTHOR}
+  LANGUAGES C)
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(deps REQUIRED IMPORTED_TARGET glib-2.0)
+# set(CMAKE_CXX_STANDARD 17)
+include(CTest)
 
-add_executable(test_vect2rast src/test_vect2rast.c src/v2r_test_utils.c src/v2r_test_utils.h src/v2r_test_ndsphere.c src/v2r_test_spheroid.c)
-target_link_libraries(test_vect2rast PRIVATE PkgConfig::deps)
-target_link_libraries(test_vect2rast PRIVATE vect2rast)
+add_subdirectory(include)
+add_subdirectory(src)
+add_subdirectory(tests)

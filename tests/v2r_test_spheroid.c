@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "v2r_spheroid.h"
+#include "vect2rast/v2r_spheroid.h"
 #include "v2r_test_utils.h"
 
 void v2r_test_spheroid_new() {
