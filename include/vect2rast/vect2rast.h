@@ -115,7 +115,7 @@ DllExport V2R_Object *v2r_object_copy(V2R_Object const *object,
  */
 DllExport void v2r_object_free(V2R_Object *object);
 
-DllExport int v2r_raster(V2R_Object *object, double *length, size_t *size,
-                         int *grid, int value);
+DllExport int v2r_raster(V2R_Object const *object, double const *length,
+                         size_t const *size, int *grid, int value);
 
 #endif
