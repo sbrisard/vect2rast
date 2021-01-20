@@ -3,6 +3,10 @@
 
 #include "v2r_test_utils.h"
 
+void assert_true(bool predicate) {
+  if (!predicate) exit(-1);
+}
+
 void assert_equals_size_t(size_t expected, size_t actual) {
   if (expected != actual) {
     exit(-1);
