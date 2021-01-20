@@ -3,6 +3,14 @@
 
 #include "v2r_test_utils.h"
 
+void print_double_array(size_t n, double *a) {
+  printf("{");
+  for (size_t i = 0; i < n; i++){
+    printf("%g, ", a[i]);
+  }
+  printf("}");
+}
+
 void assert_true(bool predicate) {
   if (!predicate) exit(-1);
 }
