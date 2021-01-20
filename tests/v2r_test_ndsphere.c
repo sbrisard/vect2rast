@@ -45,19 +45,21 @@ void test_disk_get_bounding_box() {
 }
 
 void test_sphere_new() {
+  printf("test_sphere_new...");
   size_t const dim = 3;
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
 
   V2R_Object *sphere = v2r_sphere_new(c, r);
-  g_assert_cmpint(sphere->type->dim, ==, dim);
-  g_assert_cmpfloat(v2r_ndsphere_radius(sphere), ==, r);
+  assert_equals_size_t(dim, sphere->type->dim);
+  assert_equals_double(r, v2r_ndsphere_radius(sphere), 0.0, 0.0);
 
   for (size_t i = 0; i < dim; i++) {
-    g_assert_cmpfloat(sphere->center[i], ==, c[i]);
+    assert_equals_double(c[i], sphere->center[i], 0.0, 0.0);
   }
 
   v2r_object_free(sphere);
+  printf(" OK\n");
 }
 
 void test_sphere_get_bounding_box() {
@@ -130,7 +132,7 @@ void v2r_setup_test_ndsphere_raster() {
 void v2r_setup_test_ndsphere() {
   test_disk_new();
   test_disk_get_bounding_box();
-  g_test_add_func("/Sphere/new", test_sphere_new);
+  test_sphere_new();
   g_test_add_func("/Sphere/get_bounding_box", test_sphere_get_bounding_box);
 
   double const c[] = {1.2, -3.4, 5.6};
