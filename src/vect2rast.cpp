@@ -3,13 +3,13 @@
 
 #include "vect2rast/vect2rast.hpp"
 
-V2R_Object *v2r_object_new(V2R_ObjectType const *type) {
+V2R_Object *v2r_object_new(V2R_ObjectType *type) {
   size_t const dim = type->dim;
-  V2R_Object *object = malloc(sizeof(V2R_Object));
+  auto object = static_cast<V2R_Object *>(malloc(sizeof(V2R_Object)));
   object->type = type;
 
   size_t const size = dim * sizeof(double);
-  object->center = malloc(size);
+  object->center = static_cast<double *>(malloc(size));
 
   object->data = NULL;
 
@@ -51,7 +51,7 @@ static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
  * @param grid
  * @param value
  */
-static int v2r_raster_3d(V2R_Object *object, double const *length,
+static int v2r_raster_3d(V2R_Object const *object, double const *length,
                          size_t const *size, int *grid, int value) {
   const size_t ndims = 3;
   const double L0 = length[0], L1 = length[1], L2 = length[2];
@@ -101,7 +101,7 @@ static int v2r_raster_3d(V2R_Object *object, double const *length,
   return 0;
 }
 
-static int v2r_raster_2d(V2R_Object *object, double const *length,
+static int v2r_raster_2d(V2R_Object const *object, double const *length,
                          size_t const *size, int *grid, int value) {
   const size_t ndims = 2;
   const double L0 = length[0], L1 = length[1];

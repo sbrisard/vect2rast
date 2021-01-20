@@ -1,3 +1,4 @@
+#include <iostream>
 #include <math.h>
 
 #include "v2r_test_utils.hpp"
@@ -50,7 +51,7 @@ void minimum_image(double L, double L_half, double *x) {
 
 void v2r_test_raster(V2R_Object const *object, double const *length,
                      size_t const *size) {
-  printf("v2r_test_raster{%s<%d>{c=", object->type->name, object->type->dim);
+  std::cout << "v2r_test_raster{" << object->type->name << "}<" << object->type->dim << ">";
   print_array_double(object->type->dim, object->center);
   printf("}, size=");
   print_array_size_t(object->type->dim, size);
@@ -75,7 +76,7 @@ void v2r_test_raster(V2R_Object const *object, double const *length,
     L_half[i] = 0.5 * L[i];
   }
 
-  int *actual = calloc(n[0] * n[1] * n[2], sizeof(int));
+  auto actual = static_cast<int *>(calloc(n[0] * n[1] * n[2], sizeof(int)));
   v2r_raster(object, length, size, actual, 1);
 
   /* Create copy of particle, centered at the origin, since we will compute the
@@ -116,7 +117,7 @@ size_t v2r_test_get_num_directions(size_t dim) {
 double *v2r_test_generate_directions(size_t dim) {
   size_t const num_directions = v2r_test_get_num_directions(dim);
   size_t const size = dim * num_directions * sizeof(double);
-  double *directions = malloc(size);
+  auto directions = static_cast<double *>(malloc(size));
   if (dim == 2) {
     double *dir = directions;
     for (size_t i = 0; i < num_directions; i++) {

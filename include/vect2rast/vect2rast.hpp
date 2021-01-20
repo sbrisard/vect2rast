@@ -11,6 +11,8 @@
 #include <stdbool.h>
 #include <stdlib.h>
 
+#include <string>
+
 #if _WIN32
 #define DllExport __declspec(dllexport)
 #else
@@ -30,7 +32,7 @@ typedef struct V2R_ObjectType_ V2R_ObjectType;
  */
 struct V2R_ObjectType_ {
   /** @brief A `NULL`-terminated string that holds the name of the type. */
-  char *name;
+  std::string name;
   /** @brief The dimension of the embedding space (usually 2 or 3). */
   size_t dim;
 
@@ -62,7 +64,7 @@ struct V2R_ObjectType_ {
    * The bounding box is not required to be optimal. However, tighter bounding
    * boxes should result in faster rasterization.
    */
-  void (*get_bounding_box)(V2R_Object *object, double *bbmin, double *bbmax);
+  void (*get_bounding_box)(V2R_Object const *object, double *bbmin, double *bbmax);
 };
 
 /**
@@ -95,7 +97,7 @@ struct V2R_Object_ {
  *
  * This function also allocates the V2R_Object_::center array.
  */
-DllExport V2R_Object *v2r_object_new(V2R_ObjectType const *type);
+DllExport V2R_Object *v2r_object_new(V2R_ObjectType *type);
 
 /**
  * @brief Create a copy of the specified geometric `object`.
