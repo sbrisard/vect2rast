@@ -80,16 +80,18 @@ void test_sphere_get_bounding_box() {
   sphere->type->get_bounding_box(sphere, bbmin, bbmax);
 
   for (size_t i = 0; i < dim; i++) {
-    assert_equals_double(c[i]-r, bbmin[i], 0.0, 0.0);
-    assert_equals_double(c[i]+r, bbmax[i], 0.0, 0.0);
+    assert_equals_double(c[i] - r, bbmin[i], 0.0, 0.0);
+    assert_equals_double(c[i] + r, bbmax[i], 0.0, 0.0);
   }
 
   v2r_object_free(sphere);
   printf(" OK\n");
 }
 
-void v2r_test_ndsphere_belongs(void const *data) {
-  V2R_Object const *ndsphere = data;
+void v2r_test_ndsphere_belongs(V2R_Object const *ndsphere) {
+  printf("test_ndsphere_belongs ");
+  print_ndsphere(ndsphere);
+  printf("...");
   const size_t dim = ndsphere->type->dim;
   double *directions = v2r_test_generate_directions(dim);
   double const *n = directions;
@@ -104,10 +106,11 @@ void v2r_test_ndsphere_belongs(void const *data) {
       p_out[j] = ndsphere->center[j] + r_out * n[j];
     }
 
-    g_assert_cmpuint(ndsphere->type->belongs(ndsphere, p_in), ==, true);
-    g_assert_cmpuint(ndsphere->type->belongs(ndsphere, p_out), ==, false);
+    assert_true(ndsphere->type->belongs(ndsphere, p_in));
+    assert_false(ndsphere->type->belongs(ndsphere, p_out));
   }
   free(directions);
+  printf(" OK\n");
 }
 
 void v2r_setup_test_ndsphere_raster() {
@@ -146,11 +149,11 @@ void v2r_setup_test_ndsphere() {
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
   V2R_Object *disk = v2r_disk_new(c, r);
-  g_test_add_data_func_full("/Disk/belongs", disk, v2r_test_ndsphere_belongs,
-                            v2r_object_free);
+  v2r_test_ndsphere_belongs(disk);
+  v2r_object_free(disk);
   V2R_Object *sphere = v2r_sphere_new(c, r);
-  g_test_add_data_func_full("/Sphere/belongs", sphere,
-                            v2r_test_ndsphere_belongs, v2r_object_free);
+  v2r_test_ndsphere_belongs(sphere);
+  v2r_object_free(sphere);
 
   v2r_setup_test_ndsphere_raster();
 }
