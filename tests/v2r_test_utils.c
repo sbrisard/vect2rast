@@ -1,4 +1,3 @@
-#include <glib.h>
 #include <math.h>
 
 #include "v2r_test_utils.h"
@@ -31,6 +30,10 @@ void assert_equals_size_t(size_t expected, size_t actual) {
   if (expected != actual) {
     exit(-1);
   }
+}
+
+void assert_equals_int(int expected, int actual) {
+  if (expected != actual) exit(-1);
 }
 
 void assert_equals_double(double expected, double actual, double rtol,
@@ -114,7 +117,7 @@ void v2r_test_raster(void const *data) {
         minimum_image(L[2], L_half[2], point + 2);
         size_t j = (i0 * n[1] + i1) * n[2] + i2;
         int expected = object->type->belongs(object, point);
-        g_assert_cmpint(expected, ==, actual[j]);
+        assert_equals_int(expected, actual[j]);
       }
     }
   }
