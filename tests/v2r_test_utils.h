@@ -23,8 +23,8 @@ DllExport double v2r_dot(double const *v1, double const *v2);
 DllExport void v2r_cross(double const *v1, double const *v2, double *v3);
 DllExport void v2r_normalize(double *v);
 
-DllExport void print_array_size_t(size_t n, size_t *a);
-DllExport void print_array_double(size_t n, double *a);
+DllExport void print_array_size_t(size_t n, const size_t *a);
+DllExport void print_array_double(size_t n, const double *a);
 
 DllExport void assert_true(bool predicate);
 DllExport void assert_false(bool predicate);

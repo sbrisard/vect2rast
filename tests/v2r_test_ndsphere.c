@@ -4,7 +4,7 @@
 #include "v2r_test_utils.h"
 #include "vect2rast/v2r_ndsphere.h"
 
-void print_ndsphere(V2R_Object *sphere) {
+void print_ndsphere(const V2R_Object *sphere) {
   printf("Sphere<%d>{r=%g, c=", sphere->type->dim,
          v2r_ndsphere_radius(sphere));
   print_array_double(sphere->type->dim, sphere->center);
