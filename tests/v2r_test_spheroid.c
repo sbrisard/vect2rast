@@ -68,7 +68,7 @@ void v2r_test_spheroid_belongs(double *const center, double a, double c) {
   printf("OK\n");
 }
 
-void v2r_setup_test_spheroid() {
+void v2r_test_spheroid_all() {
   v2r_test_spheroid_new();
 
   double center[] = {1.2, -3.4, 5.6};

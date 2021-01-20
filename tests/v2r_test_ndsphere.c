@@ -137,7 +137,7 @@ void v2r_test_ndsphere_raster() {
   }
 }
 
-void v2r_setup_test_ndsphere() {
+void v2r_test_ndsphere_all() {
   test_disk_new();
   test_disk_get_bounding_box();
   test_sphere_new();
