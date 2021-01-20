@@ -25,6 +25,7 @@ void test_disk_new() {
 }
 
 void test_disk_get_bounding_box() {
+  printf("test_disk_bounding_box...");
   size_t const dim = 2;
   double const c[] = {1.2, -3.4};
   double const r = 7.8;
@@ -35,11 +36,12 @@ void test_disk_get_bounding_box() {
   disk->type->get_bounding_box(disk, bbmin, bbmax);
 
   for (size_t i = 0; i < dim; i++) {
-    g_assert_cmpfloat(bbmin[i], ==, c[i] - r);
-    g_assert_cmpfloat(bbmax[i], ==, c[i] + r);
+    assert_equals_double(c[i] - r, bbmin[i], 0.0, 0.0);
+    assert_equals_double(c[i] + r, bbmax[i], 0.0, 0.0);
   }
 
   v2r_object_free(disk);
+  printf(" OK\n");
 }
 
 void test_sphere_new() {
@@ -127,7 +129,7 @@ void v2r_setup_test_ndsphere_raster() {
 
 void v2r_setup_test_ndsphere() {
   test_disk_new();
-  g_test_add_func("/Disk/get_bounding_box", test_disk_get_bounding_box);
+  test_disk_get_bounding_box();
   g_test_add_func("/Sphere/new", test_sphere_new);
   g_test_add_func("/Sphere/get_bounding_box", test_sphere_get_bounding_box);
 
