@@ -3,9 +3,17 @@
 
 #include "v2r_test_utils.h"
 
-void print_double_array(size_t n, double *a) {
+void print_array_size_t(size_t n, size_t *a) {
   printf("{");
-  for (size_t i = 0; i < n; i++){
+  for (size_t i = 0; i < n; i++) {
+    printf("%d, ", a[i]);
+  }
+  printf("}");
+}
+
+void print_array_double(size_t n, double *a) {
+  printf("{");
+  for (size_t i = 0; i < n; i++) {
     printf("%g, ", a[i]);
   }
   printf("}");
