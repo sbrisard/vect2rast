@@ -3,6 +3,19 @@
 
 #include "v2r_test_utils.h"
 
+void assert_equals_size_t(size_t expected, size_t actual) {
+  if (expected != actual) {
+    exit(-1);
+  }
+}
+
+void assert_equals_double(double expected, double actual, double rtol,
+                          double atol) {
+  if (fabs(actual - expected) > rtol * fabs(expected) + atol) {
+    exit(-1);
+  }
+}
+
 V2R_TestRasterData *v2r_test_raster_data_new(V2R_Object *object,
                                              double const *length,
                                              size_t const *size) {
@@ -26,13 +39,11 @@ void v2r_test_raster_data_free(void *data) {
 }
 
 void minimum_image(double L, double L_half, double *x) {
-  if (*x < -L_half)
-    *x += L;
-  if (*x > L_half)
-    *x -= L;
+  if (*x < -L_half) *x += L;
+  if (*x > L_half) *x -= L;
 }
 
-void v2r_test_raster(void const * data) {
+void v2r_test_raster(void const *data) {
   V2R_TestRasterData const *data_ = data;
   size_t const max_dim = 3;
   size_t const dim = data_->object->type->dim;
@@ -80,12 +91,12 @@ void v2r_test_raster(void const * data) {
 
 size_t v2r_test_get_num_directions(size_t dim) {
   switch (dim) {
-  case 2:
-    return 10;
-  case 3:
-    return 12;
-  default:
-    return 0;
+    case 2:
+      return 10;
+    case 3:
+      return 12;
+    default:
+      return 0;
   }
 }
 
