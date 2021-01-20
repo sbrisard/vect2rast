@@ -7,9 +7,10 @@
 #include "vect2rast/v2r_ndsphere.h"
 
 void print_ndsphere(V2R_Object *sphere) {
-  printf("Sphere<%d>{r=%g, c={%g, %g, %g}}", sphere->type->dim,
-         v2r_ndsphere_radius(sphere), sphere->center[0], sphere->center[1],
-         sphere->center[2]);
+  printf("Sphere<%d>{r=%g, c=", sphere->type->dim,
+         v2r_ndsphere_radius(sphere));
+  print_double_array(sphere->type->dim, sphere->center);
+  printf("}");
 }
 
 void test_disk_new() {
