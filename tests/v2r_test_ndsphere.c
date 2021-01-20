@@ -128,9 +128,7 @@ void v2r_test_ndsphere_raster() {
       for (size_t i2 = 0; i2 <= 1; i2++) {
         c[2] = i2 == 0 ? zeta * length[2] : (1. - zeta) * length[2];
         V2R_Object *sphere = v2r_sphere_new(c, r);
-        V2R_TestRasterData *data = v2r_test_raster_data_new(sphere, length, size);
-        v2r_test_raster(data);
-        v2r_test_raster_data_free(data);
+        v2r_test_raster(sphere, length, size);
         v2r_object_free(sphere);
       }
     }
