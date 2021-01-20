@@ -7,19 +7,21 @@
 #include "vect2rast/v2r_ndsphere.h"
 
 void test_disk_new() {
+  printf("test_disk_new...");
   size_t const dim = 2;
   double const c[] = {1.2, -3.4};
   double const r = 7.8;
 
   V2R_Object *disk = v2r_disk_new(c, r);
-  g_assert_cmpint(disk->type->dim, ==, dim);
-  g_assert_cmpfloat(v2r_ndsphere_radius(disk), ==, r);
+  assert_equals_size_t(dim, disk->type->dim);
+  assert_equals_double(r, v2r_ndsphere_radius(disk), 0.0, 0.0);
 
   for (size_t i = 0; i < dim; i++) {
-    g_assert_cmpfloat(disk->center[i], ==, c[i]);
+    assert_equals_double(c[i], disk->center[i], 0.0, 0.0);
   }
 
   v2r_object_free(disk);
+  printf(" OK\n");
 }
 
 void test_disk_get_bounding_box() {
@@ -124,7 +126,7 @@ void v2r_setup_test_ndsphere_raster() {
 }
 
 void v2r_setup_test_ndsphere() {
-  g_test_add_func("/Disk/new", test_disk_new);
+  test_disk_new();
   g_test_add_func("/Disk/get_bounding_box", test_disk_get_bounding_box);
   g_test_add_func("/Sphere/new", test_sphere_new);
   g_test_add_func("/Sphere/get_bounding_box", test_sphere_get_bounding_box);
@@ -132,15 +134,11 @@ void v2r_setup_test_ndsphere() {
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
   V2R_Object *disk = v2r_disk_new(c, r);
-  g_test_add_data_func_full("/Disk/belongs",
-                            disk,
-                            v2r_test_ndsphere_belongs,
+  g_test_add_data_func_full("/Disk/belongs", disk, v2r_test_ndsphere_belongs,
                             v2r_object_free);
   V2R_Object *sphere = v2r_sphere_new(c, r);
-  g_test_add_data_func_full("/Sphere/belongs",
-                            sphere,
-                            v2r_test_ndsphere_belongs,
-                            v2r_object_free);
+  g_test_add_data_func_full("/Sphere/belongs", sphere,
+                            v2r_test_ndsphere_belongs, v2r_object_free);
 
   v2r_setup_test_ndsphere_raster();
 }
