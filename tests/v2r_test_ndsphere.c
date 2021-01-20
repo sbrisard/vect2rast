@@ -63,6 +63,7 @@ void test_sphere_new() {
 }
 
 void test_sphere_get_bounding_box() {
+  printf("test_sphere_get_bounding_box...");
   size_t const dim = 3;
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
@@ -73,11 +74,12 @@ void test_sphere_get_bounding_box() {
   sphere->type->get_bounding_box(sphere, bbmin, bbmax);
 
   for (size_t i = 0; i < dim; i++) {
-    g_assert_cmpfloat(bbmin[i], ==, c[i] - r);
-    g_assert_cmpfloat(bbmax[i], ==, c[i] + r);
+    assert_equals_double(c[i]-r, bbmin[i], 0.0, 0.0);
+    assert_equals_double(c[i]+r, bbmax[i], 0.0, 0.0);
   }
 
   v2r_object_free(sphere);
+  printf(" OK\n");
 }
 
 void v2r_test_ndsphere_belongs(void const *data) {
@@ -133,7 +135,7 @@ void v2r_setup_test_ndsphere() {
   test_disk_new();
   test_disk_get_bounding_box();
   test_sphere_new();
-  g_test_add_func("/Sphere/get_bounding_box", test_sphere_get_bounding_box);
+  test_sphere_get_bounding_box();
 
   double const c[] = {1.2, -3.4, 5.6};
   double const r = 7.8;
