@@ -9,7 +9,7 @@
 void print_ndsphere(V2R_Object *sphere) {
   printf("Sphere<%d>{r=%g, c=", sphere->type->dim,
          v2r_ndsphere_radius(sphere));
-  print_double_array(sphere->type->dim, sphere->center);
+  print_array_double(sphere->type->dim, sphere->center);
   printf("}");
 }
 
@@ -114,7 +114,7 @@ void v2r_test_ndsphere_belongs(V2R_Object const *ndsphere) {
   printf(" OK\n");
 }
 
-void v2r_setup_test_ndsphere_raster() {
+void v2r_test_ndsphere_raster() {
   double length[] = {1.5, 2.6, 3.7};
   size_t size[] = {50, 60, 70};
   double xi = 0.05;
@@ -122,7 +122,6 @@ void v2r_setup_test_ndsphere_raster() {
   double zeta = 0.07;
   double c[3];
   double r = 0.5;
-  char name[255];
 
   for (size_t i0 = 0; i0 <= 1; i0++) {
     c[0] = i0 == 0 ? xi * length[0] : (1. - xi) * length[0];
@@ -130,11 +129,10 @@ void v2r_setup_test_ndsphere_raster() {
       c[1] = i1 == 0 ? eta * length[1] : (1. - eta) * length[1];
       for (size_t i2 = 0; i2 <= 1; i2++) {
         c[2] = i2 == 0 ? zeta * length[2] : (1. - zeta) * length[2];
-        sprintf(name, "/Sphere/raster/%zu", (i0 * 2 + i1) * 2 + i2);
         V2R_Object *sphere = v2r_sphere_new(c, r);
-        g_test_add_data_func_full(
-            name, v2r_test_raster_data_new(sphere, length, size),
-            v2r_test_raster, v2r_test_raster_data_free);
+        V2R_TestRasterData *data = v2r_test_raster_data_new(sphere, length, size);
+        v2r_test_raster(data);
+        v2r_test_raster_data_free(data);
         v2r_object_free(sphere);
       }
     }
@@ -156,5 +154,5 @@ void v2r_setup_test_ndsphere() {
   v2r_test_ndsphere_belongs(sphere);
   v2r_object_free(sphere);
 
-  v2r_setup_test_ndsphere_raster();
+  v2r_test_ndsphere_raster();
 }

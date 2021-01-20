@@ -69,6 +69,14 @@ void minimum_image(double L, double L_half, double *x) {
 
 void v2r_test_raster(void const *data) {
   V2R_TestRasterData const *data_ = data;
+  printf("v2r_test_raster{%s<%d>{c=", data_->object->type->name,
+         data_->object->type->dim);
+  print_array_double(data_->object->type->dim, data_->object->center);
+  printf("}, size=");
+  print_array_size_t(data_->object->type->dim, data_->size);
+  printf(", length=");
+  print_array_double(data_->object->type->dim, data_->length);
+  printf("...");
   size_t const max_dim = 3;
   size_t const dim = data_->object->type->dim;
 
@@ -111,6 +119,7 @@ void v2r_test_raster(void const *data) {
     }
   }
   free(actual);
+  printf(" OK\n");
 }
 
 size_t v2r_test_get_num_directions(size_t dim) {
