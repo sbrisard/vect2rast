@@ -1,4 +1,4 @@
-#include "vect2rast/v2r_ndsphere.h"
+#include "vect2rast/v2r_ndsphere.hpp"
 
 V2R_NDSphereData *v2r_ndsphere_data_new(double radius) {
   V2R_NDSphereData *data = malloc(sizeof(V2R_NDSphereData));

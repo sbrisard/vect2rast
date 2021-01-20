@@ -2,8 +2,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "vect2rast/v2r_spheroid.h"
-#include "v2r_test_utils.h"
+#include "v2r_test_utils.hpp"
+#include "vect2rast/v2r_spheroid.hpp"
 
 void v2r_test_spheroid_new() {
   printf("test_spheroid_new...");

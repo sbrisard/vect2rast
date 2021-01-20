@@ -6,7 +6,7 @@
 #ifndef __V2R_SPHEROID_H_202001120654__
 #define __V2R_SPHEROID_H_202001120654__
 
-#include "vect2rast.h"
+#include "vect2rast.hpp"
 
 #define V2R_SPHEROID_DATA(spheroid) ((V2R_SpheroidData *)((spheroid)->data))
 

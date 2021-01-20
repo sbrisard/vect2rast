@@ -6,7 +6,7 @@
 #ifndef __V2R_NDSPHERE_H_202001120646__
 #define __V2R_NDSPHERE_H_202001120646__
 
-#include "vect2rast.h"
+#include "vect2rast.hpp"
 
 #define V2R_NDSPHERE_DATA(sphere) ((V2R_NDSphereData *)((sphere)->data))
 

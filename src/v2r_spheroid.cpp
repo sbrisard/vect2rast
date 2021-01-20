@@ -1,7 +1,7 @@
 #include <math.h>
 #include <string.h>
 
-#include "vect2rast/v2r_spheroid.h"
+#include "vect2rast/v2r_spheroid.hpp"
 
 void *v2r_spheroid_data_new(double equatorial_radius, double polar_radius,
                             double const *axis) {

@@ -5,9 +5,9 @@ add_compile_definitions(PROJECT_AUTHOR_QUOTED=\"${METADATA_AUTHOR}\")
 
 add_library(
   ${PROJECT_NAME} SHARED
-  vect2rast.c
-  v2r_ndsphere.c
-  v2r_spheroid.c)
+        vect2rast.cpp
+        v2r_ndsphere.cpp
+        v2r_spheroid.cpp)
 
 target_include_directories(
   ${PROJECT_NAME} PUBLIC

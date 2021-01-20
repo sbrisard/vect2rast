@@ -2,7 +2,7 @@
 #define __V2R_TEST_UTILS_H_202001120826__
 #include <stdio.h>
 #include <string.h>
-#include "vect2rast/vect2rast.h"
+#include "vect2rast/vect2rast.hpp"
 
 DllExport void v2r_test_raster(V2R_Object const *object, double const *length,
                                size_t const *size);

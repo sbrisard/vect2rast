@@ -1,8 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "v2r_test_utils.h"
-#include "vect2rast/v2r_ndsphere.h"
+#include "v2r_test_utils.hpp"
+#include "vect2rast/v2r_ndsphere.hpp"
 
 void print_ndsphere(const V2R_Object *sphere) {
   printf("Sphere<%d>{r=%g, c=", sphere->type->dim,

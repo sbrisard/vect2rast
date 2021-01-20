@@ -4,10 +4,10 @@
 # )
 
 add_executable(test_vect2rast
-  test_vect2rast.c
-  v2r_test_utils.c
-  v2r_test_ndsphere.c
-  v2r_test_spheroid.c)
+        test_vect2rast.cpp
+        v2r_test_utils.cpp
+        v2r_test_ndsphere.cpp
+        v2r_test_spheroid.cpp)
 
 target_include_directories(test_vect2rast PUBLIC ../include)
 

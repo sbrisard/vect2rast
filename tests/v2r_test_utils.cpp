@@ -1,6 +1,6 @@
 #include <math.h>
 
-#include "v2r_test_utils.h"
+#include "v2r_test_utils.hpp"
 
 void print_array_size_t(size_t n, const size_t *a) {
   printf("{");
