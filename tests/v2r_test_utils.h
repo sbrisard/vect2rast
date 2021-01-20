@@ -22,6 +22,7 @@ DllExport void v2r_cross(double const *v1, double const *v2, double *v3);
 DllExport void v2r_normalize(double *v);
 
 DllExport void assert_true(bool predicate);
+DllExport void assert_false(bool predicate);
 DllExport void assert_equals_size_t(size_t expected, size_t actual);
 DllExport void assert_equals_double(double expected, double actual, double rtol,
                                     double atol);
