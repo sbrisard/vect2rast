@@ -6,6 +6,12 @@
 #include "v2r_test_utils.h"
 #include "vect2rast/v2r_ndsphere.h"
 
+void print_ndsphere(V2R_Object *sphere) {
+  printf("Sphere<%d>{r=%g, c={%g, %g, %g}}", sphere->type->dim,
+         v2r_ndsphere_radius(sphere), sphere->center[0], sphere->center[1],
+         sphere->center[2]);
+}
+
 void test_disk_new() {
   printf("test_disk_new...");
   size_t const dim = 2;
