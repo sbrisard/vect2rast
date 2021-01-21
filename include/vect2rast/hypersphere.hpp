@@ -6,6 +6,7 @@
 #pragma once
 
 #include <array>
+#include <numeric>
 #include <ostream>
 #include <span>
 #include <sstream>
@@ -41,12 +42,11 @@ class Hypersphere {
   }
 
   bool belongs(const std::span<double, DIM> point) const {
-    double r2 = 0.0;
-    for (size_t i = 0; i < DIM; i++) {
-      const double x_i = point[i] - center[i];
-      r2 += x_i * x_i;
-    }
-    return r2 <= radius * radius;
+    return std::transform_reduce(point.begin(), point.end(), center.cbegin(),
+                                 0.0, std::plus<>(), [](double c, double p) {
+                                   double cp = p - c;
+                                   return cp * cp;
+                                 }) <= radius * radius;
   }
 };
 
