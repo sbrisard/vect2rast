@@ -1,12 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
 #include <iostream>
 
 #include "v2r_test_utils.hpp"
 #include "vect2rast/hypersphere.hpp"
 
 template <size_t DIM>
-void test_hypersphere_get_bounding_box(Hypersphere<DIM> hypersphere) {
+void test_hypersphere_get_bounding_box(
+    vect2rast::Hypersphere<DIM> hypersphere) {
   std::cout << "test_hypersphere_get_bounding_box(" << hypersphere << ")...";
 
   std::array<double, DIM> bbmin, bbmax;
@@ -23,7 +22,7 @@ void test_hypersphere_get_bounding_box(Hypersphere<DIM> hypersphere) {
 }
 
 template <size_t DIM>
-void test_hypersphere_belongs(Hypersphere<DIM> hypersphere) {
+void test_hypersphere_belongs(vect2rast::Hypersphere<DIM> hypersphere) {
   std::cout << "test_hypersphere_belongs(" << hypersphere << ")...";
   double *directions = v2r_test_generate_directions(DIM);
   double const *n = directions;
@@ -68,8 +67,8 @@ void test_hypersphere_belongs(Hypersphere<DIM> hypersphere) {
 //}
 
 void test_hypersphere_all() {
-  Hypersphere<2> disk{{1.2, -3.4}, 7.8};
-  Hypersphere<3> sphere{{1.2, -3.4, 5.6}, 7.8};
+  vect2rast::Hypersphere<2> disk{{1.2, -3.4}, 7.8};
+  vect2rast::Hypersphere<3> sphere{{1.2, -3.4, 5.6}, 7.8};
 
   test_hypersphere_get_bounding_box(disk);
   test_hypersphere_get_bounding_box(sphere);

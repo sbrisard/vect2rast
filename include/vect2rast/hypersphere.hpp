@@ -13,6 +13,7 @@
 
 #include "vect2rast.hpp"
 
+namespace vect2rast {
 template <size_t DIM>
 class Hypersphere {
  public:
@@ -41,9 +42,9 @@ class Hypersphere {
   void get_bounding_box(std::span<double, DIM> bbmin,
                         std::span<double, DIM> bbmax) const {
     std::transform(center.cbegin(), center.cend(), bbmin.begin(),
-                   [=](double x) -> double { return x - radius; });
+                   [this](double x) -> double { return x - this->radius; });
     std::transform(center.cbegin(), center.cend(), bbmax.begin(),
-                   [=](double x) -> double { return x + radius; });
+                   [this](double x) -> double { return x + this->radius; });
   }
 
   /** Return `true` if the specified `point` belongs to this hypersphere. */
@@ -60,3 +61,4 @@ template <size_t DIM>
 std::ostream &operator<<(std::ostream &os, const Hypersphere<DIM> hypersphere) {
   return os << hypersphere.repr();
 }
+}  // namespace vect2rast
