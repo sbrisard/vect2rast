@@ -10,7 +10,8 @@
 
 #include <stdbool.h>
 #include <stdlib.h>
-
+#include <iterator>
+#include <sstream>
 #include <string>
 
 #if _WIN32
@@ -64,7 +65,8 @@ struct V2R_ObjectType_ {
    * The bounding box is not required to be optimal. However, tighter bounding
    * boxes should result in faster rasterization.
    */
-  void (*get_bounding_box)(V2R_Object const *object, double *bbmin, double *bbmax);
+  void (*get_bounding_box)(V2R_Object const *object, double *bbmin,
+                           double *bbmax);
 };
 
 /**
@@ -120,4 +122,16 @@ DllExport void v2r_object_free(V2R_Object *object);
 DllExport int v2r_raster(V2R_Object const *object, double const *length,
                          size_t const *size, int *grid, int value);
 
+namespace vect2rast {
+template <typename Iterator>
+std::string repr(Iterator first, Iterator last) {
+  std::ostringstream stream;
+  stream << "{";
+  for (auto i = first; i < last; i++) {
+    stream << *i << ",";
+  }
+  stream << "}";
+  return stream.str();
+}
+}  // namespace vect2rast
 #endif
