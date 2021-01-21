@@ -67,7 +67,7 @@ void test_hypersphere_belongs(Hypersphere<DIM> hypersphere) {
 //  }
 //}
 
-void v2r_test_ndsphere_all() {
+void test_hypersphere_all() {
   Hypersphere<2> disk{{1.2, -3.4}, 7.8};
   Hypersphere<3> sphere{{1.2, -3.4, 5.6}, 7.8};
 
