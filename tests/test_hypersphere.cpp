@@ -3,7 +3,7 @@
 #include <iostream>
 
 #include "v2r_test_utils.hpp"
-#include "vect2rast/v2r_ndsphere.hpp"
+#include "vect2rast/hypersphere.hpp"
 
 template <size_t DIM>
 void test_hypersphere_get_bounding_box(Hypersphere<DIM> hypersphere) {
