@@ -5,41 +5,21 @@
 #include "v2r_test_utils.hpp"
 #include "vect2rast/v2r_ndsphere.hpp"
 
-void test_disk_get_bounding_box() {
-  constexpr size_t dim = 2;
-  std::array<double, dim> c{1.2, -3.4};
-  double const r = 7.8;
+template <size_t DIM>
+void test_hypersphere_get_bounding_box(Hypersphere<DIM> hypersphere) {
+  std::cout << "test_hypersphere_get_bounding_box(" << hypersphere << ")...";
 
-  Hypersphere<dim> disk{c, r};
-  std::cout << "test_disk_bounding_box(" << disk << ")...";
+  double bbmin[DIM], bbmax[DIM];
+  hypersphere.get_bounding_box(bbmin, bbmax);
 
-  double bbmin[dim], bbmax[dim];
-  disk.get_bounding_box(bbmin, bbmax);
-
-  for (size_t i = 0; i < dim; i++) {
-    assert_equals_double(c[i] - r, bbmin[i], 0.0, 0.0);
-    assert_equals_double(c[i] + r, bbmax[i], 0.0, 0.0);
+  for (size_t i = 0; i < DIM; i++) {
+    assert_equals_double(hypersphere.center[i] - hypersphere.radius, bbmin[i],
+                         0.0, 0.0);
+    assert_equals_double(hypersphere.center[i] + hypersphere.radius, bbmax[i],
+                         0.0, 0.0);
   }
 
   std::cout << "OK" << std::endl;
-}
-
-void test_sphere_get_bounding_box() {
-  constexpr size_t dim = 3;
-  std::array<double, dim> c{1.2, -3.4, 5.6};
-  double const r = 7.8;
-  Hypersphere<dim> sphere{c, r};
-  std::cout << "test_sphere_get_bounding_box(" << sphere << ")...";
-
-  double bbmin[dim], bbmax[dim];
-  sphere.get_bounding_box(bbmin, bbmax);
-
-  for (size_t i = 0; i < dim; i++) {
-    assert_equals_double(c[i] - r, bbmin[i], 0.0, 0.0);
-    assert_equals_double(c[i] + r, bbmax[i], 0.0, 0.0);
-  }
-
-  std::cout << " OK" << std::endl;
 }
 
 template <size_t DIM>
@@ -88,11 +68,11 @@ void v2r_test_ndsphere_belongs(Hypersphere<DIM> hypersphere) {
 //}
 
 void v2r_test_ndsphere_all() {
-  test_disk_get_bounding_box();
-  test_sphere_get_bounding_box();
-
   Hypersphere<2> disk{{1.2, -3.4}, 7.8};
   Hypersphere<3> sphere{{1.2, -3.4, 5.6}, 7.8};
+
+  test_hypersphere_get_bounding_box(disk);
+  test_hypersphere_get_bounding_box(sphere);
 
   v2r_test_ndsphere_belongs(disk);
   v2r_test_ndsphere_belongs(sphere);
