@@ -35,10 +35,10 @@ class Hypersphere {
 
   void get_bounding_box(std::span<double, DIM> bbmin,
                         std::span<double, DIM> bbmax) const {
-    for (size_t i = 0; i < DIM; i++) {
-      bbmin[i] = center[i] - radius;
-      bbmax[i] = center[i] + radius;
-    }
+    std::transform(center.cbegin(), center.cend(), bbmin.begin(),
+                   [=](double x) -> double { return x - radius; });
+    std::transform(center.cbegin(), center.cend(), bbmax.begin(),
+                   [=](double x) -> double { return x + radius; });
   }
 
   bool belongs(const std::span<double, DIM> point) const {
