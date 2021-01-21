@@ -19,7 +19,7 @@ void test_hypersphere_get_bounding_box(Hypersphere<DIM> hypersphere) {
                          0.0, 0.0);
   }
 
-  std::cout << "OK" << std::endl;
+  std::cout << " OK" << std::endl;
 }
 
 template <size_t DIM>
@@ -41,7 +41,7 @@ void test_hypersphere_belongs(Hypersphere<DIM> hypersphere) {
     assert_false(hypersphere.belongs(p_out));
   }
   free(directions);
-  std::cout << "OK" << std::endl;
+  std::cout << " OK" << std::endl;
 }
 
 // void v2r_test_ndsphere_raster() {
