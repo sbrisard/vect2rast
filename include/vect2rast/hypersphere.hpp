@@ -22,9 +22,13 @@ class Hypersphere {
   /** The radius of the hypersphere. */
   const double radius;
 
+  /**
+   * Create a new instance of this class, with specified `center` and `radius.
+   */
   Hypersphere(const std::array<double, DIM> center, const double radius)
       : center(center), radius(radius) {}
 
+  /** Return a string representation of this hypersphere. */
   std::string repr() const {
     std::ostringstream stream;
     stream << "Hypersphere<" << DIM << ">{radius=" << radius
@@ -33,6 +37,7 @@ class Hypersphere {
     return stream.str();
   }
 
+  /** Updates `bbmin` and `bbmax` with the bounding-box of this hypersphere. */
   void get_bounding_box(std::span<double, DIM> bbmin,
                         std::span<double, DIM> bbmax) const {
     std::transform(center.cbegin(), center.cend(), bbmin.begin(),
@@ -41,6 +46,7 @@ class Hypersphere {
                    [=](double x) -> double { return x + radius; });
   }
 
+  /** Return `true` if the specified `point` belongs to this hypersphere. */
   bool belongs(const std::span<double, DIM> point) const {
     return std::transform_reduce(point.begin(), point.end(), center.cbegin(),
                                  0.0, std::plus<>(), [](double c, double p) {
