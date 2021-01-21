@@ -7,6 +7,7 @@
 
 #include <array>
 #include <ostream>
+#include <span>
 #include <sstream>
 
 #include "vect2rast.hpp"
@@ -31,14 +32,15 @@ class Hypersphere {
     return stream.str();
   }
 
-  void get_bounding_box(double *bbmin, double *bbmax) const {
+  void get_bounding_box(std::span<double, DIM> bbmin,
+                        std::span<double, DIM> bbmax) const {
     for (size_t i = 0; i < DIM; i++) {
       bbmin[i] = center[i] - radius;
       bbmax[i] = center[i] + radius;
     }
   }
 
-  bool belongs(double const *point) const {
+  bool belongs(const std::span<double, DIM> point) const {
     double r2 = 0.0;
     for (size_t i = 0; i < DIM; i++) {
       const double x_i = point[i] - center[i];

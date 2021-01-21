@@ -9,7 +9,7 @@ template <size_t DIM>
 void test_hypersphere_get_bounding_box(Hypersphere<DIM> hypersphere) {
   std::cout << "test_hypersphere_get_bounding_box(" << hypersphere << ")...";
 
-  double bbmin[DIM], bbmax[DIM];
+  std::array<double, DIM> bbmin, bbmax;
   hypersphere.get_bounding_box(bbmin, bbmax);
 
   for (size_t i = 0; i < DIM; i++) {
@@ -30,7 +30,7 @@ void test_hypersphere_belongs(Hypersphere<DIM> hypersphere) {
   double const r_in = 0.95 * hypersphere.radius;
   double const r_out = 1.05 * hypersphere.radius;
 
-  double p_in[DIM], p_out[DIM];
+  std::array<double, DIM> p_in, p_out;
   for (size_t i = 0; i < v2r_test_get_num_directions(DIM); i++, n += DIM) {
     for (size_t j = 0; j < DIM; j++) {
       p_in[j] = hypersphere.center[j] + r_in * n[j];
