@@ -14,8 +14,9 @@ class Spheroid {
   const double polar_radius;
   const std::array<double, Spheroid::dim> axis;
 
-  Spheroid(const std::array<double, Spheroid::dim> center, double equatorial_radius,
-           double polar_radius, const std::array<double, Spheroid::dim> axis)
+  Spheroid(const std::array<double, Spheroid::dim> center,
+           double equatorial_radius, double polar_radius,
+           const std::array<double, Spheroid::dim> axis)
       : center(center),
         equatorial_radius(equatorial_radius),
         polar_radius(polar_radius),
@@ -63,4 +64,9 @@ class Spheroid {
   const double q1;
   const double q2;
 };
+
+template <size_t DIM>
+std::ostream &operator<<(std::ostream &os, const Spheroid spheroid) {
+  return os << spheroid.repr();
+}
 }  // namespace vect2rast
