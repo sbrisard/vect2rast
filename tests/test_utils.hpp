@@ -2,7 +2,10 @@
 
 #include <array>
 #include <cmath>
+#include <numeric>
 #include <vector>
+
+#include "vect2rast/vect2rast.hpp"
 
 // DllExport void v2r_test_raster(V2R_Object const *object, double const
 // *length,
@@ -38,11 +41,12 @@ std::array<double, 3> v2r_cross(const std::array<double, 3>& v1,
           v1[0] * v2[1] - v1[1] * v2[0]};
 }
 
-void v2r_normalize(std::array<double, 3>& v) {
-  double s = 1. / sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-  v[0] *= s;
-  v[1] *= s;
-  v[2] *= s;
+template <size_t N>
+void v2r_normalize(std::array<double, N>& v) {
+  double s =
+      1. / sqrt(std::inner_product(v.cbegin(), v.cend(), v.cbegin(), 0.0));
+  std::transform(v.cbegin(), v.cend(), v.begin(),
+                 [s](double x) { return s * x; });
 }
 
 void assert_true(bool predicate) {
