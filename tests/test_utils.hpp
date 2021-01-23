@@ -1,7 +1,8 @@
 #pragma once
 
+#include <array>
 #include <cmath>
-#include <span>
+#include <vector>
 #include "vect2rast/vect2rast.hpp"
 
 // DllExport void v2r_test_raster(V2R_Object const *object, double const
@@ -21,27 +22,30 @@ constexpr size_t get_num_directions() {
 }
 
 template <size_t DIM>
-double *generate_directions() {
+std::vector<std::array<double, DIM>> generate_directions() {
   size_t const num_directions = get_num_directions<DIM>();
-  size_t const size = DIM * num_directions * sizeof(double);
-  auto directions = static_cast<double *>(malloc(size));
+  std::vector<std::array<double, DIM>> directions{};
   if constexpr (DIM == 2) {
-    double *dir = directions;
     for (size_t i = 0; i < num_directions; i++) {
-      double const theta = 2 * M_PI * i / (double)num_directions;
-      *dir = cos(theta);
-      dir += 1;
-      *dir = sin(theta);
-      dir += 1;
+      const double theta = 2 * M_PI * i / (double)num_directions;
+      directions.push_back({cos(theta), sin(theta)});
     }
   } else if constexpr (DIM == 3) {
-    double phi = .5 * (1. + sqrt(5.));
-    double u = 1. / sqrt(1 + phi * phi);
-    double v = phi * u;
-    double dir[] = {0., -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v,
-                    -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v, 0.,
-                    -v, 0., -u, -v, 0., +u, +v, 0., -u, +v, 0., +u};
-    memcpy(directions, dir, size);
+    const double phi = .5 * (1. + sqrt(5.));
+    const double u = 1. / sqrt(1 + phi * phi);
+    const double v = phi * u;
+    directions.push_back({0., -u, -v});
+    directions.push_back({0., -u, +v});
+    directions.push_back({0., +u, -v});
+    directions.push_back({0., +u, +v});
+    directions.push_back({-u, -v, 0.});
+    directions.push_back({-u, +v, 0.});
+    directions.push_back({+u, -v, 0.});
+    directions.push_back({+u, +v, 0.});
+    directions.push_back({-v, 0., -u});
+    directions.push_back({-v, 0., +u});
+    directions.push_back({+v, 0., -u});
+    directions.push_back({+v, 0., +u});
   } else {
     // This should never occur, since DIM was already statically asserted
     // through get_num_directions
@@ -50,10 +54,10 @@ double *generate_directions() {
   return directions;
 }
 
-DllExport void v2r_cross(const std::span<double, 3> v1,
-                         const std::span<double, 3> v2,
-                         std::span<double, 3> v3);
-DllExport void v2r_normalize(std::span<double, 3> v);
+DllExport void v2r_cross(const std::array<double, 3>& v1,
+                         const std::array<double, 3>& v2,
+                         std::array<double, 3>& v3);
+DllExport void v2r_normalize(std::array<double, 3>& v);
 
 DllExport void assert_true(bool predicate);
 DllExport void assert_false(bool predicate);
