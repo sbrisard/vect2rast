@@ -1,7 +1,7 @@
 #include <iostream>
 #include <numeric>
 
-#include "v2r_test_utils.hpp"
+#include "test_utils.hpp"
 #include "vect2rast/spheroid.hpp"
 
 void test_spheroid_belongs(const std::array<double, 3> center, double a,

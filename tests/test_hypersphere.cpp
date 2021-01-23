@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "v2r_test_utils.hpp"
+#include "test_utils.hpp"
 #include "vect2rast/hypersphere.hpp"
 
 template <size_t DIM>

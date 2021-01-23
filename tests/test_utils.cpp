@@ -1,4 +1,4 @@
-#include "v2r_test_utils.hpp"
+#include "test_utils.hpp"
 
 void assert_true(bool predicate) {
   if (!predicate) exit(-1);

@@ -5,7 +5,7 @@
 
 add_executable(test_vect2rast
         test_vect2rast.cpp
-        v2r_test_utils.cpp
+        test_utils.cpp
         test_hypersphere.cpp
         test_spheroid.cpp)
 
