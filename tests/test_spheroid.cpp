@@ -4,7 +4,7 @@
 #include "v2r_test_utils.hpp"
 #include "vect2rast/spheroid.hpp"
 
-void v2r_test_spheroid_belongs(const std::array<double, 3> center, double a,
+void test_spheroid_belongs(const std::array<double, 3> center, double a,
                                double c) {
   constexpr size_t dim = 3;
   std::cout << "test_spheroid_belongs(center="
@@ -45,8 +45,8 @@ void v2r_test_spheroid_belongs(const std::array<double, 3> center, double a,
   std::cout << " OK" << std::endl;
 }
 
-void v2r_test_spheroid_all() {
+void test_spheroid_all() {
   std::array<double, 3> center{1.2, -3.4, 5.6};
-  v2r_test_spheroid_belongs(center, 0.5, 0.02);
-  v2r_test_spheroid_belongs(center, 0.02, 0.5);
+  test_spheroid_belongs(center, 0.5, 0.02);
+  test_spheroid_belongs(center, 0.02, 0.5);
 }
