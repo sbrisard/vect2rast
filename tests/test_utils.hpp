@@ -54,9 +54,8 @@ std::vector<std::array<double, DIM>> generate_directions() {
   return directions;
 }
 
-DllExport void v2r_cross(const std::array<double, 3>& v1,
-                         const std::array<double, 3>& v2,
-                         std::array<double, 3>& v3);
+DllExport std::array<double, 3> v2r_cross(const std::array<double, 3>& v1,
+                                          const std::array<double, 3>& v2);
 DllExport void v2r_normalize(std::array<double, 3>& v);
 
 DllExport void assert_true(bool predicate);

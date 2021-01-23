@@ -5,7 +5,7 @@
 #include "vect2rast/spheroid.hpp"
 
 void test_spheroid_belongs(
-    const std::array<double, vect2rast::Spheroid::dim> center, double a,
+    const std::array<double, vect2rast::Spheroid::dim>& center, double a,
     double c) {
   constexpr size_t dim = vect2rast::Spheroid::dim;
   std::cout << "test_spheroid_belongs(center="
@@ -17,12 +17,12 @@ void test_spheroid_belongs(
   double alpha_in = 0.9999;
   double alpha_out = 1.0001;
   std::array<double, 3> ex{1., 0., 0.};
-  std::array<double, dim> p_in, p_out, d1, d2;
+  std::array<double, dim> p_in, p_out;
   for (const auto d3: directions) {
     vect2rast::Spheroid spheroid{center, a, c, d3};
-    v2r_cross(ex, d3, d1);
+    auto d1 = v2r_cross(ex, d3);
     v2r_normalize(d1);
-    v2r_cross(d3, d1, d2);
+    auto d2 = v2r_cross(d3, d1);
     for (const auto n: directions) {
       double n1 = std::inner_product(d1.cbegin(), d1.cend(), n.cbegin(), 0.);
       double n2 = std::inner_product(d2.cbegin(), d2.cend(), n.cbegin(), 0.);

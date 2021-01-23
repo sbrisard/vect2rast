@@ -88,11 +88,10 @@ size_t v2r_test_get_num_directions(size_t dim) {
   }
 }
 
-void v2r_cross(const std::array<double, 3>& v1, const std::array<double, 3>& v2,
-               std::array<double, 3>& v3) {
-  v3[0] = v1[1] * v2[2] - v1[2] * v2[1];
-  v3[1] = v1[2] * v2[0] - v1[0] * v2[2];
-  v3[2] = v1[0] * v2[1] - v1[1] * v2[0];
+std::array<double, 3> v2r_cross(const std::array<double, 3>& v1,
+                                const std::array<double, 3>& v2) {
+  return {v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2],
+          v1[0] * v2[1] - v1[1] * v2[0]};
 }
 
 void v2r_normalize(std::array<double, 3>& v) {

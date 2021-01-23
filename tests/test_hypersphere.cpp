@@ -5,7 +5,7 @@
 
 template <size_t DIM>
 void test_hypersphere_get_bounding_box(
-    vect2rast::Hypersphere<DIM> hypersphere) {
+    vect2rast::Hypersphere<DIM>& hypersphere) {
   std::cout << "test_hypersphere_get_bounding_box(" << hypersphere << ")...";
 
   std::array<double, DIM> bbmin, bbmax;
@@ -22,7 +22,7 @@ void test_hypersphere_get_bounding_box(
 }
 
 template <size_t DIM>
-void test_hypersphere_belongs(vect2rast::Hypersphere<DIM> hypersphere) {
+void test_hypersphere_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
   std::cout << "test_hypersphere_belongs(" << hypersphere << ")...";
   auto directions = generate_directions<DIM>();
   double const r_in = 0.95 * hypersphere.radius;
