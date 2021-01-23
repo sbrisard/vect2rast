@@ -1,5 +1,5 @@
-#ifndef __V2R_TEST_UTILS_H_202001120826__
-#define __V2R_TEST_UTILS_H_202001120826__
+#pragma once
+
 #include <stdio.h>
 #include <string.h>
 #include <cmath>
@@ -61,5 +61,3 @@ DllExport void assert_true(bool predicate);
 DllExport void assert_false(bool predicate);
 DllExport void assert_equals_double(double expected, double actual, double rtol,
                                     double atol);
-
-#endif
