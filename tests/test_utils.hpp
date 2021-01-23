@@ -3,29 +3,16 @@
 #include <array>
 #include <cmath>
 #include <vector>
-#include "vect2rast/vect2rast.hpp"
 
 // DllExport void v2r_test_raster(V2R_Object const *object, double const
 // *length,
 //                               size_t const *size);
 
 template <size_t DIM>
-constexpr size_t get_num_directions() {
-  static_assert((DIM == 2) || (DIM == 3));
-  if constexpr (DIM == 2) {
-    return 10;
-  } else if constexpr (DIM == 3) {
-    return 12;
-  } else {
-    // This should never occur
-  }
-}
-
-template <size_t DIM>
 std::vector<std::array<double, DIM>> generate_directions() {
-  size_t const num_directions = get_num_directions<DIM>();
   std::vector<std::array<double, DIM>> directions{};
   if constexpr (DIM == 2) {
+    size_t const num_directions = 10;
     for (size_t i = 0; i < num_directions; i++) {
       const double theta = 2 * M_PI * i / (double)num_directions;
       directions.push_back({cos(theta), sin(theta)});
@@ -54,11 +41,30 @@ std::vector<std::array<double, DIM>> generate_directions() {
   return directions;
 }
 
-DllExport std::array<double, 3> v2r_cross(const std::array<double, 3>& v1,
-                                          const std::array<double, 3>& v2);
-DllExport void v2r_normalize(std::array<double, 3>& v);
+std::array<double, 3> v2r_cross(const std::array<double, 3>& v1,
+                                const std::array<double, 3>& v2) {
+  return {v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2],
+          v1[0] * v2[1] - v1[1] * v2[0]};
+}
 
-DllExport void assert_true(bool predicate);
-DllExport void assert_false(bool predicate);
-DllExport void assert_equals_double(double expected, double actual, double rtol,
-                                    double atol);
+void v2r_normalize(std::array<double, 3>& v) {
+  double s = 1. / sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+  v[0] *= s;
+  v[1] *= s;
+  v[2] *= s;
+}
+
+void assert_true(bool predicate) {
+  if (!predicate) exit(-1);
+}
+
+void assert_false(bool predicate) {
+  if (predicate) exit(-1);
+}
+
+void assert_equals_double(double expected, double actual, double rtol,
+                          double atol) {
+  if (fabs(actual - expected) > rtol * fabs(expected) + atol) {
+    exit(-1);
+  }
+}

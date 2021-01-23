@@ -4,12 +4,9 @@
 # )
 
 add_executable(test_vect2rast
-        test_vect2rast.cpp
-        test_utils.cpp
-        test_hypersphere.cpp
-        test_spheroid.cpp)
+        test_vect2rast.cpp)
 
-target_include_directories(test_vect2rast PUBLIC ../include)
+target_include_directories(test_vect2rast PUBLIC . ../include)
 
 if (MATH_LIBRARY)
     target_link_libraries(test_vect2rast ${MATH_LIBRARY})

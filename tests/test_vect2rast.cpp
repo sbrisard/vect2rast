@@ -1,5 +1,5 @@
-void test_hypersphere_all();
-void test_spheroid_all();
+#include "test_hypersphere.hpp"
+#include "test_spheroid.hpp"
 
 int main(int argc, char **argv) {
   test_hypersphere_all();

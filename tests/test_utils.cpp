@@ -1,21 +1,6 @@
 #include "test_utils.hpp"
 #include <iostream>
 
-void assert_true(bool predicate) {
-  if (!predicate) exit(-1);
-}
-
-void assert_false(bool predicate) {
-  if (predicate) exit(-1);
-}
-
-void assert_equals_double(double expected, double actual, double rtol,
-                          double atol) {
-  if (fabs(actual - expected) > rtol * fabs(expected) + atol) {
-    exit(-1);
-  }
-}
-
 void minimum_image(double L, double L_half, double* x) {
   if (*x < -L_half) *x += L;
   if (*x > L_half) *x -= L;
@@ -76,27 +61,3 @@ void minimum_image(double L, double L_half, double* x) {
 //  free(actual);
 //  printf(" OK\n");
 //}
-
-size_t v2r_test_get_num_directions(size_t dim) {
-  switch (dim) {
-    case 2:
-      return 10;
-    case 3:
-      return 12;
-    default:
-      return 0;
-  }
-}
-
-std::array<double, 3> v2r_cross(const std::array<double, 3>& v1,
-                                const std::array<double, 3>& v2) {
-  return {v1[1] * v2[2] - v1[2] * v2[1], v1[2] * v2[0] - v1[0] * v2[2],
-          v1[0] * v2[1] - v1[1] * v2[0]};
-}
-
-void v2r_normalize(std::array<double, 3>& v) {
-  double s = 1. / sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-  v[0] *= s;
-  v[1] *= s;
-  v[2] *= s;
-}
