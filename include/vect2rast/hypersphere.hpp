@@ -13,6 +13,9 @@ namespace vect2rast {
 template <size_t DIM>
 class Hypersphere {
  public:
+  /** Number of spatial dimensions. */
+  static constexpr size_t dim = DIM;
+
   /** Coordinates of the center. */
   const std::array<double, DIM> center;
 

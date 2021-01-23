@@ -4,9 +4,10 @@
 #include "test_utils.hpp"
 #include "vect2rast/spheroid.hpp"
 
-void test_spheroid_belongs(const std::array<double, 3> center, double a,
-                               double c) {
-  constexpr size_t dim = 3;
+void test_spheroid_belongs(
+    const std::array<double, vect2rast::Spheroid::dim> center, double a,
+    double c) {
+  constexpr size_t dim = vect2rast::Spheroid::dim;
   std::cout << "test_spheroid_belongs(center="
             << vect2rast::repr(center.cbegin(), center.cend()) << ", a=" << a
             << ", c =" << c << ")...";
@@ -46,7 +47,7 @@ void test_spheroid_belongs(const std::array<double, 3> center, double a,
 }
 
 void test_spheroid_all() {
-  std::array<double, 3> center{1.2, -3.4, 5.6};
+  std::array center{1.2, -3.4, 5.6};
   test_spheroid_belongs(center, 0.5, 0.02);
   test_spheroid_belongs(center, 0.02, 0.5);
 }

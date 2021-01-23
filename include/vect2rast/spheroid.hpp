@@ -8,13 +8,14 @@
 namespace vect2rast {
 class Spheroid {
  public:
-  const std::array<double, 3> center;
+  static constexpr size_t dim = 3;
+  const std::array<double, Spheroid::dim> center;
   const double equatorial_radius;
   const double polar_radius;
-  const std::array<double, 3> axis;
+  const std::array<double, Spheroid::dim> axis;
 
-  Spheroid(const std::array<double, 3> center, double equatorial_radius,
-           double polar_radius, const std::array<double, 3> axis)
+  Spheroid(const std::array<double, Spheroid::dim> center, double equatorial_radius,
+           double polar_radius, const std::array<double, Spheroid::dim> axis)
       : center(center),
         equatorial_radius(equatorial_radius),
         polar_radius(polar_radius),
@@ -34,13 +35,12 @@ class Spheroid {
   }
 
   /** Updates `bbmin` and `bbmax` with the bounding-box of this hypersphere. */
-  void get_bounding_box(std::span<double, 3> bbmin,
-                        std::span<double, 3> bbmax) const {
-    const size_t dim = 3;
+  void get_bounding_box(std::span<double, Spheroid::dim> bbmin,
+                        std::span<double, Spheroid::dim> bbmax) const {
     const double a2 = equatorial_radius * equatorial_radius;
     const double c2 = polar_radius * polar_radius;
     const double c2_m_a2 = c2 - a2;
-    for (size_t i = 0; i < dim; i++) {
+    for (size_t i = 0; i < Spheroid::dim; i++) {
       const double r = sqrt(a2 + c2_m_a2 * axis[i] * axis[i]);
       bbmin[i] = center[i] - r;
       bbmax[i] = center[i] + r;
@@ -48,10 +48,10 @@ class Spheroid {
   }
 
   /** Return `true` if the specified `point` belongs to this hypersphere. */
-  bool belongs(const std::span<double, 3> point) const {
+  bool belongs(const std::span<double, Spheroid::dim> point) const {
     double x_dot_x = 0.;
     double d_dot_x = 0.;
-    for (size_t i = 0; i < 3; i++) {
+    for (size_t i = 0; i < Spheroid::dim; i++) {
       const double x_i = point[i] - center[i];
       x_dot_x += x_i * x_i;
       d_dot_x += axis[i] * x_i;
