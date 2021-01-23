@@ -1,7 +1,5 @@
 #pragma once
 
-#include <stdio.h>
-#include <string.h>
 #include <cmath>
 #include <span>
 #include "vect2rast/vect2rast.hpp"

@@ -1,6 +1,3 @@
-#include <math.h>
-#include <iostream>
-
 #include "v2r_test_utils.hpp"
 
 void assert_true(bool predicate) {
