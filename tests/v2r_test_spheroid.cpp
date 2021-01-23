@@ -1,77 +1,55 @@
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <iostream>
+#include <numeric>
 
 #include "v2r_test_utils.hpp"
 #include "vect2rast/v2r_spheroid.hpp"
 
-void v2r_test_spheroid_new() {
-  printf("test_spheroid_new...");
-  size_t const dim = 3;
-  double const x[] = {1.2, -3.4, 5.6};
-  double const theta = .3 * M_PI;
-  double const phi = .5 * M_PI;
-  double const n[] = {sin(theta) * cos(phi), sin(theta) * sin(phi), cos(theta)};
-  double const a = 7.8;
-  double const c = 9.1;
+void v2r_test_spheroid_belongs(const std::array<double, 3> center, double a,
+                               double c) {
+  constexpr size_t dim = 3;
+  std::cout << "test_spheroid_belongs(center="
+            << vect2rast::repr(center.cbegin(), center.cend()) << ", a=" << a
+            << ", c =" << c << ")...";
 
-  V2R_Object *spheroid = v2r_spheroid_new(x, a, c, n);
-  assert_equals_size_t(dim, spheroid->type->dim);
-  assert_equals_double(a, v2r_spheroid_equatorial_radius(spheroid), 0., 0.);
-  assert_equals_double(c, v2r_spheroid_polar_radius(spheroid), 0., 0.);
-
-  double n_act[3];
-  v2r_spheroid_axis(spheroid, n_act);
-  for (size_t i = 0; i < dim; i++) {
-    assert_equals_double(x[i], spheroid->center[i], 0., 0.);
-    assert_equals_double(n[i], n_act[i], 0., 0.);
-  }
-
-  v2r_object_free(spheroid);
-  printf(" OK\n");
-}
-
-void v2r_test_spheroid_belongs(double *const center, double a, double c) {
-  size_t const dim = 3;
-  printf("test_spheroid_belongs{center=");
-  print_array_double(dim, center);
-  printf(", a=%g, c=%g}... ", a, c);
-
-  size_t num_directions = v2r_test_get_num_directions(dim);
-  double *first = v2r_test_generate_directions(dim);
+  size_t num_directions = get_num_directions<dim>();
+  double *first = generate_directions<dim>();
   double *last = first + dim * num_directions;
 
   double alpha_in = 0.9999;
   double alpha_out = 1.0001;
-  char name[512];
-  double ex[] = {1., 0., 0.}, p_in[dim], p_out[dim], d1[dim], d2[dim];
+  std::array<double, 3> ex{1., 0., 0.};
+  std::array<double, dim> p_in, p_out, d1, d2;
   for (double *d3 = first; d3 < last; d3 += dim) {
-    V2R_Object *spheroid = v2r_spheroid_new(center, a, c, d3);
-    v2r_cross(ex, d3, d1);
+    vect2rast::Spheroid spheroid{center, a, c, {d3[0], d3[1], d3[2]}};
+    // TODO this is ugly
+    std::array d3_{d3[0], d3[1], d3[2]};
+    v2r_cross(ex, d3_, d1);
     v2r_normalize(d1);
-    v2r_cross(d3, d1, d2);
+    v2r_cross(d3_, d1, d2);
     for (double *n = first; n < last; n += dim) {
-      double n1 = v2r_dot(d1, n);
-      double n2 = v2r_dot(d2, n);
-      double n3 = v2r_dot(d3, n);
+      // TODO this is ugly
+      std::array n_{n[0], n[1], n[2]};
+      double n1 = std::inner_product(d1.cbegin(), d1.cend(), n_.cbegin(), 0.);
+      double n2 = std::inner_product(d2.cbegin(), d2.cend(), n_.cbegin(), 0.);
+      double n3 = std::inner_product(d3_.cbegin(), d3_.cend(), n_.cbegin(), 0.);
       for (size_t k = 0; k < dim; k++) {
         double r = a * (n1 * d1[k] + n2 * d2[k]) + c * n3 * d3[k];
-        p_in[k] = spheroid->center[k] + alpha_in * r;
-        p_out[k] = spheroid->center[k] + alpha_out * r;
+        p_in[k] = spheroid.center[k] + alpha_in * r;
+        p_out[k] = spheroid.center[k] + alpha_out * r;
       }
-      assert_true(spheroid->type->belongs(spheroid, p_in));
-      assert_false(spheroid->type->belongs(spheroid, p_out));
+      assert_true(spheroid.belongs(p_in));
+      assert_false(spheroid.belongs(p_out));
     }
-    v2r_object_free(spheroid);
   }
   free(first);
-  printf("OK\n");
+  std::cout << " OK" << std::endl;
 }
 
 void v2r_test_spheroid_all() {
-  v2r_test_spheroid_new();
-
-  double center[] = {1.2, -3.4, 5.6};
+  std::array<double, 3> center{1.2, -3.4, 5.6};
   v2r_test_spheroid_belongs(center, 0.5, 0.02);
   v2r_test_spheroid_belongs(center, 0.02, 0.5);
 }
