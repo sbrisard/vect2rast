@@ -14,6 +14,7 @@ target_include_directories(test_vect2rast PUBLIC ../include)
 if (MATH_LIBRARY)
     target_link_libraries(test_vect2rast ${MATH_LIBRARY})
 endif ()
+add_compile_definitions(_USE_MATH_DEFINES)
 
 #find_package(Catch2 REQUIRED)
 target_link_libraries(test_vect2rast vect2rast)
