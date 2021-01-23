@@ -1,5 +1,5 @@
-#include <iostream>
 #include <math.h>
+#include <iostream>
 
 #include "v2r_test_utils.hpp"
 
@@ -51,7 +51,8 @@ void minimum_image(double L, double L_half, double *x) {
 
 void v2r_test_raster(V2R_Object const *object, double const *length,
                      size_t const *size) {
-  std::cout << "v2r_test_raster{" << object->type->name << "}<" << object->type->dim << ">";
+  std::cout << "v2r_test_raster{" << object->type->name << "}<"
+            << object->type->dim << ">";
   print_array_double(object->type->dim, object->center);
   printf("}, size=");
   print_array_size_t(object->type->dim, size);
@@ -114,44 +115,14 @@ size_t v2r_test_get_num_directions(size_t dim) {
   }
 }
 
-double *v2r_test_generate_directions(size_t dim) {
-  size_t const num_directions = v2r_test_get_num_directions(dim);
-  size_t const size = dim * num_directions * sizeof(double);
-  auto directions = static_cast<double *>(malloc(size));
-  if (dim == 2) {
-    double *dir = directions;
-    for (size_t i = 0; i < num_directions; i++) {
-      double const theta = 2 * M_PI * i / (double)num_directions;
-      *dir = cos(theta);
-      dir += 1;
-      *dir = sin(theta);
-      dir += 1;
-    }
-  } else if (dim == 3) {
-    double phi = .5 * (1. + sqrt(5.));
-    double u = 1. / sqrt(1 + phi * phi);
-    double v = phi * u;
-    double dir[] = {0., -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v,
-                    -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v, 0.,
-                    -v, 0., -u, -v, 0., +u, +v, 0., -u, +v, 0., +u};
-    memcpy(directions, dir, size);
-  } else {
-    return NULL;
-  }
-  return directions;
-}
-
-double v2r_dot(double const *v1, double const *v2) {
-  return v1[0] * v2[0] + v1[1] * v2[1] + v1[2] * v2[2];
-}
-
-void v2r_cross(double const *v1, double const *v2, double *v3) {
+void v2r_cross(const std::span<double, 3> v1, const std::span<double, 3> v2,
+               std::span<double, 3> v3) {
   v3[0] = v1[1] * v2[2] - v1[2] * v2[1];
   v3[1] = v1[2] * v2[0] - v1[0] * v2[2];
   v3[2] = v1[0] * v2[1] - v1[1] * v2[0];
 }
 
-void v2r_normalize(double *v) {
+void v2r_normalize(std::span<double, 3> v) {
   double s = 1. / sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
   v[0] *= s;
   v[1] *= s;

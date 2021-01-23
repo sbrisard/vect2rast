@@ -2,17 +2,59 @@
 #define __V2R_TEST_UTILS_H_202001120826__
 #include <stdio.h>
 #include <string.h>
+#include <cmath>
+#include <span>
 #include "vect2rast/vect2rast.hpp"
 
 DllExport void v2r_test_raster(V2R_Object const *object, double const *length,
                                size_t const *size);
 
-DllExport size_t v2r_test_get_num_directions(size_t dim);
-DllExport double *v2r_test_generate_directions(size_t dim);
+template <size_t DIM>
+constexpr size_t get_num_directions() {
+  static_assert((DIM == 2) || (DIM == 3));
+  if constexpr (DIM == 2) {
+    return 10;
+  } else if constexpr (DIM == 3) {
+    return 12;
+  } else {
+    // This should never occur
+  }
+}
 
-DllExport double v2r_dot(double const *v1, double const *v2);
-DllExport void v2r_cross(double const *v1, double const *v2, double *v3);
-DllExport void v2r_normalize(double *v);
+template <size_t DIM>
+double *generate_directions() {
+  size_t const num_directions = get_num_directions<DIM>();
+  size_t const size = DIM * num_directions * sizeof(double);
+  auto directions = static_cast<double *>(malloc(size));
+  if constexpr (DIM == 2) {
+    double *dir = directions;
+    for (size_t i = 0; i < num_directions; i++) {
+      double const theta = 2 * M_PI * i / (double)num_directions;
+      *dir = cos(theta);
+      dir += 1;
+      *dir = sin(theta);
+      dir += 1;
+    }
+  } else if constexpr (DIM == 3) {
+    double phi = .5 * (1. + sqrt(5.));
+    double u = 1. / sqrt(1 + phi * phi);
+    double v = phi * u;
+    double dir[] = {0., -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v,
+                    -u, -v, 0., -u, +v, 0., +u, -v, 0., +u, +v, 0.,
+                    -v, 0., -u, -v, 0., +u, +v, 0., -u, +v, 0., +u};
+    memcpy(directions, dir, size);
+  } else {
+    // This should never occur, since DIM was already statically asserted
+    // through get_num_directions
+    return nullptr;
+  }
+  return directions;
+}
+
+DllExport void v2r_cross(const std::span<double, 3> v1,
+                         const std::span<double, 3> v2,
+                         std::span<double, 3> v3);
+DllExport void v2r_normalize(std::span<double, 3> v);
 
 DllExport void print_array_size_t(size_t n, const size_t *a);
 DllExport void print_array_double(size_t n, const double *a);
