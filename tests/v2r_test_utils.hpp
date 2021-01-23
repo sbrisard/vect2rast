@@ -6,7 +6,8 @@
 #include <span>
 #include "vect2rast/vect2rast.hpp"
 
-//DllExport void v2r_test_raster(V2R_Object const *object, double const *length,
+// DllExport void v2r_test_raster(V2R_Object const *object, double const
+// *length,
 //                               size_t const *size);
 
 template <size_t DIM>
@@ -56,12 +57,8 @@ DllExport void v2r_cross(const std::span<double, 3> v1,
                          std::span<double, 3> v3);
 DllExport void v2r_normalize(std::span<double, 3> v);
 
-DllExport void print_array_size_t(size_t n, const size_t *a);
-DllExport void print_array_double(size_t n, const double *a);
-
 DllExport void assert_true(bool predicate);
 DllExport void assert_false(bool predicate);
-DllExport void assert_equals_size_t(size_t expected, size_t actual);
 DllExport void assert_equals_double(double expected, double actual, double rtol,
                                     double atol);
 

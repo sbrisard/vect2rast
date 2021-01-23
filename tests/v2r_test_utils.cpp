@@ -3,38 +3,12 @@
 
 #include "v2r_test_utils.hpp"
 
-void print_array_size_t(size_t n, const size_t *a) {
-  printf("{");
-  for (size_t i = 0; i < n; i++) {
-    printf("%d, ", a[i]);
-  }
-  printf("}");
-}
-
-void print_array_double(size_t n, const double *a) {
-  printf("{");
-  for (size_t i = 0; i < n; i++) {
-    printf("%g, ", a[i]);
-  }
-  printf("}");
-}
-
 void assert_true(bool predicate) {
   if (!predicate) exit(-1);
 }
 
 void assert_false(bool predicate) {
   if (predicate) exit(-1);
-}
-
-void assert_equals_size_t(size_t expected, size_t actual) {
-  if (expected != actual) {
-    exit(-1);
-  }
-}
-
-void assert_equals_int(int expected, int actual) {
-  if (expected != actual) exit(-1);
 }
 
 void assert_equals_double(double expected, double actual, double rtol,
