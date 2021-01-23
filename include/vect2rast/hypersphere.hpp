@@ -1,8 +1,4 @@
-/**
- * @file v2r_ndsphere.h
- *
- * @brief This header defines n-dimensional spheres.
- */
+/** N-dimensional sphere. */
 #pragma once
 
 #include <array>

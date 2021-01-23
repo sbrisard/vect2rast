@@ -1,15 +1,5 @@
-/**
- * @file vect2rast.h
- *
- * @brief This header defines the basic object model, as well as the
- * raterization functions.
- */
+#pragma once
 
-#ifndef __VECT2RAST_H_202001120825__
-#define __VECT2RAST_H_202001120825__
-
-#include <stdbool.h>
-#include <stdlib.h>
 #include <iterator>
 #include <sstream>
 #include <string>
@@ -20,8 +10,8 @@
 #define DllExport
 #endif
 
-//template <typename T>
-//int v2r_raster(const T &object, double const *length, size_t const *size,
+// template <typename T>
+// int v2r_raster(const T &object, double const *length, size_t const *size,
 //               int *grid, int value);
 
 namespace vect2rast {
@@ -36,4 +26,3 @@ std::string repr(Iterator first, Iterator last) {
   return stream.str();
 }
 }  // namespace vect2rast
-#endif

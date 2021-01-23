@@ -1,8 +1,4 @@
-/**
- * @file v2r_spheroid.h
- *
- * @brief This header defines n-dimensional spheres.
- */
+/** Define a 3D spheroid. */
 #pragma once
 #include <array>
 #include <span>

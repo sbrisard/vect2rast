@@ -6,8 +6,8 @@
 #include <span>
 #include "vect2rast/vect2rast.hpp"
 
-DllExport void v2r_test_raster(V2R_Object const *object, double const *length,
-                               size_t const *size);
+//DllExport void v2r_test_raster(V2R_Object const *object, double const *length,
+//                               size_t const *size);
 
 template <size_t DIM>
 constexpr size_t get_num_directions() {
