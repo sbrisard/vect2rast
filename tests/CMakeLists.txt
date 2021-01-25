@@ -11,6 +11,6 @@ endif ()
 add_compile_definitions(_USE_MATH_DEFINES)
 
 find_package(Catch2 REQUIRED)
-target_link_libraries(test_vect2rast PRIVATE vect2rast Catch2::Catch2)
+target_link_libraries(test_vect2rast PRIVATE Catch2::Catch2)
 
 add_test(NAME test_vect2rast COMMAND test_vect2rast)

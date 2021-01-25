@@ -40,14 +40,18 @@ class Hypersphere {
   /** Updates `bbmin` and `bbmax` with the bounding-box of this hypersphere. */
   void get_bounding_box(std::span<double, DIM> bbmin,
                         std::span<double, DIM> bbmax) const {
-    for (auto c = center.cbegin(), a = bbmin.begin(), b = bbmax.begin();
-         c < center.cend(); ++c, ++a, ++b) {
+    auto a = bbmin.begin();
+    auto b = bbmax.begin();
+    for (auto c = center.cbegin(); c < center.cend(); ++c) {
       *a = *c - radius;
       *b = *c + radius;
+      ++a;
+      ++b;
     }
   }
 
-  /** Return `true` if the specified `point` test_hypersphere_belongs to this hypersphere. */
+  /** Return `true` if the specified `point` test_hypersphere_belongs to this
+   * hypersphere. */
   bool belongs(const std::span<double, DIM> point) const {
     return std::transform_reduce(point.begin(), point.end(), center.cbegin(),
                                  0.0, std::plus<>(), [](double c, double p) {
