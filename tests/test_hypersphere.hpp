@@ -1,32 +1,23 @@
 #pragma once
 
-#include <iostream>
+#include "catch2/catch.hpp"
 
 #include "test_utils.hpp"
 #include "vect2rast/hypersphere.hpp"
 
-namespace test_hypersphere {
 template <size_t DIM>
-void test_get_bounding_box(
-    vect2rast::Hypersphere<DIM>& hypersphere) {
-  std::cout << "test_get_bounding_box(" << hypersphere << ")...";
-
+void test_hypersphere_get_bounding_box(vect2rast::Hypersphere<DIM>& hypersphere) {
   std::array<double, DIM> bbmin, bbmax;
   hypersphere.get_bounding_box(bbmin, bbmax);
 
   for (size_t i = 0; i < DIM; i++) {
-    assert_equals_double(hypersphere.center[i] - hypersphere.radius, bbmin[i],
-                         0.0, 0.0);
-    assert_equals_double(hypersphere.center[i] + hypersphere.radius, bbmax[i],
-                         0.0, 0.0);
+    REQUIRE(bbmin[i] == hypersphere.center[i] - hypersphere.radius);
+    REQUIRE(bbmax[i] == hypersphere.center[i] + hypersphere.radius);
   }
-
-  std::cout << " OK" << std::endl;
 }
 
 template <size_t DIM>
-void test_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
-  std::cout << "test_belongs(" << hypersphere << ")...";
+void test_hypersphere_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
   auto directions = generate_directions<DIM>();
   double const r_in = 0.95 * hypersphere.radius;
   double const r_out = 1.05 * hypersphere.radius;
@@ -38,10 +29,9 @@ void test_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
       p_out[j] = hypersphere.center[j] + r_out * n[j];
     }
 
-    assert_true(hypersphere.belongs(p_in));
-    assert_false(hypersphere.belongs(p_out));
+    REQUIRE(hypersphere.belongs(p_in));
+    REQUIRE_FALSE(hypersphere.belongs(p_out));
   }
-  std::cout << " OK" << std::endl;
 }
 
 // void v2r_test_ndsphere_raster() {
@@ -67,16 +57,18 @@ void test_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
 //  }
 //}
 
-void main() {
+TEST_CASE("Hypersphere") {
   vect2rast::Hypersphere<2> disk{{1.2, -3.4}, 7.8};
   vect2rast::Hypersphere<3> sphere{{1.2, -3.4, 5.6}, 7.8};
 
-  test_get_bounding_box(disk);
-  test_get_bounding_box(sphere);
+  SECTION("Hypersphere.get_bounding_box") {
+    test_hypersphere_get_bounding_box(disk);
+    test_hypersphere_get_bounding_box(sphere);
+  }
 
-  test_belongs(disk);
-  test_belongs(sphere);
-
+  SECTION("Hypersphere.belongs") {
+    test_hypersphere_belongs(disk);
+    test_hypersphere_belongs(sphere);
+  }
   //  v2r_test_ndsphere_raster();
 }
-}  // namespace test_hypersphere

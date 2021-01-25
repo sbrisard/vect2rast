@@ -48,18 +48,3 @@ void v2r_normalize(std::array<double, N>& v) {
   std::transform(v.cbegin(), v.cend(), v.begin(),
                  [s](double x) { return s * x; });
 }
-
-void assert_true(bool predicate) {
-  if (!predicate) exit(-1);
-}
-
-void assert_false(bool predicate) {
-  if (predicate) exit(-1);
-}
-
-void assert_equals_double(double expected, double actual, double rtol,
-                          double atol) {
-  if (fabs(actual - expected) > rtol * fabs(expected) + atol) {
-    exit(-1);
-  }
-}

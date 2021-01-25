@@ -1,19 +1,16 @@
 #pragma once
 
-#include <iostream>
 #include <numeric>
+
+#include "catch2/catch.hpp"
 
 #include "test_utils.hpp"
 #include "vect2rast/spheroid.hpp"
 
-namespace test_spheroid {
-void test_belongs(
+void test_spheroid_belongs(
     const std::array<double, vect2rast::Spheroid::dim>& center, double a,
     double c) {
   constexpr size_t dim = vect2rast::Spheroid::dim;
-  std::cout << "test_belongs(center="
-            << vect2rast::repr(center.cbegin(), center.cend()) << ", a=" << a
-            << ", c =" << c << ")...";
 
   auto directions = generate_directions<dim>();
 
@@ -35,16 +32,17 @@ void test_belongs(
         p_in[k] = spheroid.center[k] + alpha_in * r;
         p_out[k] = spheroid.center[k] + alpha_out * r;
       }
-      assert_true(spheroid.belongs(p_in));
-      assert_false(spheroid.belongs(p_out));
+      REQUIRE(spheroid.belongs(p_in));
+      REQUIRE_FALSE(spheroid.belongs(p_out));
     }
   }
-  std::cout << " OK" << std::endl;
 }
 
-void main() {
+TEST_CASE("Spheroid") {
   std::array center{1.2, -3.4, 5.6};
-  test_belongs(center, 0.5, 0.02);
-  test_belongs(center, 0.02, 0.5);
+
+  SECTION("Spheroid.belongs()") {
+    test_spheroid_belongs(center, 0.5, 0.02);
+    test_spheroid_belongs(center, 0.02, 0.5);
+  }
 }
-}  // namespace test_spheroid

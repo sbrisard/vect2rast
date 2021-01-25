@@ -48,7 +48,7 @@ class Spheroid {
     }
   }
 
-  /** Return `true` if the specified `point` test_belongs to this hypersphere. */
+  /** Return `true` if the specified `point` test_hypersphere_belongs to this hypersphere. */
   bool belongs(const std::span<double, Spheroid::dim> point) const {
     double x_dot_x = 0.;
     double d_dot_x = 0.;
