@@ -12,7 +12,7 @@ static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
 ///**
 // * @brief Rasterize the specified object.
 // *
-// * For each cell of the grid whose center belongs to the object, the value is
+// * For each cell of the grid whose center test_belongs to the object, the value is
 // * set.
 // *
 // * @param object the object to rasterize
@@ -47,7 +47,7 @@ static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
 //      int j2 = i2_min >= 0 ? i2_min : i2_min + n2;
 //      x[2] = (i2_min + 0.5) * h2;
 //      for (int i2 = i2_min; i2 <= i2_max; i2++) {
-//        if (object->type->belongs(object, x)) {
+//        if (object->type->test_belongs(object, x)) {
 //          grid[(j0 * n1 + j1) * n2 + j2] = value;
 //        }
 //        x[2] += h2;
@@ -91,7 +91,7 @@ static void init_bounds(double x_min, double x_max, double h_inv, int *i_min,
 //    int j1 = i1_min >= 0 ? i1_min : i1_min + n1;
 //    x[1] = (i1_min + 0.5) * h1;
 //    for (int i1 = i1_min; i1 <= i1_max; i1++) {
-//      if (object->type->belongs(object, x)) {
+//      if (object->type->test_belongs(object, x)) {
 //        grid[j0 * n1 + j1] = value;
 //      }
 //      ++j1;

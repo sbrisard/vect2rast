@@ -7,11 +7,11 @@
 #include "vect2rast/spheroid.hpp"
 
 namespace test_spheroid {
-void test_spheroid_belongs(
+void test_belongs(
     const std::array<double, vect2rast::Spheroid::dim>& center, double a,
     double c) {
   constexpr size_t dim = vect2rast::Spheroid::dim;
-  std::cout << "test_spheroid_belongs(center="
+  std::cout << "test_belongs(center="
             << vect2rast::repr(center.cbegin(), center.cend()) << ", a=" << a
             << ", c =" << c << ")...";
 
@@ -42,9 +42,9 @@ void test_spheroid_belongs(
   std::cout << " OK" << std::endl;
 }
 
-void test_spheroid_all() {
+void main() {
   std::array center{1.2, -3.4, 5.6};
-  test_spheroid_belongs(center, 0.5, 0.02);
-  test_spheroid_belongs(center, 0.02, 0.5);
+  test_belongs(center, 0.5, 0.02);
+  test_belongs(center, 0.02, 0.5);
 }
 }  // namespace test_spheroid

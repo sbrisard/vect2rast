@@ -47,7 +47,7 @@ class Hypersphere {
     }
   }
 
-  /** Return `true` if the specified `point` belongs to this hypersphere. */
+  /** Return `true` if the specified `point` test_belongs to this hypersphere. */
   bool belongs(const std::span<double, DIM> point) const {
     return std::transform_reduce(point.begin(), point.end(), center.cbegin(),
                                  0.0, std::plus<>(), [](double c, double p) {

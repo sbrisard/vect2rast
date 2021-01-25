@@ -7,9 +7,9 @@
 
 namespace test_hypersphere {
 template <size_t DIM>
-void test_hypersphere_get_bounding_box(
+void test_get_bounding_box(
     vect2rast::Hypersphere<DIM>& hypersphere) {
-  std::cout << "test_hypersphere_get_bounding_box(" << hypersphere << ")...";
+  std::cout << "test_get_bounding_box(" << hypersphere << ")...";
 
   std::array<double, DIM> bbmin, bbmax;
   hypersphere.get_bounding_box(bbmin, bbmax);
@@ -25,8 +25,8 @@ void test_hypersphere_get_bounding_box(
 }
 
 template <size_t DIM>
-void test_hypersphere_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
-  std::cout << "test_hypersphere_belongs(" << hypersphere << ")...";
+void test_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
+  std::cout << "test_belongs(" << hypersphere << ")...";
   auto directions = generate_directions<DIM>();
   double const r_in = 0.95 * hypersphere.radius;
   double const r_out = 1.05 * hypersphere.radius;
@@ -67,15 +67,15 @@ void test_hypersphere_belongs(vect2rast::Hypersphere<DIM>& hypersphere) {
 //  }
 //}
 
-void test_hypersphere_all() {
+void main() {
   vect2rast::Hypersphere<2> disk{{1.2, -3.4}, 7.8};
   vect2rast::Hypersphere<3> sphere{{1.2, -3.4, 5.6}, 7.8};
 
-  test_hypersphere_get_bounding_box(disk);
-  test_hypersphere_get_bounding_box(sphere);
+  test_get_bounding_box(disk);
+  test_get_bounding_box(sphere);
 
-  test_hypersphere_belongs(disk);
-  test_hypersphere_belongs(sphere);
+  test_belongs(disk);
+  test_belongs(sphere);
 
   //  v2r_test_ndsphere_raster();
 }
