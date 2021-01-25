@@ -5,6 +5,7 @@
 #include "test_utils.hpp"
 #include "vect2rast/hypersphere.hpp"
 
+namespace test_hypersphere {
 template <size_t DIM>
 void test_hypersphere_get_bounding_box(
     vect2rast::Hypersphere<DIM>& hypersphere) {
@@ -78,3 +79,4 @@ void test_hypersphere_all() {
 
   //  v2r_test_ndsphere_raster();
 }
+}  // namespace test_hypersphere
