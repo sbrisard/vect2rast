@@ -23,7 +23,7 @@ class Hypersphere {
   const double radius;
 
   /**
-   * Create a new instance of this class, with specified `center` and `radius.
+   * Create a new instance of this class, with specified `center` and `radius`.
    */
   Hypersphere(const std::array<double, DIM> center, const double radius)
       : center(center), radius(radius) {}
@@ -46,8 +46,7 @@ class Hypersphere {
                    [this](double x) { return x + this->radius; });
   }
 
-  /** Return `true` if the specified `point` test_hypersphere_belongs to this
-   * hypersphere. */
+  /** Return `true` if the specified `point` belongs to this hypersphere. */
   bool belongs(const std::span<double, DIM> point) const {
     return std::transform_reduce(point.begin(), point.end(), center.cbegin(),
                                  0.0, std::plus<>(), [](double c, double p) {
